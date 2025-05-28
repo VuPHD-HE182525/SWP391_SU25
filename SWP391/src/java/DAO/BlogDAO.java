@@ -19,10 +19,10 @@ import java.util.List;
 public class BlogDAO {
 
     // Lấy bài viết nổi bật (ví dụ 5 bài mới nhất)
-    public List<Blog> getHotPosts() throws Exception {
+    public List<Blog> getHotBlogs() throws Exception {
         List<Blog> list = new ArrayList<>();
         String sql = "SELECT id, title, content, author_id, published_at, thumbnail_url " +
-                     "FROM blogs WHERE published_at IS NOT NULL ORDER BY published_at DESC LIMIT 5";
+                     "FROM blogs WHERE published_at IS NOT NULL ORDER BY published_at DESC LIMIT 3";
 
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -43,7 +43,7 @@ public class BlogDAO {
     }
 
     // Lấy bài viết mới nhất (cho sidebar)
-    public List<Blog> getLatestPosts() throws Exception {
+    public List<Blog> getLatestBlogs() throws Exception {
         List<Blog> list = new ArrayList<>();
         String sql = "SELECT id, title, content, author_id, published_at, thumbnail_url " +
                      "FROM blogs WHERE published_at IS NOT NULL ORDER BY published_at DESC LIMIT 5";

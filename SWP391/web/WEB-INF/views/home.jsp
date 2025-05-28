@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Trang chủ E-Learn</title>
+        <title>Home E-Learn</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -43,16 +43,16 @@
 
             <!-- Blog Section -->
             <div class="mb-16">
-                <h2 class="text-xl font-semibold border-l-4 border-blue-600 pl-4 mb-6 text-blue-600">Bài viết mới</h2>
+                <h2 class="text-xl font-semibold border-l-4 border-blue-600 pl-4 mb-6 text-blue-600">Blogs</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <c:forEach var="b" items="${latestPosts}">
-                        <a href="blog-detail.jsp?id=${b.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
-                            <img src="${b.thumbnailUrl}" alt="${b.title}" class="w-full h-48 object-cover" />
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold">${b.title}</h4>
-                                <p class="text-sm text-gray-500">${b.publishedAt}</p>
-                            </div>
-                        </a>
+                    <c:forEach var="b" items="${latestBlogs}" varStatus="loop">
+                          <a href="blog-detail.jsp?id=${b.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
+                              <img src="${b.thumbnailUrl}" alt="${b.title}" class="w-full h-48 object-cover" />
+                              <div class="p-4">
+                                  <h4 class="text-lg font-semibold">${b.title}</h4>
+                                  <p class="text-sm text-gray-500">${b.publishedAt}</p>
+                              </div>
+                          </a>
                     </c:forEach>
                 </div>
             </div>
@@ -61,14 +61,14 @@
             <div>
                 <h2 class="text-xl font-semibold border-l-4 border-blue-600 pl-4 mb-6 text-blue-600">Featured Subjects</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <c:forEach var="sub" items="${featuredSubjects}">
-                        <a href="subject-detail.jsp?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
-                            <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-full h-48 object-cover" />
-                            <div class="p-4">
-                                <h4 class="text-lg font-semibold">${sub.name}</h4>
-                                <p class="text-sm text-gray-600">${sub.description}</p>
-                            </div>
-                        </a>
+                    <c:forEach var="sub" items="${featuredSubjects}" varStatus="loop">
+                          <a href="subject-detail.jsp?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
+                              <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-full h-48 object-cover" />
+                              <div class="p-4">
+                                  <h4 class="text-lg font-semibold">${sub.name}</h4>
+                                  <p class="text-sm text-blue-600">${sub.description}</p>
+                              </div>
+                          </a>
                     </c:forEach>
                 </div>
             </div>
