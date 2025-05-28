@@ -29,9 +29,12 @@ public class HomeController extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            //Demo user
-            User user = UserDAO.getUserById(1);
-            request.setAttribute("user", user);
+            HttpSession session = request.getSession(false);
+            User user = null;
+
+            if (session != null) {
+                user = (User) session.getAttribute("userObj");
+            }
 
             SliderDAO sliderDAO = new SliderDAO();
             List<Slider> sliders = sliderDAO.getAllSliders();
@@ -43,6 +46,7 @@ public class HomeController extends HttpServlet{
             SubjectDAO subjectDAO = new SubjectDAO();
             List<Subject> featuredSubjects = subjectDAO.getFeaturedSubjects();
 
+            request.setAttribute("user", user);  // **Thêm dòng này**
             request.setAttribute("sliders", sliders);
             request.setAttribute("hotPosts", hotPosts);
             request.setAttribute("latestPosts", latestPosts);
