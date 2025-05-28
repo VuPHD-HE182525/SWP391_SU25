@@ -62,7 +62,7 @@ public class UpdateProfileServlet extends HttpServlet {
             avatarFileName = "avatar_" + user.getId() + "_" + System.currentTimeMillis() + ext;
 
             // Đường dẫn lưu file (ví dụ trong folder "uploads/images" trong app)
-            String uploadPath = getServletContext().getRealPath("/") + "uploads/images/";
+            String uploadPath = "D:/Projects/FPTU/SWP391/SWP391/web/uploads/images/"; //Cái này cần thay thành đường dẫn của máy
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
