@@ -4,8 +4,8 @@
  */
 package controller;
 
+import DAO.UserDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
         if (user!=null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            response.sendRedirect("views/home.jsp");
+            response.sendRedirect("/");
         } else {
             request.setAttribute("error", "Invalid email or password");
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);

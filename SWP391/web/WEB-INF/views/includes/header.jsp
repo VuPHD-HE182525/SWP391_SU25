@@ -28,11 +28,11 @@
 
                 <!-- Navigation -->
                 <nav class="flex items-center space-x-8">
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Trang chủ</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Khóa học</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Bài viết</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Giới thiệu</a>
-                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Liên hệ</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Courses</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Blogs</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">About</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Contacts</a>
                 </nav>
 
                 <!-- Actions -->
@@ -41,7 +41,7 @@
                     <div class="relative">
                         <input 
                           type="search" 
-                          placeholder="Tìm kiếm..."
+                          placeholder="Search..."
                           class="w-64 h-9 pl-9 pr-3 rounded-md border border-gray-300 focus:outline-none focus:ring focus:ring-blue-200"
                         />
                         <svg 
@@ -57,39 +57,44 @@
                         </svg>
                     </div>
 
-                  <!-- Avatar -->
                   <c:choose>
-        <c:when test="${not empty userObj}">
-            <!-- Đã đăng nhập: hiển thị avatar và dropdown -->
-            <div class="relative inline-block text-left">
-                <button id="avatarButton" class="rounded-full bg-transparent p-1 focus:outline-none">
-                    <img 
-                        src="${empty userObj.avatarUrl ? '/uploads/images/default-avatar.svg' : userObj.avatarUrl}" 
-                        alt="Avatar" 
-                        class="w-8 h-8 rounded-full object-cover border border-gray-300"
-                    />
-                </button>
+                    <c:when test="${not empty user}">
+                      <!-- Avatar Dropdown -->
+                      <div class="relative inline-block text-left">
+                        <button id="avatarButton" class="rounded-full bg-transparent p-1 focus:outline-none">
+                          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-800 font-semibold">
+                            <img 
+                                src="${empty user.avatarUrl ? '/uploads/images/default-avatar.svg' : user.avatarUrl}"
+                                alt="User Avatar" 
+                                class="w-8 h-8 rounded-full object-cover border border-gray-300"
+                            />
+                          </div>
+                        </button>
 
-                <!-- Dropdown -->
-                <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-                    <div class="py-2">
-                        <span class="block px-4 py-2 text-sm text-gray-700">Xin chào, ${userObj.fullName}</span>
-                        <a href="my-course" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Khóa học của tôi</a>
-                        <a href="settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cài đặt</a>
-                        <hr class="my-1" />
-                        <a href="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
-                    </div>
-                </div>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <!-- Chưa đăng nhập: hiển thị nút Login -->
-            <a href="${pageContext.request.contextPath}/login" 
-               class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-               Đăng nhập
-            </a>
-        </c:otherwise>
-    </c:choose>
+                        <!-- Dropdown -->
+                        <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                          <div class="py-2">
+                            <button 
+                              id="openProfileModal"
+                              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Tài khoản
+                            </button>
+                            <a href="my-course" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Khóa học của tôi</a>
+                            <a href="settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cài đặt</a>
+                            <hr class="my-1" />
+                            <a href="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
+                          </div>
+                        </div>
+                      </div>
+                    </c:when>
+
+                    <c:otherwise>
+                      <!-- Login Button -->
+                      <a href="login" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Login</a>
+                    </c:otherwise>
+                  </c:choose>
+
                 </div>
               </div>
             </div>
@@ -97,17 +102,48 @@
 
         <!-- Profile Edit Modal -->
         <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-            <div class="bg-white w-full max-w-md rounded-lg p-6 shadow-lg relative">
-                <h3 class="text-xl font-semibold mb-4">Cập nhật thông tin cá nhân</h3>
+            <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg relative flex">
 
-                <form id="profileForm" method="post" action="updateProfile" enctype="multipart/form-data">
-                    <!-- Avatar -->
+                <!-- Left: Avatar preview -->
+                <div class="w-1/2 p-6 flex items-center justify-center border-r">
+                  <img 
+                    id="avatarPreview"
+                    src="${empty user.avatarUrl ? '/uploads/images/default-avatar.svg' : user.avatarUrl}" 
+                    alt="Avatar Preview" 
+                    class="w-64 h-64 object-cover rounded-lg border"
+                  />
+                </div>
+
+                <!-- Right: Profile form -->
+                <div class="w-1/2 p-6">
+                  <h3 class="text-xl font-semibold mb-4">Cập nhật thông tin cá nhân</h3>
+                  <form id="profileForm" method="post" action="updateProfile" enctype="multipart/form-data">
+
+                    <!-- Avatar upload -->
                     <div class="mb-4">
                       <label class="block text-sm font-medium mb-1">Ảnh đại diện</label>
-                      <input type="file" name="avatar" accept="image/*" class="w-full border border-gray-300 rounded p-2" />
+                      <input 
+                        type="file" 
+                        name="avatar" 
+                        accept="image/*" 
+                        class="w-full border border-gray-300 rounded p-2"
+                        onchange="previewAvatar(this)"
+                      />
                     </div>
 
-                    <!-- Name -->
+                    <!-- Username -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Tên đăng nhập</label>
+                      <input 
+                        type="text" 
+                        name="username" 
+                        value="${user.username}" 
+                        class="w-full border border-gray-300 rounded p-2" 
+                        required 
+                      />
+                    </div>
+
+                    <!-- Fullname -->
                     <div class="mb-4">
                       <label class="block text-sm font-medium mb-1">Họ và tên</label>
                       <input 
@@ -115,7 +151,27 @@
                         name="fullName" 
                         value="${user.fullName}" 
                         class="w-full border border-gray-300 rounded p-2" 
-                        required
+                        required 
+                      />
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Giới tính</label>
+                      <select name="gender" class="w-full border border-gray-300 rounded p-2">
+                        <option value="male" ${user.gender == 'male' ? 'selected' : ''}>Nam</option>
+                        <option value="female" ${user.gender == 'female' ? 'selected' : ''}>Nữ</option>
+                      </select>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Số điện thoại</label>
+                      <input 
+                        type="text" 
+                        name="phone" 
+                        value="${user.phone}" 
+                        class="w-full border border-gray-300 rounded p-2" 
                       />
                     </div>
 
@@ -132,20 +188,30 @@
                       <p class="text-xs text-gray-500 mt-1">Không thể thay đổi email.</p>
                     </div>
 
+                    <!-- Address -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Địa chỉ</label>
+                      <input 
+                        type="text" 
+                        name="address" 
+                        value="${user.address}" 
+                        class="w-full border border-gray-300 rounded p-2" 
+                      />
+                    </div>
+
                     <!-- Buttons -->
                     <div class="flex justify-end space-x-2">
                       <button type="button" id="closeProfileModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Hủy</button>
                       <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lưu</button>
                     </div>
-                </form>
+                  </form>
+                </div>
 
-
-                <!-- Close Icon -->
-                <button id="closeIcon" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
-                  ✕
-                </button>
+              <!-- Close Icon -->
+              <button id="closeIcon" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">✕</button>
             </div>
         </div>
+
 
         <script>
           // Dropdown Avatar
@@ -186,6 +252,21 @@
 
           document.getElementById('profileForm').addEventListener('submit', function(e){
           });
+        </script>
+        
+        <!-- Hien anh -->
+        <script>
+            function previewAvatar(input) {
+              const preview = document.getElementById('avatarPreview');
+              const file = input.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                  preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+              }
+            }
         </script>
     </body>
 </html>

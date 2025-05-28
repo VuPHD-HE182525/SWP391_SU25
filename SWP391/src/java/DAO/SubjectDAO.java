@@ -20,7 +20,7 @@ public class SubjectDAO {
         public List<Subject> getFeaturedSubjects() throws Exception {
         List<Subject> list = new ArrayList<>();
         String sql = "SELECT id, name, description, created_at, thumbnail_url " +
-                     "FROM subjects ORDER BY created_at DESC LIMIT 5";
+                     "FROM subjects ORDER BY created_at DESC LIMIT 6";
 
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);

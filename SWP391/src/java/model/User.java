@@ -18,11 +18,15 @@ public class User {
     private String role;
     private LocalDateTime createdAt;
     private String avatarUrl;
+    private String username;
+    private String gender;
+    private String phone;
+    private String address;
 
     public User() {
     }
 
-    public User(int id, String fullName, String email, String passwordHash, String role, LocalDateTime createdAt, String avatarUrl) {
+    public User(int id, String fullName, String email, String passwordHash, String role, LocalDateTime createdAt, String avatarUrl, String username, String gender, String phone, String address) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -30,6 +34,10 @@ public class User {
         this.role = role;
         this.createdAt = createdAt;
         this.avatarUrl = avatarUrl;
+        this.username = username;
+        this.gender = gender;
+        this.phone = phone;
+        this.address = address;
     }
 
     public int getId() {
@@ -87,6 +95,39 @@ public class User {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     
     
 }

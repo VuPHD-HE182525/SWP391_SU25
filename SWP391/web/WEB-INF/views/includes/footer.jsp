@@ -32,19 +32,19 @@
 
                 <!-- Quick Links -->
                 <div>
-                  <h4 class="font-bold mb-4">Liên kết nhanh</h4>
+                  <h4 class="font-bold mb-4">Others</h4>
                   <ul class="space-y-2 text-sm">
-                    <li><a href="<%= request.getContextPath() %>/" class="text-gray-300 hover:text-white transition-colors">Trang chủ</a></li>
-                    <li><a href="<%= request.getContextPath() %>/courses" class="text-gray-300 hover:text-white transition-colors">Khóa học</a></li>
-                    <li><a href="<%= request.getContextPath() %>/articles" class="text-gray-300 hover:text-white transition-colors">Bài viết</a></li>
-                    <li><a href="<%= request.getContextPath() %>/about" class="text-gray-300 hover:text-white transition-colors">Giới thiệu</a></li>
-                    <li><a href="<%= request.getContextPath() %>/contact" class="text-gray-300 hover:text-white transition-colors">Liên hệ</a></li>
+                    <li><a href="<%= request.getContextPath() %>/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+                    <li><a href="<%= request.getContextPath() %>/courses" class="text-gray-300 hover:text-white transition-colors">Courses</a></li>
+                    <li><a href="<%= request.getContextPath() %>/articles" class="text-gray-300 hover:text-white transition-colors">Blogs</a></li>
+                    <li><a href="<%= request.getContextPath() %>/about" class="text-gray-300 hover:text-white transition-colors">About</a></li>
+                    <li><a href="<%= request.getContextPath() %>/contact" class="text-gray-300 hover:text-white transition-colors">Contacts</a></li>
                   </ul>
                 </div>
 
                 <!-- Categories -->
                 <div>
-                  <h4 class="font-bold mb-4">Danh mục</h4>
+                  <h4 class="font-bold mb-4">Category</h4>
                   <ul class="space-y-2 text-sm">
                     <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Communication Skills</a></li>
                     <li><a href="#" class="text-gray-300 hover:text-white transition-colors">Collaboration Leadership Time Management</a></li>
@@ -56,7 +56,7 @@
 
                 <!-- Contact -->
                 <div>
-                  <h4 class="font-bold mb-4">Liên hệ</h4>
+                  <h4 class="font-bold mb-4">Contact</h4>
                   <div class="space-y-2 text-sm text-gray-300">
                     <p>📧 vuphdhe182525@fpt.edu.vn</p>
                     <p>📞 +84 123 456 789</p>

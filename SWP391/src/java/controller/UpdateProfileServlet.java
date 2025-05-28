@@ -31,56 +31,56 @@ import model.User;
     maxRequestSize = 10 * 1024 * 1024   // 10 MB
 )
 public class UpdateProfileServlet extends HttpServlet {
-    
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        // Lấy user hiện tại từ session (bạn cần lưu user khi login)
-        HttpSession session = request.getSession();
 
+        HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+
         if (user == null) {
-            // Tạo user giả để demo
-            user = new User();
-            user.setId(1); // giả id
-            user.setEmail("demo@example.com"); // giả email
-            session.setAttribute("user", user);
+            // Trường hợp không có user trong session
+            response.sendRedirect("login.jsp");
+            return;
         }
 
-        // Lấy thông tin fullname
+        // Lấy dữ liệu từ form
         String fullName = request.getParameter("fullName");
+        String username = request.getParameter("username");
+        String gender = request.getParameter("gender");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
 
-        // Xử lý upload avatar (nếu có)
+        // Xử lý avatar (nếu có upload)
         Part avatarPart = request.getPart("avatar");
         String avatarFileName = null;
+
         if (avatarPart != null && avatarPart.getSize() > 0) {
-            // Lấy tên file gốc (hoặc tạo tên mới để tránh trùng)
             String submittedFileName = Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
-            // Tạo tên file mới ví dụ: userId-timestamp.ext
             String ext = submittedFileName.substring(submittedFileName.lastIndexOf("."));
             avatarFileName = "avatar_" + user.getId() + "_" + System.currentTimeMillis() + ext;
 
-            // Đường dẫn lưu file (ví dụ trong folder "uploads/images" trong app)
-            String uploadPath = "D:/Projects/FPTU/SWP391/SWP391/web/uploads/images/"; //Cái này cần thay thành đường dẫn của máy
+            String uploadPath = "D:/Projects/FPTU/SWP391/SWP391/web/uploads/images/";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            // Lưu file
             avatarPart.write(uploadPath + avatarFileName);
-        }
-
-        // Cập nhật thông tin user vào database
-        UserDAO userDAO = new UserDAO();
-
-        if (avatarFileName != null) {
             user.setAvatarUrl("/uploads/images/" + avatarFileName);
         }
-        user.setFullName(fullName);
 
+        // Cập nhật thông tin người dùng
+        user.setFullName(fullName);
+        user.setUsername(username);
+        user.setGender(gender);
+        user.setPhone(phone);
+        user.setAddress(address);
+
+        // Gọi DAO để update
+        UserDAO userDAO = new UserDAO();
         userDAO.updateUser(user);
 
-        // Cập nhật user trong session
+        // Cập nhật lại user trong session
         session.setAttribute("user", user);
 
         //reload

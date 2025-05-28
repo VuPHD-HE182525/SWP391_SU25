@@ -8,7 +8,6 @@ package controller;
 import DAO.BlogDAO;
 import DAO.SliderDAO;
 import DAO.SubjectDAO;
-import DAO.UserDAO;
 import model.Blog;
 import model.Slider;
 import model.Subject;
@@ -40,16 +39,16 @@ public class HomeController extends HttpServlet{
             List<Slider> sliders = sliderDAO.getAllSliders();
 
             BlogDAO blogDAO = new BlogDAO();
-            List<Blog> hotPosts = blogDAO.getHotPosts();
-            List<Blog> latestPosts = blogDAO.getLatestPosts();
+            List<Blog> hotBlogs = blogDAO.getHotBlogs();
+            List<Blog> latestBlogs = blogDAO.getLatestBlogs();
 
             SubjectDAO subjectDAO = new SubjectDAO();
             List<Subject> featuredSubjects = subjectDAO.getFeaturedSubjects();
 
             request.setAttribute("user", user);  // **Thêm dòng này**
             request.setAttribute("sliders", sliders);
-            request.setAttribute("hotPosts", hotPosts);
-            request.setAttribute("latestPosts", latestPosts);
+            request.setAttribute("hotBlogs", hotBlogs);
+            request.setAttribute("latestBlogs", latestBlogs);
             request.setAttribute("featuredSubjects", featuredSubjects);
 
             request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
