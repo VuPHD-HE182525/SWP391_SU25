@@ -52,5 +52,38 @@ public class UserDAO {
             } catch (Exception e) {
         }
 }
-
+public User authenticateUser(String email, String password) {
+        User user = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            Connection conn = dbContext.getConnection();
+            String sql = "SELECT * FROM users WHERE email = ? AND password_hash = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, email);
+            stmt.setString(2, password);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPasswordHash(rs.getString("password_hash"));
+                user.setRole(rs.getString("role"));
+                String avatar = rs.getString("avatar_url");
+                user.setAvatarUrl((avatar == null || avatar.isEmpty()) ? "/uploads/images/default-avatar.svg" : avatar);
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return user;
+    }
 }
