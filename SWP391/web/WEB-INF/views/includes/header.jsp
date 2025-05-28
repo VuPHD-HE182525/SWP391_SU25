@@ -58,42 +58,42 @@
                     </div>
 
                   <c:choose>
-  <c:when test="${not empty user}">
-    <!-- Avatar Dropdown -->
-    <div class="relative inline-block text-left">
-      <button id="avatarButton" class="rounded-full bg-transparent p-1 focus:outline-none">
-        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-800 font-semibold">
-          <img 
-              src="${empty user.avatarUrl ? '/uploads/images/default-avatar.svg' : user.avatarUrl}"
-              alt="User Avatar" 
-              class="w-8 h-8 rounded-full object-cover border border-gray-300"
-          />
-        </div>
-      </button>
+                    <c:when test="${not empty user}">
+                      <!-- Avatar Dropdown -->
+                      <div class="relative inline-block text-left">
+                        <button id="avatarButton" class="rounded-full bg-transparent p-1 focus:outline-none">
+                          <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-800 font-semibold">
+                            <img 
+                                src="${empty user.avatarUrl ? '/uploads/images/default-avatar.svg' : user.avatarUrl}"
+                                alt="User Avatar" 
+                                class="w-8 h-8 rounded-full object-cover border border-gray-300"
+                            />
+                          </div>
+                        </button>
 
-      <!-- Dropdown -->
-      <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-        <div class="py-2">
-          <button 
-            id="openProfileModal"
-            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-          >
-            Tài khoản
-          </button>
-          <a href="my-course" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Khóa học của tôi</a>
-          <a href="settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cài đặt</a>
-          <hr class="my-1" />
-          <a href="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
-        </div>
-      </div>
-    </div>
-  </c:when>
+                        <!-- Dropdown -->
+                        <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                          <div class="py-2">
+                            <button 
+                              id="openProfileModal"
+                              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                              Tài khoản
+                            </button>
+                            <a href="my-course" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Khóa học của tôi</a>
+                            <a href="settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cài đặt</a>
+                            <hr class="my-1" />
+                            <a href="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
+                          </div>
+                        </div>
+                      </div>
+                    </c:when>
 
-  <c:otherwise>
-    <!-- Login Button -->
-    <a href="login" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Đăng nhập</a>
-  </c:otherwise>
-</c:choose>
+                    <c:otherwise>
+                      <!-- Login Button -->
+                      <a href="login" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Đăng nhập</a>
+                    </c:otherwise>
+                  </c:choose>
 
                 </div>
               </div>
