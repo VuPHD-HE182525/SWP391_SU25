@@ -27,24 +27,22 @@ public class LoginServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
     }
 
-    @Override
+   @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if ("admin123@example.com".equals(email) && "admin123".equals(password)) {
-            User user = new User();
-            user.setEmail(email);
-            user.setFullName("Admin");
-            user.setAvatarUrl("avatar_url_here");
+        UserDAO userDao = new UserDAO();
+        User user = userDao.authenticateUser(email, password);
 
+        if (user!=null) {
             HttpSession session = request.getSession();
-            session.setAttribute("userObj", user);
-            response.sendRedirect(request.getContextPath() + "/");
+            session.setAttribute("user", user);
+            response.sendRedirect("views/home.jsp");
         } else {
             request.setAttribute("error", "Invalid email or password");
-            request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         }
     }
 }
