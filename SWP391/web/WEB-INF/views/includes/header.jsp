@@ -4,6 +4,7 @@
     Author     : Kaonashi
 --%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -56,44 +57,98 @@
                         </svg>
                     </div>
 
-                  <!-- Avatar Dropdown -->
-                  <div class="relative inline-block text-left">
-                    <button id="avatarButton" class="rounded-full bg-transparent p-1 focus:outline-none">
-                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-800 font-semibold">
-                          <svg
-                              class="text-gray-400"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              width="24"
-                              height="24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                          >
-                            <path d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m0 0a8.95 8.95 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.95 8.95 0 0 0 12 21m3-11a3 3 0 1 1-6 0a3 3 0 0 1 6 0"/>
-                          </svg>
-                      </div>
-                    </button>
+                  <!-- Avatar -->
+                  <c:choose>
+        <c:when test="${not empty userObj}">
+            <!-- Đã đăng nhập: hiển thị avatar và dropdown -->
+            <div class="relative inline-block text-left">
+                <button id="avatarButton" class="rounded-full bg-transparent p-1 focus:outline-none">
+                    <img 
+                        src="${empty userObj.avatarUrl ? '/uploads/images/default-avatar.svg' : userObj.avatarUrl}" 
+                        alt="Avatar" 
+                        class="w-8 h-8 rounded-full object-cover border border-gray-300"
+                    />
+                </button>
 
-                    <!-- Dropdown -->
-                    <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
-                      <div class="py-2">
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Tài khoản</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Khóa học của tôi</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cài đặt</a>
+                <!-- Dropdown -->
+                <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2">
+                        <span class="block px-4 py-2 text-sm text-gray-700">Xin chào, ${userObj.fullName}</span>
+                        <a href="my-course" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Khóa học của tôi</a>
+                        <a href="settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cài đặt</a>
                         <hr class="my-1" />
-                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
-                      </div>
+                        <a href="Logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Đăng xuất</a>
                     </div>
-                  </div>
+                </div>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <!-- Chưa đăng nhập: hiển thị nút Login -->
+            <a href="${pageContext.request.contextPath}/login" 
+               class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+               Đăng nhập
+            </a>
+        </c:otherwise>
+    </c:choose>
                 </div>
               </div>
             </div>
         </header>
 
+        <!-- Profile Edit Modal -->
+        <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white w-full max-w-md rounded-lg p-6 shadow-lg relative">
+                <h3 class="text-xl font-semibold mb-4">Cập nhật thông tin cá nhân</h3>
+
+                <form id="profileForm" method="post" action="updateProfile" enctype="multipart/form-data">
+                    <!-- Avatar -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Ảnh đại diện</label>
+                      <input type="file" name="avatar" accept="image/*" class="w-full border border-gray-300 rounded p-2" />
+                    </div>
+
+                    <!-- Name -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Họ và tên</label>
+                      <input 
+                        type="text" 
+                        name="fullName" 
+                        value="${user.fullName}" 
+                        class="w-full border border-gray-300 rounded p-2" 
+                        required
+                      />
+                    </div>
+
+                    <!-- Email (disabled) -->
+                    <div class="mb-4">
+                      <label class="block text-sm font-medium mb-1">Email</label>
+                      <input 
+                        type="email" 
+                        name="email" 
+                        value="${user.email}" 
+                        disabled 
+                        class="w-full bg-gray-100 border border-gray-300 rounded p-2" 
+                      />
+                      <p class="text-xs text-gray-500 mt-1">Không thể thay đổi email.</p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex justify-end space-x-2">
+                      <button type="button" id="closeProfileModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Hủy</button>
+                      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lưu</button>
+                    </div>
+                </form>
+
+
+                <!-- Close Icon -->
+                <button id="closeIcon" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
+                  ✕
+                </button>
+            </div>
+        </div>
+
         <script>
+          // Dropdown Avatar
           const avatarBtn = document.getElementById("avatarButton");
           const dropdown = document.getElementById("avatarDropdown");
 
@@ -104,6 +159,32 @@
 
           document.addEventListener("click", function () {
             dropdown.classList.add("hidden");
+          });
+
+          // Modal popup
+          const openBtn = document.getElementById('openProfileModal');
+          const closeBtn = document.getElementById('closeProfileModal');
+          const closeIcon = document.getElementById('closeIcon');
+          const modal = document.getElementById('profileModal');
+
+          openBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            dropdown.classList.add('hidden');
+          });
+
+          closeBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+          });
+
+          closeIcon.addEventListener('click', () => {
+            modal.classList.add('hidden');
+          });
+
+          window.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+          });
+
+          document.getElementById('profileForm').addEventListener('submit', function(e){
           });
         </script>
     </body>
