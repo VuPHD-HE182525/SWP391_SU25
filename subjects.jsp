@@ -215,6 +215,50 @@
     <!-- Main Content -->
     <div class="main">
         <h1 style="text-align:center; margin-bottom: 32px;">Subjects List</h1>
+        <div style="text-align:right; margin-bottom: 16px;">
+            <button id="showFieldsBtn" style="padding: 8px 18px; background: #ccc; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Click to Show</button>
+        </div>
+        <!-- Modal for field selection -->
+        <div id="fieldsModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.3); z-index:1000; align-items:center; justify-content:center;">
+            <div style="background:#fff; padding:32px 24px; border-radius:12px; min-width:320px; max-width:90vw; margin:auto; box-shadow:0 4px 32px #888; display:flex; flex-direction:column; gap:16px;">
+                <label style="display:flex; align-items:center; gap:12px;"><input type="checkbox" class="field-checkbox" value="image" checked> Course's image</label>
+                <label style="display:flex; align-items:center; gap:12px;"><input type="checkbox" class="field-checkbox" value="info" checked> Course's Information</label>
+                <label style="display:flex; align-items:center; gap:12px;"><input type="checkbox" class="field-checkbox" value="tag" checked> Course's tag</label>
+                <label style="display:flex; align-items:center; gap:12px;"><input type="checkbox" class="field-checkbox" value="prices" checked> Course's prices</label>
+                <label style="display:flex; align-items:center; gap:12px;"><input type="checkbox" class="field-checkbox" value="thumbnail" checked> Course's Thumbnail</label>
+                <label style="display:flex; align-items:center; gap:12px;"><input type="checkbox" class="field-checkbox" value="title" checked> Course's title</label>
+                <button id="applyFieldsBtn" style="margin-top:16px; padding:8px 18px; background:#e74c3c; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Apply Change</button>
+            </div>
+        </div>
+        <script>
+        // Modal logic
+        const showFieldsBtn = document.getElementById('showFieldsBtn');
+        const fieldsModal = document.getElementById('fieldsModal');
+        const applyFieldsBtn = document.getElementById('applyFieldsBtn');
+        showFieldsBtn.onclick = function() { fieldsModal.style.display = 'flex'; };
+        fieldsModal.onclick = function(e) { if (e.target === fieldsModal) fieldsModal.style.display = 'none'; };
+        applyFieldsBtn.onclick = function() {
+            const checked = Array.from(document.querySelectorAll('.field-checkbox:checked')).map(cb => cb.value);
+            document.querySelectorAll('.subject-card').forEach(card => {
+                // Image
+                card.querySelector('img').style.display = checked.includes('image') ? '' : 'none';
+                // Info block
+                card.querySelector('.subject-info').style.display = checked.includes('info') ? '' : 'none';
+                // Tagline
+                let tag = card.querySelector('.subject-tagline');
+                if (tag) tag.style.display = checked.includes('tag') ? '' : 'none';
+                // Prices
+                let price = card.querySelector('.price-info');
+                if (price) price.style.display = checked.includes('prices') ? '' : 'none';
+                // Thumbnail (same as image for this UI)
+                card.querySelector('img').style.display = checked.includes('thumbnail') || checked.includes('image') ? '' : 'none';
+                // Title
+                let title = card.querySelector('.subject-title');
+                if (title) title.style.display = checked.includes('title') ? '' : 'none';
+            });
+            fieldsModal.style.display = 'none';
+        };
+        </script>
         <div class="subjects-grid">
             <c:forEach var="subject" items="${subjects}">
                 <c:choose>
@@ -232,7 +276,7 @@
                                         Sale Price: <c:out value='${subject.lowestPackage.salePrice}' default='--'/>$
                                     </span>
                                 </div>
-                                <form method="get" action="registerSubject" onClick="event.stopPropagation();">
+                                <form method="Post" action="RegisterSubjectServlet" onClick="event.stopPropagation();">
                                     <input type="hidden" name="id" value="${subject.id}" />
                                     <button type="submit" class="register-btn">Register</button>
                                 </form>
@@ -251,14 +295,22 @@
         <!-- Pagination -->
         <div class="pagination">
             <c:if test="${page > 1}">
-                <a href="subjects?page=${page-1}&search=${param.search}&category=${param.category}">Previous</a>
+                <a href="subjects?page=${page-1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Previous</a>
             </c:if>
             <c:forEach begin="1" end="${(totalSubjects/pageSize) + (totalSubjects%pageSize==0?0:1)}" var="i">
-                <a href="subjects?page=${i}&search=${param.search}&category=${param.category}" class="${i==page ? 'active' : ''}">${i}</a>
+                <a href="subjects?page=${i}&search=${param.search}&category=${param.category}&pageSize=${pageSize}" class="${i==page ? 'active' : ''}">${i}</a>
             </c:forEach>
             <c:if test="${page < (totalSubjects/pageSize) + (totalSubjects%pageSize==0?0:1)}">
-                <a href="subjects?page=${page+1}&search=${param.search}&category=${param.category}">Next</a>
+                <a href="subjects?page=${page+1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Next</a>
             </c:if>
+            <!-- Items per page input -->
+            <form method="get" action="subjects" style="display:inline-block; margin-left:10px;">
+                <input type="hidden" name="search" value="${param.search}" />
+                <input type="hidden" name="category" value="${param.category}" />
+                <input type="hidden" name="page" value="1" />
+                <input type="number" name="pageSize" min="1" max="100" value="${pageSize}" style="width:60px;" />
+                <button type="submit">Items per page</button>
+            </form>
         </div>
     </div>
 </div>
