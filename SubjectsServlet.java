@@ -54,11 +54,22 @@ public class SubjectsServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+      protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String search = request.getParameter("search");
         String categoryId = request.getParameter("category");
         int page = 1;
         int pageSize = 4;
+        String pageSizeParam = request.getParameter("pageSize");
+        if (pageSizeParam != null) {
+            try {
+                int parsedPageSize = Integer.parseInt(pageSizeParam);
+                if (parsedPageSize > 0 && parsedPageSize <= 100) {
+                    pageSize = parsedPageSize;
+                }
+            } catch (NumberFormatException e) {
+                // Ignore and use default
+            }
+        }
         if (request.getParameter("page") != null) {
             page = Integer.parseInt(request.getParameter("page"));
         }
@@ -157,7 +168,6 @@ public class SubjectsServlet extends HttpServlet {
 
         request.getRequestDispatcher("/views/subjects.jsp").forward(request, response);
     }
-
 
     /** 
      * Handles the HTTP <code>POST</code> method.
