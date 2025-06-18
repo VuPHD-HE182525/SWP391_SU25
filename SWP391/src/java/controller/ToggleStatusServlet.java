@@ -35,7 +35,7 @@ public class ToggleStatusServlet extends HttpServlet {
 
             dao.toggleStatus(lessonId, newStatus);
 
-            response.sendRedirect("lesson?subjectId=" + subjectId);
+            response.sendRedirect("lesson-list?subjectId=" + subjectId);
         } catch (Exception e) {
             e.printStackTrace();
             response.getWriter().println("Lỗi khi đổi trạng thái lesson: " + e.getMessage());

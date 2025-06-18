@@ -9,6 +9,7 @@ package model;
  * @author Kaonashi
  */
 public class Lesson {
+
     private int id;
     private String name;
     private int orderNum;
@@ -16,11 +17,14 @@ public class Lesson {
     private boolean status;
     private int subjectId;
     private int parentLessonId;
+    private String videoLink;
+    private String htmlContent;
+    private Integer quizId;
 
     public Lesson() {
     }
 
-    public Lesson(int id, String name, int orderNum, String type, boolean status, int subjectId, int parentLessonId) {
+    public Lesson(int id, String name, int orderNum, String type, boolean status, int subjectId, int parentLessonId, String videoLink, String htmlContent, Integer quizId) {
         this.id = id;
         this.name = name;
         this.orderNum = orderNum;
@@ -28,6 +32,9 @@ public class Lesson {
         this.status = status;
         this.subjectId = subjectId;
         this.parentLessonId = parentLessonId;
+        this.videoLink = videoLink;
+        this.htmlContent = htmlContent;
+        this.quizId = quizId;
     }
 
     public int getId() {
@@ -85,6 +92,28 @@ public class Lesson {
     public void setParentLessonId(int parentLessonId) {
         this.parentLessonId = parentLessonId;
     }
-    
-    
+
+    public String getVideoLink() {
+        return videoLink;
+    }
+
+    public void setVideoLink(String videoLink) {
+        this.videoLink = videoLink;
+    }
+
+    public String getHtmlContent() {
+        return htmlContent;
+    }
+
+    public void setHtmlContent(String htmlContent) {
+        this.htmlContent = htmlContent;
+    }
+
+    public Integer getQuizId() {
+        return quizId;
+    }
+
+    public void setQuizId(Integer quizId) {
+        this.quizId = quizId;
+    }
 }

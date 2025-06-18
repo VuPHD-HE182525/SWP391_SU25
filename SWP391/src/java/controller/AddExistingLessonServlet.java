@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
  */
 @WebServlet("/addExistingLesson")
 public class AddExistingLessonServlet extends HttpServlet {
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
@@ -28,8 +29,7 @@ public class AddExistingLessonServlet extends HttpServlet {
             int subjectId = Integer.parseInt(request.getParameter("subjectId"));
 
             String sql = "UPDATE lessons SET subject_id = ? WHERE id = ?";
-            try (Connection conn = DBContext.getConnection();
-                 PreparedStatement ps = conn.prepareStatement(sql)) {
+            try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
                 ps.setInt(1, subjectId);
                 ps.setInt(2, lessonId);
@@ -38,8 +38,8 @@ public class AddExistingLessonServlet extends HttpServlet {
                 System.getLogger(AddExistingLessonServlet.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
 
-            response.sendRedirect("lesson?subjectId=" + subjectId);
-        } catch (IOException | NumberFormatException  e) {
+            response.sendRedirect("lesson-list?subjectId=" + subjectId);
+        } catch (IOException | NumberFormatException e) {
             response.getWriter().println("Lỗi khi thêm lesson: " + e.getMessage());
         }
     }

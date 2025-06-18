@@ -14,8 +14,7 @@ public class LessonDAO {
         List<Lesson> list = new ArrayList<>();
         String sql = "SELECT * FROM lessons WHERE subject_id = ? ORDER BY parent_lesson_id, lesson_order";
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, subjectId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -37,8 +36,7 @@ public class LessonDAO {
 
     public void toggleStatus(int lessonId, boolean status) throws Exception {
         String sql = "UPDATE lessons SET status = ? WHERE id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setBoolean(1, status);
             ps.setInt(2, lessonId);
@@ -48,8 +46,7 @@ public class LessonDAO {
 
     public Lesson getLessonById(int id) throws Exception {
         String sql = "SELECT * FROM lessons WHERE id = ?";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -62,6 +59,14 @@ public class LessonDAO {
                     lesson.setStatus(rs.getBoolean("status"));
                     lesson.setSubjectId(rs.getInt("subject_id"));
                     lesson.setParentLessonId(rs.getInt("parent_lesson_id"));
+                    lesson.setVideoLink(rs.getString("video_link"));
+                    lesson.setHtmlContent(rs.getString("html_content"));
+
+                    int quizId = rs.getInt("quiz_id");
+                    if (!rs.wasNull()) {
+                        lesson.setQuizId(quizId);
+                    }
+
                     return lesson;
                 }
             }
@@ -70,19 +75,27 @@ public class LessonDAO {
     }
 
     public void updateLesson(Lesson lesson) throws Exception {
-        String sql = "UPDATE lessons SET title = ?, lesson_order = ?, type = ?, status = ?, parent_lesson_id = ? WHERE id = ?";
+        String sql = "UPDATE lessons SET title = ?, lesson_order = ?, type = ?, status = ?, parent_lesson_id = ?, video_link = ?, html_content = ?, quiz_id = ? WHERE id = ?";
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, lesson.getName());
             ps.setInt(2, lesson.getOrderNum());
             ps.setString(3, lesson.getType());
             ps.setBoolean(4, lesson.isStatus());
             ps.setInt(5, lesson.getParentLessonId());
-            ps.setInt(6, lesson.getId());
+            ps.setString(6, lesson.getVideoLink());
+            ps.setString(7, lesson.getHtmlContent());
+
+            if (lesson.getQuizId() != null) {
+                ps.setInt(8, lesson.getQuizId());
+            } else {
+                ps.setNull(8, java.sql.Types.INTEGER);
+            }
+
+            ps.setInt(9, lesson.getId());
             ps.executeUpdate();
         }
+
     }
 
     public List<Lesson> getLessonsBySubjectWithFilters(int subjectId, String status, String search, String group) throws Exception {
@@ -109,8 +122,7 @@ public class LessonDAO {
 
         sql.append(" ORDER BY parent_lesson_id, lesson_order");
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
@@ -132,13 +144,12 @@ public class LessonDAO {
         }
         return list;
     }
-    
+
     public List<Lesson> getUnassignedLessons(int subjectId) throws Exception {
         List<Lesson> list = new ArrayList<>();
         String sql = "SELECT * FROM lessons WHERE subject_id IS NULL OR subject_id != ?";
 
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, subjectId);
             ResultSet rs = ps.executeQuery();
@@ -152,4 +163,21 @@ public class LessonDAO {
         }
         return list;
     }
+
+    public void insertLesson(Lesson lesson) throws Exception {
+        String sql = "INSERT INTO lessons (title, lesson_order, type, status, subject_id, parent_lesson_id) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBContext.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, lesson.getName());
+            ps.setInt(2, lesson.getOrderNum());
+            ps.setString(3, lesson.getType());
+            ps.setBoolean(4, lesson.isStatus());
+            ps.setInt(5, lesson.getSubjectId());
+            ps.setInt(6, lesson.getParentLessonId());
+
+            ps.executeUpdate();
+        }
+    }
+
 }
