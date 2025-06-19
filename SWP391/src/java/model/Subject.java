@@ -16,6 +16,9 @@ public class Subject {
     private String description;
     private Date createdAt;
     private String thumbnailUrl;
+    private String category;
+    private String status;
+    private boolean isFeatured;
 
     public Subject() {
     }
@@ -68,6 +71,28 @@ public class Subject {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isFeatured() {
+        return isFeatured;
+    }
+
+    public void setFeatured(boolean isFeatured) {
+        this.isFeatured = isFeatured;
+    }
 }
 

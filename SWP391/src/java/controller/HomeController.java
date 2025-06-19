@@ -44,12 +44,14 @@ public class HomeController extends HttpServlet{
 
             SubjectDAO subjectDAO = new SubjectDAO();
             List<Subject> featuredSubjects = subjectDAO.getFeaturedSubjects();
+            List<Subject> recentSubjects = subjectDAO.getRecentSubjects(6);
 
             request.setAttribute("user", user);  // **Thêm dòng này**
             request.setAttribute("sliders", sliders);
             request.setAttribute("hotBlogs", hotBlogs);
             request.setAttribute("latestBlogs", latestBlogs);
             request.setAttribute("featuredSubjects", featuredSubjects);
+            request.setAttribute("recentSubjects", recentSubjects);
 
             request.getRequestDispatcher("/WEB-INF/views/home.jsp").forward(request, response);
 
