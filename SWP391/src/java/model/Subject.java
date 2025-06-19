@@ -10,6 +10,9 @@ public class Subject {
     private String tagline;
     private String description;
     private String thumbnailUrl;
+    private String category;
+    private String status;
+    private boolean isFeatured;
     private Date createdAt;
     private int categoryId;
     private Package lowestPackage;
@@ -90,6 +93,30 @@ public class Subject {
         this.categoryId = categoryId;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public boolean isFeatured() {
+        return isFeatured;
+    }
+
+    public void setFeatured(boolean isFeatured) {
+        this.isFeatured = isFeatured;
+    }
+  
     public Package getLowestPackage() {
         return lowestPackage;
     }
