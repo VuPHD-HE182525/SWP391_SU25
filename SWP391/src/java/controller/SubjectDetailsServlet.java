@@ -64,6 +64,7 @@ public class SubjectDetailsServlet extends HttpServlet {
         String action = request.getParameter("action");
         try {
             if (action != null) {
+                //add
                 if (action.equals("addDimension")) {
                     DimensionDAO dimensionDAO = new DimensionDAO();
                     Dimension d = new Dimension();
@@ -71,6 +72,7 @@ public class SubjectDetailsServlet extends HttpServlet {
                     d.setType(request.getParameter("type"));
                     d.setName(request.getParameter("name"));
                     dimensionDAO.addDimension(d);
+                    //edit
                 } else if (action.equals("editDimension")) {
                     DimensionDAO dimensionDAO = new DimensionDAO();
                     Dimension d = new Dimension();
@@ -129,9 +131,12 @@ public class SubjectDetailsServlet extends HttpServlet {
         String category = request.getParameter("category");
         String status = request.getParameter("status");
         String description = request.getParameter("description");
+        
+        //Check feature
         boolean featured = request.getParameter("featured") != null;
 
         String thumbnailUrl = null;
+        String videoUrl = null;
         try {
             Part filePart = request.getPart("thumbnail");
             if (filePart != null && filePart.getSize() > 0) {
@@ -146,6 +151,19 @@ public class SubjectDetailsServlet extends HttpServlet {
                 Subject oldSubject = subjectDAO.getSubjectById(subjectId);
                 thumbnailUrl = oldSubject.getThumbnailUrl();
             }
+            Part videoPart = request.getPart("video");
+            if (videoPart != null && videoPart.getSize() > 0) {
+                String videoFileName = "video_" + subjectId + "_" + System.currentTimeMillis() + ".mp4";
+                String uploadVideoPath = request.getServletContext().getRealPath("/uploads/videos/");
+                java.io.File uploadVideoDir = new java.io.File(uploadVideoPath);
+                if (!uploadVideoDir.exists()) uploadVideoDir.mkdirs();
+                videoPart.write(uploadVideoPath + java.io.File.separator + videoFileName);
+                videoUrl = "uploads/videos/" + videoFileName;
+            } else {
+                SubjectDAO subjectDAO = new SubjectDAO();
+                Subject oldSubject = subjectDAO.getSubjectById(subjectId);
+                videoUrl = oldSubject.getVideoUrl();
+            }
             Subject subject = new Subject();
             subject.setId(subjectId);
             subject.setName(name);
@@ -154,6 +172,7 @@ public class SubjectDetailsServlet extends HttpServlet {
             subject.setDescription(description);
             subject.setFeatured(featured);
             subject.setThumbnailUrl(thumbnailUrl);
+            subject.setVideoUrl(videoUrl);
             SubjectDAO subjectDAO = new SubjectDAO();
             subjectDAO.updateSubject(subject);
         } catch (Exception e) {

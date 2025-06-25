@@ -74,7 +74,6 @@
                 <div class="grid grid-cols-2 gap-8">
                     <div>
                         <label>Subject Name</label>
-                        //Require HTML
                         <input type="text" name="name" class="w-full border rounded p-2 mb-4" value="${subject.name}" required />
                         <label>Category</label>
                         <select name="category" class="w-full border rounded p-2 mb-4" required>
@@ -97,6 +96,8 @@
                         </select>
                         <label>Image</label>
                         <div style="width:200px;height:200px;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#eee;" onclick="document.getElementById('imageInput').click();">
+                            <!-- SET THUMBNAIL -->
+                         
                             <img id="previewImg" src="${subject.thumbnailUrl}" alt="Subject Image" style="max-width:100%;max-height:100%;" />
                         </div>
                         <input type="file" name="thumbnail" id="imageInput" accept="image/*" style="display:none;" onchange="previewImage(event)" />
@@ -108,6 +109,7 @@
                 </div>
             </form>
             <script>
+                <!-- see preview image -->
                 function previewImage(event) {
                     const [file] = event.target.files;
                     if (file) {
@@ -209,6 +211,16 @@
                     document.getElementById('columnModal').style.display = 'none';
                 }
                 document.addEventListener('DOMContentLoaded', function() {
+                    //checkbox
+                    function updateColToggleState() {
+                        const checkboxes = document.querySelectorAll('.col-toggle');
+                        const checked = document.querySelectorAll('.col-toggle:checked');
+                        if (checked.length === 1) {
+                            checked[0].disabled = true;
+                        } else {
+                            checkboxes.forEach(cb => cb.disabled = false);
+                        }
+                    }
                     document.querySelectorAll('.col-toggle').forEach(function(checkbox) {
                         checkbox.addEventListener('change', function() {
                             var colIdx = parseInt(this.dataset.col);
@@ -223,8 +235,11 @@
                                 var td = row.querySelectorAll('td, th')[colIdx];
                                 if (td) td.style.display = show ? '' : 'none';
                             });
+                            updateColToggleState();
                         });
                     });
+                    // Kiểm tra trạng thái ban đầu khi mở modal
+                    updateColToggleState();
                 });
             </script>
         </div>

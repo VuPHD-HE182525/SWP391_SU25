@@ -15,11 +15,11 @@ import utils.DBContext;
 /**
  *
  * @author Kaonashi
- */
+ *///feature
 public class SubjectDAO {
         public List<Subject> getFeaturedSubjects() throws Exception {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE is_featured = 1 AND status = 'Published' ORDER BY created_at DESC LIMIT 6";
+        String sql = "SELECT id, name, description, created_at, video_url FROM subjects WHERE is_featured = 1 AND status = 'Published' ORDER BY created_at DESC LIMIT 6";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -29,7 +29,7 @@ public class SubjectDAO {
                 s.setName(rs.getString("name"));
                 s.setDescription(rs.getString("description"));
                 s.setCreatedAt(rs.getTimestamp("created_at"));
-                s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                s.setVideoUrl(rs.getString("video_url"));
                 list.add(s);
             }
         }
@@ -48,7 +48,7 @@ public class SubjectDAO {
                     s.setName(rs.getString("name"));
                     s.setDescription(rs.getString("description"));
                     s.setCreatedAt(rs.getTimestamp("created_at"));
-                    s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                    s.setVideoUrl(rs.getString("video_url"));
                     s.setCategory(rs.getString("category"));
                     s.setStatus(rs.getString("status"));
                     s.setFeatured(rs.getBoolean("is_featured"));
@@ -60,12 +60,12 @@ public class SubjectDAO {
     }
 
     public void updateSubject(Subject subject) throws Exception {
-        String sql = "UPDATE subjects SET name=?, description=?, thumbnail_url=?, category=?, status=?, is_featured=? WHERE id=?";
+        String sql = "UPDATE subjects SET name=?, description=?, video_url=?, category=?, status=?, is_featured=? WHERE id=?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, subject.getName());
             ps.setString(2, subject.getDescription());
-            ps.setString(3, subject.getThumbnailUrl());
+            ps.setString(3, subject.getVideoUrl());
             ps.setString(4, subject.getCategory());
             ps.setString(5, subject.getStatus());
             ps.setBoolean(6, subject.isFeatured());
@@ -77,7 +77,7 @@ public class SubjectDAO {
     // Returns the latest N published subjects (not just featured)
     public List<Subject> getRecentSubjects(int limit) throws Exception {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE status = 'Published' ORDER BY created_at DESC LIMIT ?";
+        String sql = "SELECT id, name, description, created_at, video_url FROM subjects WHERE status = 'Published' ORDER BY created_at DESC LIMIT ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);
@@ -88,7 +88,7 @@ public class SubjectDAO {
                     s.setName(rs.getString("name"));
                     s.setDescription(rs.getString("description"));
                     s.setCreatedAt(rs.getTimestamp("created_at"));
-                    s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                    s.setVideoUrl(rs.getString("video_url"));
                     list.add(s);
                 }
             }

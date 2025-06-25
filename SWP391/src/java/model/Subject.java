@@ -15,20 +15,24 @@ public class Subject {
     private String name;
     private String description;
     private Date createdAt;
-    private String thumbnailUrl;
+    /**
+     * Đường dẫn video giới thiệu khóa học
+     */
+    private String videoUrl;
     private String category;
     private String status;
     private boolean isFeatured;
+    private String thumbnailUrl; // Đường dẫn ảnh đại diện khóa học
 
     public Subject() {
     }
 
-    public Subject(int id, String name, String description, Date createdAt, String thumbnailUrl) {
+    public Subject(int id, String name, String description, Date createdAt, String videoUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
-        this.thumbnailUrl = thumbnailUrl;
+        this.videoUrl = videoUrl;
     }
 
     public int getId() {
@@ -63,12 +67,12 @@ public class Subject {
         this.createdAt = createdAt;
     }
 
-    public String getThumbnailUrl() {
-        return thumbnailUrl;
+    public String getVideoUrl() {
+        return videoUrl;
     }
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 
     public String getCategory() {
@@ -93,6 +97,14 @@ public class Subject {
 
     public void setFeatured(boolean isFeatured) {
         this.isFeatured = isFeatured;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 }
 
