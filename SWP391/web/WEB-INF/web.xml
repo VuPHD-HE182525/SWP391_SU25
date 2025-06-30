@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>controller.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CourseDetailsServlet</servlet-name>
+        <servlet-class>controller.CourseDetailsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SubjectDetailsServlet</servlet-name>
+        <servlet-class>controller.SubjectDetailsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SubjectsServlet</servlet-name>
+        <servlet-class>controller.SubjectsServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterSubjectServlet</servlet-name>
+        <servlet-class>controller.RegisterSubjectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CourseDetailsServlet</servlet-name>
+        <url-pattern>/CourseDetailsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectDetailsServlet</servlet-name>
+        <url-pattern>/SubjectDetailsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SubjectsServlet</servlet-name>
+        <url-pattern>/subjects</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterSubjectServlet</servlet-name>
+        <url-pattern>/RegisterSubjectServlet</url-pattern>
+    </servlet-mapping>
+</web-app> 
