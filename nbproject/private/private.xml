@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/model/Contact.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/controller/LoginServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/dao/CategoryDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/includes/footer_subjects.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/uploads/images/blog1.jpg</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/uploads/images/subject2.jpg</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/model/User.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/dao/SubjectDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/dao/ContactDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/login.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/model/Course.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/model/Category.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/controller/RegisterSubjectServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/home.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/dao/CourseDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/CourseDetails.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/uploads/images/banner1.jpg</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/includes/footer.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/dao/UserDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/register.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/model/Package.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/model/Subject.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/controller/SubjectsServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/includes/header.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/includes/header_subjects.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/utils/DBContext.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/views/subjects.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/uploads/images/subject1.png</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/web/index.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/src/java/controller/CourseDetailsServlet.java</file>
+        </group>
+    </open-files>
+</project-private>

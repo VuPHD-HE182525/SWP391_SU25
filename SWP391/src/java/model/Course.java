@@ -1,6 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Course {
 
@@ -11,7 +13,7 @@ public class Course {
     private String description;
     private String thumbnailUrl;
     private LocalDateTime createdAt;
-    private Package coursePackage;
+    private List<Package> packages;
 
     // Expert info
     private String expertName;
@@ -24,6 +26,7 @@ public class Course {
 
     // Constructors
     public Course() {
+        this.packages = new ArrayList<>();
     }
 
     // Getters and Setters
@@ -83,20 +86,20 @@ public class Course {
         this.createdAt = createdAt;
     }
 
+    public List<Package> getPackages() {
+        return packages;
+    }
+
+    public void setPackages(List<Package> packages) {
+        this.packages = packages;
+    }
+
     public String getExpertName() {
         return expertName;
     }
 
     public void setExpertName(String expertName) {
         this.expertName = expertName;
-    }
-
-    public Package getCoursePackage() {
-        return coursePackage;
-    }
-
-    public void setCoursePackage(Package coursePackage) {
-        this.coursePackage = coursePackage;
     }
 
     public String getBriefInfo() {
@@ -114,4 +117,4 @@ public class Course {
     public void setTagline(String tagline) {
         this.tagline = tagline;
     }
-}
+} 

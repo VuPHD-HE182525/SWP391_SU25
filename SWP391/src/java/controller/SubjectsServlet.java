@@ -13,7 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.*;
-import dao.*;
+import DAO.*;
+
 import java.util.List;
 
 /**
@@ -84,6 +85,11 @@ public class SubjectsServlet extends HttpServlet {
         // Fetch subjects with pagination and search
         List<Subject> subjects = SubjectDAO.getSubjectsForMainContent(search, categoryId, page, pageSize);
         int totalSubjects = SubjectDAO.getTotalSubjects(search, categoryId);
+        
+        // Fetch all subjects to determine featured subjects
+        List<Subject> allSubjects = SubjectDAO.getSubjectsForMainContent(null, null, 1, Integer.MAX_VALUE);
+        List<Subject> featuredSubjects = SubjectDAO.getFeatured(allSubjects);
+
 
         // Create JSON string of all subjects for JavaScript search
         StringBuilder subjectsJson = new StringBuilder("[");
@@ -129,7 +135,7 @@ public class SubjectsServlet extends HttpServlet {
 
         // Fetch other data
         List<Category> categories = CategoryDAO.getAll();
-        List<Subject> featuredSubjects = SubjectDAO.getFeatured();
+
         List<Contact> contacts = ContactDAO.getAll();
 
         // Debug other data
@@ -166,7 +172,8 @@ public class SubjectsServlet extends HttpServlet {
         System.out.println("page: " + request.getAttribute("page"));
         System.out.println("pageSize: " + request.getAttribute("pageSize"));
 
-        request.getRequestDispatcher("/views/subjects.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/subjects.jsp").forward(request, response);
+
     }
 
 
@@ -181,7 +188,8 @@ public class SubjectsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         // Forward to register.jsp
-        request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+
     }
 
     /** 
@@ -193,4 +201,5 @@ public class SubjectsServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-}
+} 
+
