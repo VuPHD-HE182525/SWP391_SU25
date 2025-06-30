@@ -1,5 +1,7 @@
 package DAO;
 
+
+
 import model.Category;
 import utils.DBContext;
 import java.sql.*;
@@ -10,6 +12,7 @@ public class CategoryDAO {
     
     public static List<Category> getAll() {
         List<Category> categories = new ArrayList<>();
+ origin/feature/resetpassword
         String sql = "SELECT * FROM categories ORDER BY name";
         
         try {
@@ -26,6 +29,8 @@ public class CategoryDAO {
                 }
             }
         } catch (Exception e) {
+
+      
             e.printStackTrace();
         }
         return categories;
@@ -53,4 +58,5 @@ public class CategoryDAO {
         }
         return category;
     }
+
 } 

@@ -57,12 +57,28 @@
                 </div>
             </div>
 
+            <!-- Recent Subjects -->
+            <div class="mb-16">
+                <h2 class="text-xl font-semibold border-l-4 border-green-600 pl-4 mb-6 text-green-600">Latest Subjects</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <c:forEach var="sub" items="${recentSubjects}" varStatus="loop">
+                          <a href="subjectDetails?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
+                              <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-full h-48 object-cover" />
+                              <div class="p-4">
+                                  <h4 class="text-lg font-semibold">${sub.name}</h4>
+                                  <p class="text-sm text-gray-600">${sub.description}</p>
+                              </div>
+                          </a>
+                    </c:forEach>
+                </div>
+            </div>
+
             <!-- Featured Subjects -->
             <div>
                 <h2 class="text-xl font-semibold border-l-4 border-blue-600 pl-4 mb-6 text-blue-600">Featured Subjects</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     <c:forEach var="sub" items="${featuredSubjects}" varStatus="loop">
-                          <a href="subject-detail.jsp?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
+                          <a href="subjectDetails?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
                               <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-full h-48 object-cover" />
                               <div class="p-4">
                                   <h4 class="text-lg font-semibold">${sub.name}</h4>

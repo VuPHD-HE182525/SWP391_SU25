@@ -61,7 +61,7 @@ public class UpdateProfileServlet extends HttpServlet {
             String ext = submittedFileName.substring(submittedFileName.lastIndexOf("."));
             avatarFileName = "avatar_" + user.getId() + "_" + System.currentTimeMillis() + ext;
 
-            String uploadPath = "D:/Projects/FPTU/SWP391/SWP391/web/uploads/images/";
+            String uploadPath = "D:\\Projects\\FPTU\\SWP391\\SWP391";
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 

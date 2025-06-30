@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.*;
 import DAO.*;
+
 import java.util.List;
 
 /**
@@ -89,6 +90,7 @@ public class SubjectsServlet extends HttpServlet {
         List<Subject> allSubjects = SubjectDAO.getSubjectsForMainContent(null, null, 1, Integer.MAX_VALUE);
         List<Subject> featuredSubjects = SubjectDAO.getFeatured(allSubjects);
 
+
         // Create JSON string of all subjects for JavaScript search
         StringBuilder subjectsJson = new StringBuilder("[");
         for (int i = 0; i < subjects.size(); i++) {
@@ -133,6 +135,7 @@ public class SubjectsServlet extends HttpServlet {
 
         // Fetch other data
         List<Category> categories = CategoryDAO.getAll();
+
         List<Contact> contacts = ContactDAO.getAll();
 
         // Debug other data
@@ -170,6 +173,7 @@ public class SubjectsServlet extends HttpServlet {
         System.out.println("pageSize: " + request.getAttribute("pageSize"));
 
         request.getRequestDispatcher("/WEB-INF/views/subjects.jsp").forward(request, response);
+
     }
 
 
@@ -185,6 +189,7 @@ public class SubjectsServlet extends HttpServlet {
     throws ServletException, IOException {
         // Forward to register.jsp
         request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
+
     }
 
     /** 
@@ -197,3 +202,4 @@ public class SubjectsServlet extends HttpServlet {
     }// </editor-fold>
 
 } 
+

@@ -11,6 +11,7 @@ import DAO.CourseDAO;
 import DAO.CategoryDAO;
 import DAO.SubjectDAO;
 import DAO.ContactDAO;
+
 import java.util.List;
 
 public class CourseDetailsServlet extends HttpServlet {
@@ -47,6 +48,7 @@ public class CourseDetailsServlet extends HttpServlet {
         // Fetch all subjects to pass to getFeatured
         List<Subject> allSubjects = SubjectDAO.getSubjectsForMainContent(null, null, 1, Integer.MAX_VALUE);
         List<Subject> featuredSubjects = SubjectDAO.getFeatured(allSubjects);
+
         List<Contact> contacts = ContactDAO.getAll();
         
         // Set attributes
@@ -56,5 +58,6 @@ public class CourseDetailsServlet extends HttpServlet {
         request.setAttribute("contacts", contacts);
         
         request.getRequestDispatcher("/WEB-INF/views/CourseDetails.jsp").forward(request, response);
+
     }
 } 
