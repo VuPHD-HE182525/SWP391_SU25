@@ -22,6 +22,8 @@ public class User {
     private String gender;
     private String phone;
     private String address;
+    private String resetToken;
+    private LocalDateTime resetTokenExpiry;
 
     public User() {
     }
@@ -128,6 +130,19 @@ public class User {
         this.address = address;
     }
 
-    
-    
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public LocalDateTime getResetTokenExpiry() {
+        return resetTokenExpiry;
+    }
+
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
+        this.resetTokenExpiry = resetTokenExpiry;
+    }
 }

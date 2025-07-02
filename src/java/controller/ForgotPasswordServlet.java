@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import utils.MailUtil;
 
-@WebServlet(name = "ForgotPasswordServlet", urlPatterns = {"/ForgotPasswordServlet"})
+@WebServlet("/forgot-password-process")
 public class ForgotPasswordServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws jakarta.servlet.ServletException, IOException {
@@ -38,7 +38,7 @@ public class ForgotPasswordServlet extends HttpServlet {
         User user = userDAO.getUserByEmail(email);
         if (user == null) {
             request.setAttribute("message", "No user found with that email address.");
-            request.getRequestDispatcher("WEB-INF/views/reset_result.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/reset_result.jsp").forward(request, response);
             return;
         }
         // Generate token and expiry based on user selection
@@ -47,11 +47,11 @@ public class ForgotPasswordServlet extends HttpServlet {
         boolean updated = userDAO.setResetToken(email, token, expiry);
         if (!updated) {
             request.setAttribute("message", "Failed to generate reset link. Please try again later.");
-            request.getRequestDispatcher("WEB-INF/views/reset_result.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/reset_result.jsp").forward(request, response);
             return;
         }
         // Send email using MailUtil
-        String resetLink = request.getRequestURL().toString().replace("ForgotPasswordServlet", "ResetPasswordServlet") + "?token=" + token;
+        String resetLink = request.getRequestURL().toString().replace("forgot-password-process", "reset-password") + "?token=" + token;
         String htmlContent =
             "<div style='background:#222;padding:40px 0;'>" +
             "<div style='background:#fff;margin:0 auto;padding:40px 40px 60px 40px;max-width:600px;border-radius:6px;'>" +
@@ -68,11 +68,11 @@ public class ForgotPasswordServlet extends HttpServlet {
             MailUtil.sendMail(user.getEmail(), "Reset your Elearning password", htmlContent);
         } catch (Exception e) {
             request.setAttribute("message", "Failed to send reset email. Please try again later.");
-            request.getRequestDispatcher("WEB-INF/views/reset_result.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/reset_result.jsp").forward(request, response);
             return;
         }
         // Show confirmation
         request.setAttribute("message", "A password reset link has been sent to your email. Please check your inbox.");
-        request.getRequestDispatcher("WEB-INF/views/reset_result.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/reset_result.jsp").forward(request, response);
     }
 } 

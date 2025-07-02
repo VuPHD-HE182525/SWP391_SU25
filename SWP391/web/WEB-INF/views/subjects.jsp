@@ -128,7 +128,7 @@
                   return subject && subject.name.toLowerCase() === searchTerm.toLowerCase();
               });
               if (matchedSubject) {
-                  window.location.href = 'CourseDetailsServlet?subjectId=' + matchedSubject.id;
+                  window.location.href = 'course-details?subjectId=' + matchedSubject.id;
               } else {
                   alert('No exact match found for: ' + searchTerm);
               }
@@ -221,7 +221,7 @@
               <c:choose>
                   <c:when test="${subject != null}">
                       <div class="col">
-                          <div class="subject-card" onclick="window.location.href='CourseDetailsServlet?subjectId=${subject.id}'">
+                          <div class="subject-card" onclick="window.location.href='course-details?subjectId=${subject.id}'">
                               <img src="${subject.thumbnailUrl}" alt="${subject.name}" />
                               <div class="subject-info">
                                   <div class="subject-title">${subject.name}</div>

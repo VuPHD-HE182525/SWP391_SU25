@@ -36,13 +36,14 @@ public class LoginServlet extends HttpServlet {
         UserDAO userDao = new UserDAO();
         User user = userDao.authenticateUser(email, password);
 
-        if (user!=null) {
+        if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            response.sendRedirect("/");
+            session.setAttribute("userObj", user); // Also set userObj for compatibility
+            response.sendRedirect(request.getContextPath() + "/home");
         } else {
             request.setAttribute("error", "Invalid email or password");
-            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
         }
     }
 }

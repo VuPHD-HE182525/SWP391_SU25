@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import model.Subject;
+import model.Package;
 import utils.DBContext;
 import java.util.Map;
 import java.util.HashMap;
@@ -44,25 +45,92 @@ public class SubjectDAO {
     
     public List<Subject> getFeaturedSubjects() throws Exception {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE is_featured = 1 AND status = 'Published' ORDER BY created_at DESC LIMIT 6";
-        try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Subject s = new Subject();
-                s.setId(rs.getInt("id"));
-                s.setName(rs.getString("name"));
-                s.setDescription(rs.getString("description"));
-                s.setCreatedAt(rs.getTimestamp("created_at"));
-                s.setThumbnailUrl(rs.getString("thumbnail_url"));
-                list.add(s);
+        
+        try (Connection conn = DBContext.getConnection()) {
+            // First, try to check if is_featured or featured column exists
+            String sql = null;
+            
+            try {
+                // Try with is_featured column
+                sql = "SELECT id, name, description, created_at, thumbnail_url " +
+                     "FROM subjects WHERE is_featured = 1 ORDER BY created_at DESC LIMIT 6";
+                System.out.println("Trying getFeaturedSubjects with is_featured: " + sql);
+                
+                try (PreparedStatement ps = conn.prepareStatement(sql);
+                     ResultSet rs = ps.executeQuery()) {
+                    
+                    while (rs.next()) {
+                        Subject s = new Subject();
+                        s.setId(rs.getInt("id"));
+                        s.setName(rs.getString("name"));
+                        s.setDescription(rs.getString("description"));
+                        s.setCreatedAt(rs.getTimestamp("created_at"));
+                        s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                        list.add(s);
+                        System.out.println("Found featured subject: " + s.getName());
+                    }
+                }
+                
+            } catch (SQLException e1) {
+                System.out.println("is_featured column not found, trying featured column...");
+                
+                try {
+                    // Try with featured column
+                    sql = "SELECT id, name, description, created_at, thumbnail_url " +
+                         "FROM subjects WHERE featured = 1 ORDER BY created_at DESC LIMIT 6";
+                    System.out.println("Trying getFeaturedSubjects with featured: " + sql);
+                    
+                    try (PreparedStatement ps = conn.prepareStatement(sql);
+                         ResultSet rs = ps.executeQuery()) {
+                        
+                        while (rs.next()) {
+                            Subject s = new Subject();
+                            s.setId(rs.getInt("id"));
+                            s.setName(rs.getString("name"));
+                            s.setDescription(rs.getString("description"));
+                            s.setCreatedAt(rs.getTimestamp("created_at"));
+                            s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                            list.add(s);
+                            System.out.println("Found featured subject: " + s.getName());
+                        }
+                    }
+                    
+                } catch (SQLException e2) {
+                    System.out.println("featured column also not found, getting first 6 subjects as featured...");
+                    
+                    // If no featured column exists, just get first 6 subjects
+                    sql = "SELECT id, name, description, created_at, thumbnail_url " +
+                         "FROM subjects ORDER BY created_at DESC LIMIT 6";
+                    System.out.println("Using fallback query: " + sql);
+                    
+                    try (PreparedStatement ps = conn.prepareStatement(sql);
+                         ResultSet rs = ps.executeQuery()) {
+                        
+                        while (rs.next()) {
+                            Subject s = new Subject();
+                            s.setId(rs.getInt("id"));
+                            s.setName(rs.getString("name"));
+                            s.setDescription(rs.getString("description"));
+                            s.setCreatedAt(rs.getTimestamp("created_at"));
+                            s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                            list.add(s);
+                            System.out.println("Found featured subject (fallback): " + s.getName());
+                        }
+                    }
+                }
             }
+            
+        } catch (Exception e) {
+            System.err.println("Error in getFeaturedSubjects: " + e.getMessage());
+            e.printStackTrace();
         }
+        
+        System.out.println("Total featured subjects found: " + list.size());
         return list;
     }
 
     public Subject getSubjectById(int id) throws Exception {
-        String sql = "SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE id = ?";
+        String sql = "SELECT id, name, description, created_at, thumbnail_url, category, status, is_featured FROM subjects WHERE id = ?";
 
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -104,10 +172,15 @@ public class SubjectDAO {
     // Returns the latest N published subjects (not just featured)
     public List<Subject> getRecentSubjects(int limit) throws Exception {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE status = 'Published' ORDER BY created_at DESC LIMIT ?";
+        // More flexible query without strict status filter
+        String sql = "SELECT id, name, description, created_at, thumbnail_url " +
+                    "FROM subjects " +
+                    "WHERE (status = 'Published' OR status = 'published' OR status = 'active' OR status = '1' OR status IS NULL) " +
+                    "ORDER BY created_at DESC LIMIT ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);
+            System.out.println("Executing getRecentSubjects query: " + sql + " with limit: " + limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Subject s = new Subject();
@@ -117,27 +190,34 @@ public class SubjectDAO {
                     s.setCreatedAt(rs.getTimestamp("created_at"));
                     s.setThumbnailUrl(rs.getString("thumbnail_url"));
                     list.add(s);
+                    System.out.println("Found recent subject: " + s.getName());
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("Error in getRecentSubjects: " + e.getMessage());
+            e.printStackTrace();
         }
         return list;
+    }
         
-         public static List<Subject> getSubjects(String search, String categoryId) {
+    public static List<Subject> getSubjects(String search, String categoryId) throws Exception {
         List<Subject> subjects = new ArrayList<>();
         String sql = "SELECT s.*, " +
-                "p.id AS package_id, p.name AS package_name, p.original_price, p.sale_price, p.duration, p.status " +
-                "FROM subjects_2 s " +
-                "LEFT JOIN packages_2 p ON s.id = p.subject_id " +
+                "p.id AS package_id, p.package_name AS package_name, p.original_price, p.sale_price, p.duration_months AS duration, p.status " +
+                "FROM subjects s " +
+                "LEFT JOIN courses c ON s.id = c.subject_id " +
+                "LEFT JOIN packages p ON c.id = p.course_id " +
                 "WHERE p.sale_price = ( " +
                 "    SELECT MIN(p2.sale_price) " +
-                "    FROM packages_2 p2 " +
-                "    WHERE p2.subject_id = s.id " +
+                "    FROM packages p2 " +
+                "    LEFT JOIN courses c2 ON p2.course_id = c2.id " +
+                "    WHERE c2.subject_id = s.id " +
                 ") " +
                 (search != null && !search.trim().isEmpty() ? "AND (s.name LIKE ? OR s.tagline LIKE ?) " : "") +
                 (categoryId != null && !categoryId.trim().isEmpty() ? "AND s.category_id = ? " : "") +
                 "ORDER BY s.created_at DESC";
         
-        try (Connection conn = DBContext.getInstance().getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;
@@ -179,7 +259,7 @@ public class SubjectDAO {
         return subjects;
     }
     
-    public static List<Subject> getFeatured() {
+    public static List<Subject> getFeatured() throws Exception {
         List<Subject> featured = new ArrayList<>();
         List<Subject> all = getSubjects(null, null);
         if (!all.isEmpty()) featured.add(all.get(0));
@@ -188,91 +268,58 @@ public class SubjectDAO {
 
     public static List<Subject> getSubjectsForMainContent(String search, String categoryId, int page, int pageSize) {
         List<Subject> subjects = new ArrayList<>();
-        String sql = "SELECT s.*, p.id as package_id, p.package_name as package_name, p.original_price, p.sale_price, p.duration_months as duration, p.description as package_description " +
-                    "FROM subjects_2 s " +
-                    "LEFT JOIN packages_2 p ON s.id = p.course_id " +
+        
+        // Simplified query for MySQL
+        String sql = "SELECT id, name, description, created_at, thumbnail_url " +
+                    "FROM subjects " +
                     "WHERE 1=1 " +
                     (search != null && !search.trim().isEmpty() ? 
-                        "AND (s.name LIKE ? OR s.tagline LIKE ?) " : "") +
+                        "AND (name LIKE ? OR description LIKE ?) " : "") +
                     (categoryId != null && !categoryId.trim().isEmpty() ? 
-                        "AND s.category_id = ? " : "") +
-                    "ORDER BY s.created_at DESC " +
-                    "OFFSET ? ROWS " +
-                    "FETCH NEXT ? ROWS ONLY";
+                        "AND category = ? " : "") +
+                    "ORDER BY created_at DESC " +
+                    "LIMIT ? OFFSET ?";
         
-        try (Connection conn = DBContext.getInstance().getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;
+            System.out.println("Executing getSubjectsForMainContent...");
+            
             if (search != null && !search.trim().isEmpty()) {
                 ps.setString(paramIndex++, "%" + search + "%");
                 ps.setString(paramIndex++, "%" + search + "%");
+                System.out.println("Search parameter: " + search);
             }
             if (categoryId != null && !categoryId.trim().isEmpty()) {
                 ps.setString(paramIndex++, categoryId);
+                System.out.println("Category parameter: " + categoryId);
             }
-            ps.setInt(paramIndex++, (page - 1) * pageSize);
-            ps.setInt(paramIndex, pageSize);
             
-            System.out.println("Executing SQL: " + sql);
-            System.out.println("Parameters: page=" + page + ", pageSize=" + pageSize);
-            System.out.println("Search pattern: " + (search != null ? search : "null"));
+            ps.setInt(paramIndex++, pageSize);
+            ps.setInt(paramIndex, (page - 1) * pageSize);
+            
+            System.out.println("Pagination: pageSize=" + pageSize + ", offset=" + ((page - 1) * pageSize));
+            System.out.println("SQL: " + sql);
             
             try (ResultSet rs = ps.executeQuery()) {
-                Map<Integer, Subject> subjectMap = new HashMap<>();
-                
                 while (rs.next()) {
-                    int subjectId = rs.getInt("id");
-                    Subject subject = subjectMap.get(subjectId);
+                    Subject subject = new Subject();
+                    subject.setId(rs.getInt("id"));
+                    subject.setName(rs.getString("name"));
+                    subject.setDescription(rs.getString("description"));
+                    subject.setCreatedAt(rs.getTimestamp("created_at"));
+                    subject.setThumbnailUrl(rs.getString("thumbnail_url"));
                     
-                    if (subject == null) {
-                        subject = new Subject();
-                        subject.setId(subjectId);
-                        subject.setName(rs.getString("name"));
-                        subject.setTagline(rs.getString("tagline"));
-                        subject.setDescription(rs.getString("description"));
-                        subject.setThumbnailUrl(rs.getString("thumbnail_url"));
-                        // Handle missing columns gracefully
-                        try { subject.setFeatured(rs.getBoolean("featured")); } catch (Exception e) { subject.setFeatured(false); }
-                        try { subject.setStatus(rs.getString("status")); } catch (Exception e) { subject.setStatus("active"); }
-                        subject.setCreatedAt(rs.getTimestamp("created_at"));
-                        subject.setCategoryId(rs.getInt("category_id"));
-                        subjectMap.put(subjectId, subject);
-                        
-                        System.out.println("Created new subject: " + subject.getName() + 
-                            " (ID: " + subjectId + 
-                            ", Status: " + subject.getStatus() + 
-                            ", Featured: " + subject.isFeatured() + ")");
-                    }
-                    
-                    // Add package if it exists
-                    if (rs.getInt("package_id") != 0) {
-                        Package pkg = new Package();
-                        pkg.setId(rs.getInt("package_id"));
-                        pkg.setName(rs.getString("package_name"));
-                        pkg.setOriginalPrice(rs.getDouble("original_price"));
-                        pkg.setSalePrice(rs.getDouble("sale_price"));
-                        pkg.setDuration(rs.getInt("duration"));
-                        pkg.setStatus(""); // No status column in packages_2
-                        pkg.setSubjectId(subjectId); // For compatibility
-                        
-                        subject.getPackages().add(pkg);
-                        
-                        // Update lowest package if this one is lower
-                        if (subject.getLowestPackage() == null || 
-                            pkg.getSalePrice() < subject.getLowestPackage().getSalePrice()) {
-                            subject.setLowestPackage(pkg);
-                            System.out.println("Updated lowest package for " + subject.getName() + 
-                                " to price: " + pkg.getSalePrice());
-                        }
-                    }
+                    subjects.add(subject);
+                    System.out.println("Found subject: " + subject.getName());
                 }
-                
-                subjects.addAll(subjectMap.values());
-                System.out.println("Total subjects retrieved: " + subjects.size());
             }
+            
+            System.out.println("Total subjects found: " + subjects.size());
+            
         } catch (Exception e) {
-            System.out.println("Error in getSubjectsForMainContent: " + e.getMessage());
+            System.err.println("Error in getSubjectsForMainContent: " + e.getMessage());
             e.printStackTrace();
         }
         
@@ -280,20 +327,19 @@ public class SubjectDAO {
     }
 
     public static int getTotalSubjects(String search, String categoryId) {
-        String sql = "SELECT COUNT(*) FROM subjects_2 WHERE status = 'active' " +
+        String sql = "SELECT COUNT(*) as total FROM subjects WHERE 1=1 " +
                     (search != null && !search.trim().isEmpty() ? 
-                        "AND (name LIKE ? OR tagline LIKE ?)" : "") +
+                        "AND (name LIKE ? OR description LIKE ?)" : "") +
                     (categoryId != null && !categoryId.trim().isEmpty() ? 
-                        "AND category_id = ?" : "");
+                        "AND category = ?" : "");
         
-        try (Connection conn = DBContext.getInstance().getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;
             if (search != null && !search.trim().isEmpty()) {
-                String searchPattern = "%" + search + "%";
-                ps.setString(paramIndex++, searchPattern);
-                ps.setString(paramIndex++, searchPattern);
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
             }
             if (categoryId != null && !categoryId.trim().isEmpty()) {
                 ps.setString(paramIndex, categoryId);
@@ -301,10 +347,13 @@ public class SubjectDAO {
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    int total = rs.getInt("total");
+                    System.out.println("Total subjects count: " + total);
+                    return total;
                 }
             }
         } catch (Exception e) {
+            System.err.println("Error in getTotalSubjects: " + e.getMessage());
             e.printStackTrace();
         }
         

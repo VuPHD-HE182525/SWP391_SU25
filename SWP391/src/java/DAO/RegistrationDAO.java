@@ -22,14 +22,19 @@ public class RegistrationDAO {
      * @return the generated registration ID, or -1 if failed
      */
     public static int createRegistration(Registration registration) {
-        String sql = "INSERT INTO registrations (user_id, course_id, package_id, full_name, email, mobile, gender, image_url, image_description, video_url, video_description, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Simple insert with core fields only
+        String sql = "INSERT INTO registrations (user_id, course_id, package_id, full_name, email, mobile, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         
         try {
+            System.out.println("Creating registration for user: " + registration.getUserId() + ", subject: " + registration.getSubjectId());
+            
             conn = DBContext.getConnection();
+            System.out.println("Database connection successful");
+            
             ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             // Set parameters
@@ -45,26 +50,41 @@ public class RegistrationDAO {
             ps.setString(5, registration.getEmail());
             ps.setString(6, registration.getMobile());
             ps.setString(7, registration.getGender());
-            ps.setString(8, registration.getImageUrl());
-            ps.setString(9, registration.getImageDescription());
-            ps.setString(10, registration.getVideoUrl());
-            ps.setString(11, registration.getVideoDescription());
-            ps.setString(12, registration.getStatus());
+            ps.setString(8, registration.getStatus() != null ? registration.getStatus() : "pending");
+            
+            System.out.println("Executing SQL: " + sql);
+            System.out.println("Parameters: userId=" + registration.getUserId() + 
+                             ", subjectId=" + registration.getSubjectId() + 
+                             ", packageId=" + registration.getPackageId() + 
+                             ", fullName=" + registration.getFullName() + 
+                             ", email=" + registration.getEmail());
             
             int affectedRows = ps.executeUpdate();
+            System.out.println("Affected rows: " + affectedRows);
             
             if (affectedRows > 0) {
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     int generatedId = rs.getInt(1);
+                    System.out.println("Successfully created registration with ID: " + generatedId);
                     return generatedId;
                 }
             }
             
+            System.out.println("No registration created - no affected rows");
             return -1;
         } catch (SQLException e) {
             System.err.println("SQL Error in createRegistration: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
             e.printStackTrace();
+            
+            // Try to create table if it doesn't exist
+            if (e.getErrorCode() == 1146) { // Table doesn't exist
+                System.out.println("Attempting to create registrations table...");
+                createRegistrationsTable();
+            }
+            
             return -1;
         } catch (Exception e) {
             System.err.println("Error creating registration: " + e.getMessage());
@@ -73,6 +93,53 @@ public class RegistrationDAO {
         } finally {
             try {
                 if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Create registrations table if it doesn't exist
+     */
+    private static void createRegistrationsTable() {
+        String createTableSQL = """
+            CREATE TABLE IF NOT EXISTS registrations (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT,
+                course_id INT NOT NULL,
+                package_id INT,
+                full_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                mobile VARCHAR(20) NOT NULL,
+                gender VARCHAR(10) NOT NULL,
+                status VARCHAR(20) DEFAULT 'pending',
+                image_url VARCHAR(500),
+                image_description TEXT,
+                video_url VARCHAR(500),
+                video_description TEXT,
+                registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_user_course (user_id, course_id),
+                INDEX idx_course (course_id),
+                INDEX idx_email (email)
+            )
+            """;
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(createTableSQL);
+            ps.executeUpdate();
+            System.out.println("Registrations table created successfully");
+        } catch (Exception e) {
+            System.err.println("Error creating registrations table: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
                 if (ps != null) ps.close();
                 if (conn != null) conn.close();
             } catch (SQLException e) {
@@ -134,6 +201,8 @@ public class RegistrationDAO {
         ResultSet rs = null;
         
         try {
+            System.out.println("Checking if user " + userId + " is already registered for subject " + subjectId);
+            
             conn = DBContext.getConnection();
             ps = conn.prepareStatement(sql);
             ps.setInt(1, userId);
@@ -141,7 +210,20 @@ public class RegistrationDAO {
             rs = ps.executeQuery();
             
             if (rs.next()) {
-                return rs.getInt(1) > 0;
+                int count = rs.getInt(1);
+                System.out.println("Found " + count + " existing registrations for user " + userId + " and subject " + subjectId);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error checking user registration: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            e.printStackTrace();
+            
+            // If table doesn't exist, user is not registered
+            if (e.getErrorCode() == 1146) {
+                System.out.println("Registrations table doesn't exist - user not registered");
+                return false;
             }
         } catch (Exception e) {
             System.err.println("Error checking user registration: " + e.getMessage());
@@ -153,6 +235,89 @@ public class RegistrationDAO {
                 if (conn != null) conn.close();
             } catch (SQLException e) {
                 System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+        
+        System.out.println("Default return false - user not registered");
+        return false;
+    }
+    
+    /**
+     * Check if an email is already registered for a subject (for non-logged-in users)
+     * @param email the email address
+     * @param subjectId the subject ID (course_id in registrations table)
+     * @return true if email already registered, false otherwise
+     */
+    public static boolean isEmailRegisteredForSubject(String email, int subjectId) {
+        String sql = "SELECT COUNT(*) FROM registrations WHERE email = ? AND course_id = ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            System.out.println("Checking if email " + email + " is already registered for subject " + subjectId);
+            
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, email.trim().toLowerCase());
+            ps.setInt(2, subjectId);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                System.out.println("Found " + count + " existing registrations for email " + email + " and subject " + subjectId);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL Error checking email registration: " + e.getMessage());
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            e.printStackTrace();
+            
+            // If table doesn't exist, email is not registered
+            if (e.getErrorCode() == 1146) {
+                System.out.println("Registrations table doesn't exist - email not registered");
+                return false;
+            }
+        } catch (Exception e) {
+            System.err.println("Error checking email registration: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+        
+        System.out.println("Default return false - email not registered");
+        return false;
+    }
+    
+    /**
+     * Check for any duplicate registration (by user ID or email)
+     * @param userId the user ID (can be null for non-logged-in users)
+     * @param email the email address
+     * @param subjectId the subject ID
+     * @return true if any duplicate found, false otherwise
+     */
+    public static boolean isDuplicateRegistration(Integer userId, String email, int subjectId) {
+        // Check by user ID if user is logged in
+        if (userId != null && userId > 0) {
+            if (isUserRegisteredForSubject(userId, subjectId)) {
+                System.out.println("Duplicate found: User ID " + userId + " already registered for subject " + subjectId);
+                return true;
+            }
+        }
+        
+        // Also check by email (for both logged-in and non-logged-in users)
+        if (email != null && !email.trim().isEmpty()) {
+            if (isEmailRegisteredForSubject(email, subjectId)) {
+                System.out.println("Duplicate found: Email " + email + " already registered for subject " + subjectId);
+                return true;
             }
         }
         

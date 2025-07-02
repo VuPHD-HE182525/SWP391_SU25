@@ -54,7 +54,7 @@
                 <button type="submit" class="btn btn-dark">Log In</button>
             </form>
             <div class="mt-3">
-                <a href="${pageContext.request.contextPath}/view/reset-password.jsp">Reset password</a><br>
+                <a href="/forgot-password">Reset password</a><br>
                 Don’t have an account? <a href="${pageContext.request.contextPath}/view/register.jsp">Register</a>
             </div>
         </div>

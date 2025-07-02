@@ -12,13 +12,11 @@ public class Subject {
     private String thumbnailUrl;
     private String category;
     private String status;
-    private boolean isFeatured;
+    private boolean featured;
     private Date createdAt;
+    private Date updatedDate;
     private int categoryId;
     private Package lowestPackage;
-    private boolean featured;
-    private String status;
-    private Date updatedDate;
     private List<Package> packages;
 
     public Subject() {
@@ -85,6 +83,14 @@ public class Subject {
         this.createdAt = createdAt;
     }
 
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
     public int getCategoryId() {
         return categoryId;
     }
@@ -110,11 +116,11 @@ public class Subject {
     }
 
     public boolean isFeatured() {
-        return isFeatured;
+        return featured;
     }
 
-    public void setFeatured(boolean isFeatured) {
-        this.isFeatured = isFeatured;
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
     }
   
     public Package getLowestPackage() {
@@ -123,30 +129,6 @@ public class Subject {
 
     public void setLowestPackage(Package lowestPackage) {
         this.lowestPackage = lowestPackage;
-    }
-
-    public boolean isFeatured() {
-        return featured;
-    }
-
-    public void setFeatured(boolean featured) {
-        this.featured = featured;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Date getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(Date updatedDate) {
-        this.updatedDate = updatedDate;
     }
 
     public List<Package> getPackages() {

@@ -17,28 +17,47 @@ import java.io.IOException;
  *
  * @author Kaonashi
  */
-@WebServlet(name = "ToggleStatusServlet", urlPatterns = {"/toggleStatus"})
+@WebServlet("/toggle-status")
 public class ToggleStatusServlet extends HttpServlet {
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         try {
-            int lessonId = Integer.parseInt(request.getParameter("id"));
-            int subjectId = Integer.parseInt(request.getParameter("subjectId"));
+            String lessonIdParam = request.getParameter("id");
+            String subjectIdParam = request.getParameter("subjectId");
 
-            LessonDAO dao = new LessonDAO();
-            Lesson lesson = dao.getLessonById(lessonId);
+            if (lessonIdParam == null || subjectIdParam == null) {
+                response.sendRedirect(request.getContextPath() + "/subjects");
+                return;
+            }
+
+            int lessonId = Integer.parseInt(lessonIdParam);
+            int subjectId = Integer.parseInt(subjectIdParam);
+
+            LessonDAO lessonDAO = new LessonDAO();
+            Lesson lesson = lessonDAO.getLessonById(lessonId);
+
+            if (lesson == null) {
+                response.sendRedirect(request.getContextPath() + "/lesson-list?subjectId=" + subjectId);
+                return;
+            }
 
             boolean currentStatus = lesson.isStatus();
             boolean newStatus = !currentStatus;
 
-            dao.toggleStatus(lessonId, newStatus);
+            lessonDAO.toggleStatus(lessonId, newStatus);
 
-            response.sendRedirect("lesson-list?subjectId=" + subjectId);
+            response.sendRedirect(request.getContextPath() + "/lesson-list?subjectId=" + subjectId);
+            
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid lesson or subject ID: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/subjects");
         } catch (Exception e) {
+            System.err.println("Error toggling lesson status: " + e.getMessage());
             e.printStackTrace();
-            response.getWriter().println("Lỗi khi đổi trạng thái lesson: " + e.getMessage());
+            response.getWriter().println("Error toggling lesson status: " + e.getMessage());
         }
     }
 }

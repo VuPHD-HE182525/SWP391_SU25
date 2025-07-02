@@ -63,7 +63,7 @@
             <% String error = (String) request.getAttribute("error"); if (error != null) { %>
             <div class="error"><%= error %></div>
             <% } %>
-            <form action="ForgotPasswordServlet" method="post">
+            <form action="/forgot-password-process" method="POST">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" required />
                 

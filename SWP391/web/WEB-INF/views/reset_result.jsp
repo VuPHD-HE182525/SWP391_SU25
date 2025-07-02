@@ -17,7 +17,7 @@
 <div class="container">
     <h2>Password Reset</h2>
     <p><%= message %></p>
-    <a href="/login">Return to login</a>
+    <a href="login">Return to login</a>
 </div>
 </body>
 </html> 

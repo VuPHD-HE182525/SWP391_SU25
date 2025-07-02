@@ -15,13 +15,16 @@ import java.util.List;
 public class PackageDAO {
     
     /**
-     * Get all packages for a specific subject/course ID
-     * @param subjectId the subject ID (maps to course_id in packages table)
+     * Get all packages for a specific subject ID (through courses table)
+     * @param subjectId the subject ID
      * @return List of packages for the subject
      */
     public static List<Package> getPackagesBySubjectId(int subjectId) {
         List<Package> packages = new ArrayList<>();
-        String sql = "SELECT * FROM packages WHERE course_id = ? ORDER BY sale_price ASC";
+        String sql = "SELECT p.* FROM packages p " +
+                    "INNER JOIN courses c ON p.course_id = c.id " +
+                    "WHERE c.subject_id = ? " +
+                    "ORDER BY p.sale_price ASC";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -36,7 +39,7 @@ public class PackageDAO {
             while (rs.next()) {
                 Package pkg = new Package();
                 pkg.setId(rs.getInt("id"));
-                pkg.setSubjectId(rs.getInt("course_id")); // Map course_id to subjectId
+                pkg.setSubjectId(rs.getInt("course_id")); // Map course_id to subjectId for compatibility
                 pkg.setName(rs.getString("package_name")); // Use package_name column
                 pkg.setOriginalPrice(rs.getDouble("original_price"));
                 pkg.setSalePrice(rs.getDouble("sale_price"));
@@ -58,7 +61,7 @@ public class PackageDAO {
                 packages.add(pkg);
             }
             
-            System.out.println("Found " + packages.size() + " packages for subject/course ID: " + subjectId);
+            System.out.println("Found " + packages.size() + " packages for subject ID: " + subjectId);
         } catch (Exception e) {
             System.err.println("Error getting packages for subject " + subjectId + ": " + e.getMessage());
             e.printStackTrace();

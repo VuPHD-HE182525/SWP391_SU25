@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import model.Subject;
+import model.Package;
 import utils.DBContext;
 import java.util.Map;
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class SubjectDAO {
     }
 
     public Subject getSubjectById(int id) throws Exception {
-        String sql = "SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE id = ?";
+        String sql = "SELECT id, name, description, created_at, thumbnail_url, category, status, is_featured FROM subjects WHERE id = ?";
 
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -121,23 +122,26 @@ public class SubjectDAO {
             }
         }
         return list;
+    }
         
-         public static List<Subject> getSubjects(String search, String categoryId) {
+    public static List<Subject> getSubjects(String search, String categoryId) {
         List<Subject> subjects = new ArrayList<>();
         String sql = "SELECT s.*, " +
-                "p.id AS package_id, p.name AS package_name, p.original_price, p.sale_price, p.duration, p.status " +
-                "FROM subjects_2 s " +
-                "LEFT JOIN packages_2 p ON s.id = p.subject_id " +
+                "p.id AS package_id, p.package_name AS package_name, p.original_price, p.sale_price, p.duration_months AS duration, p.status " +
+                "FROM subjects s " +
+                "LEFT JOIN courses c ON s.id = c.subject_id " +
+                "LEFT JOIN packages p ON c.id = p.course_id " +
                 "WHERE p.sale_price = ( " +
                 "    SELECT MIN(p2.sale_price) " +
-                "    FROM packages_2 p2 " +
-                "    WHERE p2.subject_id = s.id " +
+                "    FROM packages p2 " +
+                "    LEFT JOIN courses c2 ON p2.course_id = c2.id " +
+                "    WHERE c2.subject_id = s.id " +
                 ") " +
                 (search != null && !search.trim().isEmpty() ? "AND (s.name LIKE ? OR s.tagline LIKE ?) " : "") +
                 (categoryId != null && !categoryId.trim().isEmpty() ? "AND s.category_id = ? " : "") +
                 "ORDER BY s.created_at DESC";
         
-        try (Connection conn = DBContext.getInstance().getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;
@@ -189,8 +193,9 @@ public class SubjectDAO {
     public static List<Subject> getSubjectsForMainContent(String search, String categoryId, int page, int pageSize) {
         List<Subject> subjects = new ArrayList<>();
         String sql = "SELECT s.*, p.id as package_id, p.package_name as package_name, p.original_price, p.sale_price, p.duration_months as duration, p.description as package_description " +
-                    "FROM subjects_2 s " +
-                    "LEFT JOIN packages_2 p ON s.id = p.course_id " +
+                    "FROM subjects s " +
+                    "LEFT JOIN courses c ON s.id = c.subject_id " +
+                    "LEFT JOIN packages p ON c.id = p.course_id " +
                     "WHERE 1=1 " +
                     (search != null && !search.trim().isEmpty() ? 
                         "AND (s.name LIKE ? OR s.tagline LIKE ?) " : "") +
@@ -200,7 +205,7 @@ public class SubjectDAO {
                     "OFFSET ? ROWS " +
                     "FETCH NEXT ? ROWS ONLY";
         
-        try (Connection conn = DBContext.getInstance().getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;
@@ -253,7 +258,7 @@ public class SubjectDAO {
                         pkg.setOriginalPrice(rs.getDouble("original_price"));
                         pkg.setSalePrice(rs.getDouble("sale_price"));
                         pkg.setDuration(rs.getInt("duration"));
-                        pkg.setStatus(""); // No status column in packages_2
+                        pkg.setStatus("active"); // Default status for packages
                         pkg.setSubjectId(subjectId); // For compatibility
                         
                         subject.getPackages().add(pkg);
@@ -280,13 +285,13 @@ public class SubjectDAO {
     }
 
     public static int getTotalSubjects(String search, String categoryId) {
-        String sql = "SELECT COUNT(*) FROM subjects_2 WHERE status = 'active' " +
+        String sql = "SELECT COUNT(*) FROM subjects WHERE status = 'active' " +
                     (search != null && !search.trim().isEmpty() ? 
                         "AND (name LIKE ? OR tagline LIKE ?)" : "") +
                     (categoryId != null && !categoryId.trim().isEmpty() ? 
                         "AND category_id = ?" : "");
         
-        try (Connection conn = DBContext.getInstance().getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;

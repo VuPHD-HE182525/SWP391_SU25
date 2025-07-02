@@ -5,61 +5,52 @@
 
 package controller;
 
-
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.*;
-import DAO.*;
-
+import model.Subject;
+import model.Package;
+import model.Category;
+import model.Contact;
+import DAO.SubjectDAO;
+import DAO.PackageDAO;
+import DAO.CategoryDAO;
+import DAO.ContactDAO;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
  * @author admin
  */
+@WebServlet("/subjects")
 public class SubjectsServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet SubjectsServlet</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet SubjectsServlet at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
+    /**
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        System.out.println("=== SubjectsServlet Debug ===");
+        
         String search = request.getParameter("search");
         String categoryId = request.getParameter("category");
         int page = 1;
         int pageSize = 4;
+        
+        System.out.println("Search: " + search);
+        System.out.println("Category: " + categoryId);
+        
+        // Parse page size parameter
         String pageSizeParam = request.getParameter("pageSize");
         if (pageSizeParam != null) {
             try {
@@ -68,116 +59,156 @@ public class SubjectsServlet extends HttpServlet {
                     pageSize = parsedPageSize;
                 }
             } catch (NumberFormatException e) {
-                // Ignore and use default
+                // Use default pageSize
             }
         }
-        if (request.getParameter("page") != null) {
-            page = Integer.parseInt(request.getParameter("page"));
-        }
-
-        // Debug request parameters
-        System.out.println("Request Parameters:");
-        System.out.println("Search: " + search);
-        System.out.println("Category ID: " + categoryId);
-        System.out.println("Page: " + page);
-        System.out.println("PageSize: " + pageSize);
-
-        // Fetch subjects with pagination and search
-        List<Subject> subjects = SubjectDAO.getSubjectsForMainContent(search, categoryId, page, pageSize);
-        int totalSubjects = SubjectDAO.getTotalSubjects(search, categoryId);
         
-        // Fetch all subjects to determine featured subjects
-        List<Subject> allSubjects = SubjectDAO.getSubjectsForMainContent(null, null, 1, Integer.MAX_VALUE);
-        List<Subject> featuredSubjects = SubjectDAO.getFeatured(allSubjects);
-
-
-        // Create JSON string of all subjects for JavaScript search
-        StringBuilder subjectsJson = new StringBuilder("[");
-        for (int i = 0; i < subjects.size(); i++) {
-            Subject subject = subjects.get(i);
-            if (subject != null) {
-                if (i > 0) subjectsJson.append(",");
-                subjectsJson.append("{")
-                    .append("\"id\":").append(subject.getId())
-                    .append(",\"name\":\"")
-                    .append(subject.getName()
-                        .replace("\\", "\\\\")
-                        .replace("\"", "\\\"")
-                        .replace("\n", "\\n")
-                        .replace("\r", "\\r")
-                        .replace("\t", "\\t"))
-                    .append("\"}");
+        // Parse page parameter
+        if (request.getParameter("page") != null) {
+            try {
+                page = Integer.parseInt(request.getParameter("page"));
+                if (page < 1) page = 1;
+            } catch (NumberFormatException e) {
+                page = 1;
             }
         }
-        subjectsJson.append("]");
 
-        System.out.println("\nSubjects Data:");
-        System.out.println("Total subjects found: " + totalSubjects);
-        System.out.println("Subjects fetched: " + subjects.size());
-        for (Subject subject : subjects) {
-            if (subject != null) {
-                System.out.println("\nSubject Details:");
-                System.out.println("ID: " + subject.getId());
-                System.out.println("Name: " + subject.getName());
-                System.out.println("Tagline: " + subject.getTagline());
-                System.out.println("Status: " + subject.getStatus());
-                System.out.println("Featured: " + subject.isFeatured());
-                System.out.println("Category ID: " + subject.getCategoryId());
-                if (subject.getLowestPackage() != null) {
-                    System.out.println("Lowest Package Price: " + subject.getLowestPackage().getSalePrice());
-                } else {
-                    System.out.println("No lowest package found");
+        try {
+            System.out.println("Loading subjects...");
+            
+            // Use simpler method first
+            SubjectDAO subjectDAO = new SubjectDAO();
+            List<Subject> allSubjects = subjectDAO.getAllSubjects();
+            System.out.println("All subjects count: " + allSubjects.size());
+            
+            // Load packages for each subject
+            System.out.println("Loading packages for subjects...");
+            for (Subject subject : allSubjects) {
+                try {
+                    List<Package> packages = PackageDAO.getPackagesBySubjectId(subject.getId());
+                    if (packages != null) {
+                        subject.setPackages(packages);
+                        
+                        // Find the lowest price package
+                        Package lowestPackage = null;
+                        for (Package pkg : packages) {
+                            if (pkg != null && (lowestPackage == null || pkg.getSalePrice() < lowestPackage.getSalePrice())) {
+                                lowestPackage = pkg;
+                            }
+                        }
+                        if (lowestPackage != null) {
+                            subject.setLowestPackage(lowestPackage);
+                        }
+                        
+                        System.out.println("Subject: " + subject.getName() + 
+                                         " - Packages: " + packages.size() + 
+                                         " - Lowest price: " + (lowestPackage != null ? lowestPackage.getSalePrice() : "N/A"));
+                    } else {
+                        System.out.println("No packages found for subject: " + subject.getName());
+                        subject.setPackages(new ArrayList<>());
+                    }
+                } catch (Exception e) {
+                    System.out.println("Failed to load packages for subject " + subject.getId() + ": " + e.getMessage());
+                    e.printStackTrace();
+                    subject.setPackages(new ArrayList<>());
                 }
-            } else {
-                System.out.println("Null subject placeholder");
             }
+            
+            // Apply pagination manually
+            List<Subject> subjects = new ArrayList<>();
+            int startIndex = (page - 1) * pageSize;
+            int endIndex = Math.min(startIndex + pageSize, allSubjects.size());
+            
+            for (int i = startIndex; i < endIndex; i++) {
+                subjects.add(allSubjects.get(i));
+            }
+            
+            System.out.println("Paginated subjects count: " + subjects.size());
+            
+            int totalSubjects = allSubjects.size();
+            
+            // Get featured subjects using instance method
+            List<Subject> featuredSubjects = subjectDAO.getFeaturedSubjects();
+            System.out.println("Featured subjects count: " + featuredSubjects.size());
+
+            // Create JSON string of all subjects for JavaScript search
+            StringBuilder subjectsJson = new StringBuilder("[");
+            for (int i = 0; i < subjects.size(); i++) {
+                Subject subject = subjects.get(i);
+                if (subject != null) {
+                    if (i > 0) subjectsJson.append(",");
+                    subjectsJson.append("{")
+                        .append("\"id\":").append(subject.getId())
+                        .append(",\"name\":\"")
+                        .append(subject.getName()
+                            .replace("\\", "\\\\")
+                            .replace("\"", "\\\"")
+                            .replace("\n", "\\n")
+                            .replace("\r", "\\r")
+                            .replace("\t", "\\t"))
+                        .append("\"}");
+                }
+            }
+            subjectsJson.append("]");
+
+            // Try to fetch other data, with fallbacks
+            List<Category> categories = new ArrayList<>();
+            List<Contact> contacts = new ArrayList<>();
+            
+            try {
+                categories = CategoryDAO.getAll();
+                System.out.println("Categories count: " + categories.size());
+            } catch (Exception e) {
+                System.out.println("Failed to load categories: " + e.getMessage());
+            }
+            
+            try {
+                contacts = ContactDAO.getAll();
+                System.out.println("Contacts count: " + contacts.size());
+            } catch (Exception e) {
+                System.out.println("Failed to load contacts: " + e.getMessage());
+            }
+
+            // Pad the list to always have pageSize subjects (for consistent UI)
+            while (subjects.size() < pageSize) {
+                subjects.add(null);
+            }
+
+            // Set attributes
+            request.setAttribute("subjects", subjects);
+            request.setAttribute("categories", categories);
+            request.setAttribute("featuredSubjects", featuredSubjects);
+            request.setAttribute("contacts", contacts);
+            request.setAttribute("totalSubjects", totalSubjects);
+            request.setAttribute("page", page);
+            request.setAttribute("pageSize", pageSize);
+            request.setAttribute("subjectsJson", subjectsJson.toString());
+            request.setAttribute("searchTerm", search);
+            request.setAttribute("selectedCategory", categoryId);
+
+            System.out.println("=== Forwarding to subjects.jsp ===");
+            request.getRequestDispatcher("/WEB-INF/views/subjects.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            System.err.println("Error in SubjectsServlet: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Set empty data to prevent JSP errors
+            request.setAttribute("subjects", new ArrayList<>());
+            request.setAttribute("categories", new ArrayList<>());
+            request.setAttribute("featuredSubjects", new ArrayList<>());
+            request.setAttribute("contacts", new ArrayList<>());
+            request.setAttribute("totalSubjects", 0);
+            request.setAttribute("page", 1);
+            request.setAttribute("pageSize", pageSize);
+            request.setAttribute("subjectsJson", "[]");
+            request.setAttribute("error", "Error loading subjects: " + e.getMessage());
+            
+            request.getRequestDispatcher("/WEB-INF/views/subjects.jsp").forward(request, response);
         }
-
-        // Fetch other data
-        List<Category> categories = CategoryDAO.getAll();
-
-        List<Contact> contacts = ContactDAO.getAll();
-
-        // Debug other data
-        System.out.println("\nOther Data:");
-        System.out.println("Categories: " + categories.size());
-        for (Category cat : categories) {
-            System.out.println("- " + cat.getName());
-        }
-        System.out.println("Featured subjects: " + featuredSubjects.size());
-        System.out.println("Contacts: " + contacts.size());
-
-        // Pad the list to always have 4 subjects
-        while (subjects.size() < pageSize) {
-            subjects.add(null);
-        }
-
-        // Set attributes
-        request.setAttribute("subjects", subjects);
-        request.setAttribute("categories", categories);
-        request.setAttribute("featuredSubjects", featuredSubjects);
-        request.setAttribute("contacts", contacts);
-        request.setAttribute("totalSubjects", totalSubjects);
-        request.setAttribute("page", page);
-        request.setAttribute("pageSize", pageSize);
-        request.setAttribute("subjectsJson", subjectsJson.toString());
-
-        // Debug attributes
-        System.out.println("\nRequest Attributes:");
-        System.out.println("subjects size: " + ((List<?>)request.getAttribute("subjects")).size());
-        System.out.println("categories size: " + ((List<?>)request.getAttribute("categories")).size());
-        System.out.println("featuredSubjects size: " + ((List<?>)request.getAttribute("featuredSubjects")).size());
-        System.out.println("contacts size: " + ((List<?>)request.getAttribute("contacts")).size());
-        System.out.println("totalSubjects: " + request.getAttribute("totalSubjects"));
-        System.out.println("page: " + request.getAttribute("page"));
-        System.out.println("pageSize: " + request.getAttribute("pageSize"));
-
-        request.getRequestDispatcher("/WEB-INF/views/subjects.jsp").forward(request, response);
-
     }
 
-
-    /** 
+    /**
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
      * @param response servlet response
@@ -186,20 +217,18 @@ public class SubjectsServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        // Forward to register.jsp
-        request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
-
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 
-    /** 
+    /**
      * Returns a short description of the servlet.
+     *
      * @return a String containing servlet description
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Subjects listing servlet";
+    }
 } 
 

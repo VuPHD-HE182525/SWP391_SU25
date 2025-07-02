@@ -1,9 +1,11 @@
 package controller;
 
 import DAO.SubjectDAO;
+import DAO.CategoryDAO;
 import DAO.DimensionDAO;
 import DAO.PricePackageDAO;
 import model.Subject;
+import model.Category;
 import model.Dimension;
 import model.PricePackage;
 
@@ -14,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import jakarta.servlet.http.Part;
 
-@WebServlet("/subjectDetails")
+@WebServlet("/subject-details")
 @jakarta.servlet.annotation.MultipartConfig(
     fileSizeThreshold = 1024 * 1024,    // 1 MB
     maxFileSize = 5 * 1024 * 1024,      // 5 MB
@@ -23,46 +25,79 @@ import jakarta.servlet.http.Part;
 public class SubjectDetailsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int subjectId = Integer.parseInt(request.getParameter("id"));
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/subjects");
+            return;
+        }
+        
         try {
+            int subjectId = Integer.parseInt(idParam);
+            
             SubjectDAO subjectDAO = new SubjectDAO();
             DimensionDAO dimensionDAO = new DimensionDAO();
             PricePackageDAO pricePackageDAO = new PricePackageDAO();
 
             Subject subject = subjectDAO.getSubjectById(subjectId);
+            if (subject == null) {
+                request.setAttribute("error", "Subject not found");
+                response.sendRedirect(request.getContextPath() + "/subjects");
+                return;
+            }
             
-            
-            // Show dimensions and price packages with IDs from 1 to 6
+            // Get dimensions and price packages (showing up to 6)
             List<Dimension> dimensions = dimensionDAO.getDimensions(6);
             List<PricePackage> pricePackages = pricePackageDAO.getPricePackages(6);
 
-            // Add static categories list here
+            // Get categories from database instead of hardcoded list
+            List<Category> categoryList = CategoryDAO.getAll();
             List<String> categories = new java.util.ArrayList<>();
-            categories.add("Communication Skills");
-            categories.add("Collaboration");
-            categories.add("Leadership");
-            categories.add("Time Management");
-            categories.add("Problem-Solving");
-            categories.add("Critical Thinking");
-            categories.add("Negotiation");
-            categories.add("Public Speaking");
-            request.setAttribute("categories", categories);
+            for (Category cat : categoryList) {
+                categories.add(cat.getName());
+            }
+            
+            // Add default categories if database is empty
+            if (categories.isEmpty()) {
+                categories.add("Communication Skills");
+                categories.add("Collaboration");
+                categories.add("Leadership");
+                categories.add("Time Management");
+                categories.add("Problem-Solving");
+                categories.add("Critical Thinking");
+            }
 
             request.setAttribute("subject", subject);
             request.setAttribute("dimensions", dimensions);
             request.setAttribute("pricePackages", pricePackages);
+            request.setAttribute("categories", categories);
+            
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid subject ID: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/subjects");
+            return;
         } catch (Exception e) {
-            throw new ServletException(e);
+            System.err.println("Error in SubjectDetailsServlet: " + e.getMessage());
+            e.printStackTrace();
+            throw new ServletException("Error loading subject details", e);
         }
+        
         request.getRequestDispatcher("/WEB-INF/views/SubjectDetails.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        int subjectId = Integer.parseInt(request.getParameter("id"));
+        String idParam = request.getParameter("id");
         String action = request.getParameter("action");
+        
+        if (idParam == null || idParam.trim().isEmpty()) {
+            response.sendRedirect(request.getContextPath() + "/subjects");
+            return;
+        }
+        
         try {
+            int subjectId = Integer.parseInt(idParam);
+            
             if (action != null) {
                 if (action.equals("addDimension")) {
                     DimensionDAO dimensionDAO = new DimensionDAO();
@@ -92,10 +127,17 @@ public class SubjectDetailsServlet extends HttpServlet {
                 // Fallback to subject update (overview form)
                 updateSubject(request, subjectId);
             }
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid subject ID: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/subjects");
+            return;
         } catch (Exception e) {
-            throw new ServletException(e);
+            System.err.println("Error in SubjectDetailsServlet POST: " + e.getMessage());
+            e.printStackTrace();
+            throw new ServletException("Error updating subject", e);
         }
-        response.sendRedirect("subjectDetails?id=" + subjectId);
+        
+        response.sendRedirect(request.getContextPath() + "/subject-details?id=" + idParam);
     }
 
     private void handlePricePackageActions(HttpServletRequest request, int subjectId, String action) throws Exception {

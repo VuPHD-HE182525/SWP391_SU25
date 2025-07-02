@@ -12,7 +12,7 @@ import model.Lesson;
 import model.Quiz;
 import model.Subject;
 
-@WebServlet(name = "LessonDetailServlet", urlPatterns = {"/lesson-detail"})
+@WebServlet("/lesson-detail")
 public class LessonDetailServlet extends HttpServlet {
 
     @Override

@@ -25,7 +25,7 @@
     <% if (error != null) { %>
         <div class="error"><%= error %></div>
     <% } %>
-    <form action="ResetPasswordServlet" method="post">
+    <form action="reset-password" method="post">
         <input type="hidden" name="token" value="<%= token != null ? token : "" %>" />
         <label for="password">New Password</label>
         <input type="password" id="password" name="password" required />
@@ -33,7 +33,7 @@
         <input type="password" id="confirm" name="confirm" required />
         <div class="actions">
             <button type="submit">Reset Password</button>
-            <a href="/login">Return to login</a>
+            <a href="login">Return to login</a>
         </div>
     </form>
 </div>

@@ -20,7 +20,7 @@ import model.Subject;
  *
  * @author Kaonashi
  */
-@WebServlet(name = "LessonListServlet", urlPatterns = {"/lesson-list"})
+@WebServlet("/lesson-list")
 public class LessonListServlet extends HttpServlet {
 
     /**
@@ -35,12 +35,17 @@ public class LessonListServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            String courseIdRaw = request.getParameter("subjectId");
-            String groupIdRaw = request.getParameter("groupId");
-            String statusRaw = request.getParameter("status");
+            String subjectIdParam = request.getParameter("subjectId");
+            String groupIdParam = request.getParameter("groupId");
+            String statusParam = request.getParameter("status");
             String keyword = request.getParameter("keyword");
 
-            int subjectId = Integer.parseInt(courseIdRaw);
+            if (subjectIdParam == null || subjectIdParam.trim().isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/subjects");
+                return;
+            }
+
+            int subjectId = Integer.parseInt(subjectIdParam);
 
             LessonDAO lessonDAO = new LessonDAO();
             List<Lesson> lessons = lessonDAO.getLessonsBySubject(subjectId);
@@ -48,19 +53,19 @@ public class LessonListServlet extends HttpServlet {
             List<Lesson> unassignedLessons = lessonDAO.getUnassignedLessons(subjectId);
             request.setAttribute("unassignedLessons", unassignedLessons);
 
-            if (groupIdRaw != null && !groupIdRaw.isEmpty()) {
-                int parentId = Integer.parseInt(groupIdRaw);
-                lessons.removeIf(l -> l.getParentLessonId() != parentId);
+            if (groupIdParam != null && !groupIdParam.isEmpty()) {
+                int parentId = Integer.parseInt(groupIdParam);
+                lessons.removeIf(lesson -> lesson.getParentLessonId() != parentId);
             }
 
-            if (statusRaw != null && !statusRaw.isEmpty()) {
-                boolean status = Boolean.parseBoolean(statusRaw);
-                lessons.removeIf(l -> l.isStatus() != !status);
+            if (statusParam != null && !statusParam.isEmpty()) {
+                boolean status = Boolean.parseBoolean(statusParam);
+                lessons.removeIf(lesson -> lesson.isStatus() != status);
             }
 
             if (keyword != null && !keyword.trim().isEmpty()) {
-                String kwLower = keyword.toLowerCase();
-                lessons.removeIf(l -> !l.getName().toLowerCase().contains(kwLower));
+                String keywordLower = keyword.toLowerCase();
+                lessons.removeIf(lesson -> !lesson.getName().toLowerCase().contains(keywordLower));
             }
 
             SubjectDAO subjectDAO = new SubjectDAO();
@@ -68,16 +73,19 @@ public class LessonListServlet extends HttpServlet {
 
             request.setAttribute("subject", subject);
             request.setAttribute("lessonList", lessons);
-
-            request.setAttribute("groupId", groupIdRaw);
-            request.setAttribute("status", statusRaw);
+            request.setAttribute("groupId", groupIdParam);
+            request.setAttribute("status", statusParam);
             request.setAttribute("keyword", keyword);
 
             request.getRequestDispatcher("/WEB-INF/views/subject_lessons.jsp").forward(request, response);
 
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid subject ID parameter: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/subjects");
         } catch (Exception e) {
+            System.err.println("Error in LessonListServlet: " + e.getMessage());
             e.printStackTrace();
-            response.getWriter().println("Lỗi: " + e.getMessage());
+            response.getWriter().println("Error loading lesson list: " + e.getMessage());
         }
     }
 }
