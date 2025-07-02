@@ -1,4 +1,4 @@
-package dao;
+package DAO;
 
 import model.Category;
 import utils.DBContext;
@@ -33,7 +33,7 @@ public class CategoryDAO {
 
     public static Category getCategoryById(int id) {
         Category category = null;
-        String sql = "SELECT * FROM categories_2 WHERE id = ? LIMIT 1";
+        String sql = "SELECT * FROM categories WHERE id = ? LIMIT 1";
         try {
             try (Connection conn = DBContext.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql)) {

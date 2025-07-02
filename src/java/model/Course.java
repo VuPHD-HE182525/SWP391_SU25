@@ -117,4 +117,4 @@ public class Course {
     public void setTagline(String tagline) {
         this.tagline = tagline;
     }
-}
+} 

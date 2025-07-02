@@ -1,4 +1,4 @@
-package dao;
+package DAO;
 
 import model.Contact;
 import utils.DBContext;
@@ -25,6 +25,7 @@ public class ContactDAO {
                 }
             }
         } catch (Exception e) {
+
             e.printStackTrace();
         }
         return contacts;
@@ -52,4 +53,5 @@ public class ContactDAO {
         }
         return contact;
     }
+
 } 

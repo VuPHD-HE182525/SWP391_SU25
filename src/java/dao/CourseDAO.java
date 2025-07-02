@@ -1,4 +1,5 @@
-package dao;
+package DAO;
+
 
 import model.Course;
 import model.Package;
@@ -6,6 +7,7 @@ import utils.DBContext;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class CourseDAO {
     public static Course getCourseById(int courseId) {
@@ -34,6 +36,7 @@ public class CourseDAO {
                         course.setTagline(rs.getString("subject_tagline"));
                     }
                     
+
                     if (rs.getInt("package_id") != 0) {
                         Package pkg = new Package();
                         pkg.setId(rs.getInt("package_id"));
@@ -48,6 +51,7 @@ public class CourseDAO {
                 }
             }
         } catch (Exception e) {
+
             e.printStackTrace();
         }
         return course;

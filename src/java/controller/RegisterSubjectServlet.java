@@ -66,7 +66,7 @@ public class RegisterSubjectServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-                   request.getRequestDispatcher("/views/register.jsp").forward(request, response);
+                   request.getRequestDispatcher("/WEB-INF/views/register.jsp").forward(request, response);
 
     }
 
@@ -79,4 +79,4 @@ public class RegisterSubjectServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-}
+} 
