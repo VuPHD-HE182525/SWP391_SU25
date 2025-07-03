@@ -1,7 +1,7 @@
 package model;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Subject {
@@ -18,6 +18,9 @@ public class Subject {
     private int categoryId;
     private Package lowestPackage;
     private List<Package> packages;
+    private String categoryName;
+    private String ownerName;
+    private int lessonCount;
 
     public Subject() {
         this.packages = new ArrayList<>();
@@ -137,5 +140,29 @@ public class Subject {
 
     public void setPackages(List<Package> packages) {
         this.packages = packages;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public int getLessonCount() {
+        return lessonCount;
+    }
+
+    public void setLessonCount(int lessonCount) {
+        this.lessonCount = lessonCount;
     }
 }
