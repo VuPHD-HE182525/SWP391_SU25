@@ -17,6 +17,7 @@ public class Blog {
     private int authorId;
     private Date publishedAt;
     private String thumbnailUrl;
+    private Integer categoryId;
 
     public Blog() {
     }
@@ -78,5 +79,11 @@ public class Blog {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
 }
