@@ -19,7 +19,7 @@
       </div>
       <!-- Navigation -->
       <nav class="d-none d-md-flex align-items-center gap-4">
-        <a href="#" class="text-secondary text-decoration-none fw-semibold">Home</a>
+        <a href="${pageContext.request.contextPath}/home" class="text-secondary text-decoration-none fw-semibold">Home</a>
         <a href="#" class="text-secondary text-decoration-none fw-semibold">Courses</a>
         <a href="#" class="text-secondary text-decoration-none fw-semibold">Blogs</a>
         <a href="#" class="text-secondary text-decoration-none fw-semibold">About</a>

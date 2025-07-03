@@ -12,80 +12,99 @@
         <meta charset="UTF-8">
         <title>SWP391 Home</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     </head>
-    <body class="bg-gray-100 text-gray-800 font-sans">
+    <body class="bg-light">
         <jsp:include page="/WEB-INF/views/includes/header.jsp" />
 
-        <div class="max-w-6xl mx-auto px-4 py-10">
+        <div class="container py-5">
             <!-- Slider Section -->
-            <div class="mb-16">
-                <div class="relative swiper mySlider">
+            <div class="mb-5">
+                <div class="swiper mySlider position-relative">
                     <div class="swiper-wrapper">
                         <c:forEach var="s" items="${sliders}">
-                            <div class="swiper-slide h-64">
-                              <a href="${s.linkUrl}" class="block w-full h-full bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200">
-                                <img src="${pageContext.request.contextPath}${s.imageUrl}" alt="${s.title}" class="w-full h-full object-cover" />
-                                <div class="p-4 bg-white/70 absolute bottom-0 w-full">
-                                  <h4 class="text-lg font-semibold text-gray-800">${s.title}</h4>
+                            <div class="swiper-slide" style="height: 260px;">
+                              <a href="${s.linkUrl}" class="d-block w-100 h-100 bg-white rounded shadow-sm overflow-hidden text-decoration-none">
+                                <img src="${pageContext.request.contextPath}${s.imageUrl}" alt="${s.title}" class="w-100 h-100 object-fit-cover" style="object-fit:cover;" />
+                                <div class="p-3 bg-white bg-opacity-75 position-absolute bottom-0 w-100">
+                                  <h4 class="h5 fw-bold text-dark mb-0">${s.title}</h4>
                                 </div>
                               </a>
                             </div>
                         </c:forEach>
                     </div>
-
                     <!-- Navigation Buttons -->
-                    <div class="swiper-button-prev absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border rounded-full flex items-center justify-center shadow hover:bg-gray-100 cursor-pointer"></div>
-                    <div class="swiper-button-next absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white border rounded-full flex items-center justify-center shadow hover:bg-gray-100 cursor-pointer"></div>
+                    <div class="swiper-button-prev position-absolute top-50 start-0 translate-middle-y z-2 bg-white border rounded-circle d-flex align-items-center justify-content-center shadow" style="width:40px;height:40px;"></div>
+                    <div class="swiper-button-next position-absolute top-50 end-0 translate-middle-y z-2 bg-white border rounded-circle d-flex align-items-center justify-content-center shadow" style="width:40px;height:40px;"></div>
                 </div>
             </div>
 
             <!-- Blog Section -->
-            <div class="mb-16">
-                <h2 class="text-xl font-semibold border-l-4 border-blue-600 pl-4 mb-6 text-blue-600">Blogs</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="mb-5">
+                <h2 class="h4 fw-bold border-start border-4 border-primary ps-3 mb-4 text-primary">Blogs</h2>
+                <div class="row g-4">
                     <c:forEach var="b" items="${latestBlogs}" varStatus="loop">
-                          <a href="blog-detail.jsp?id=${b.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
-                              <img src="${b.thumbnailUrl}" alt="${b.title}" class="w-full h-48 object-cover" />
-                              <div class="p-4">
-                                  <h4 class="text-lg font-semibold">${b.title}</h4>
-                                  <p class="text-sm text-gray-500">${b.publishedAt}</p>
+                        <div class="col-12 col-sm-6 col-md-4">
+                          <a href="${pageContext.request.contextPath}/blog_detail?id=${b.id}" class="bg-white rounded shadow-sm overflow-hidden d-block text-decoration-none h-100">
+                              <img src="${b.thumbnailUrl}" alt="${b.title}" class="w-100" style="height:180px;object-fit:cover;" />
+                              <div class="p-3">
+                                  <h4 class="h6 fw-bold mb-1">${b.title}</h4>
+                                  <p class="mb-0 text-muted small">${b.publishedAt}</p>
                               </div>
                           </a>
+                        </div>
                     </c:forEach>
                 </div>
             </div>
 
             <!-- Recent Subjects -->
-            <div class="mb-16">
-                <h2 class="text-xl font-semibold border-l-4 border-green-600 pl-4 mb-6 text-green-600">Latest Subjects</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="mb-5">
+                <h2 class="h4 fw-bold border-start border-4 border-success ps-3 mb-4 text-success">Latest Subjects</h2>
+                <div class="row g-4">
                     <c:forEach var="sub" items="${recentSubjects}" varStatus="loop">
-                          <a href="subjectDetails?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
-                              <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-full h-48 object-cover" />
-                              <div class="p-4">
-                                  <h4 class="text-lg font-semibold">${sub.name}</h4>
-                                  <p class="text-sm text-gray-600">${sub.description}</p>
+                        <div class="col-12 col-sm-6 col-md-4">
+                          <c:choose>
+                            <c:when test="${not empty user and (user.role == 'admin' or user.role == 'expert')}">
+                              <a href="${pageContext.request.contextPath}/subject-details?id=${sub.id}" class="bg-white rounded shadow-sm overflow-hidden d-block text-decoration-none h-100">
+                            </c:when>
+                            <c:otherwise>
+                              <a href="${pageContext.request.contextPath}/course_list?subjectId=${sub.id}" class="bg-white rounded shadow-sm overflow-hidden d-block text-decoration-none h-100">
+                            </c:otherwise>
+                          </c:choose>
+                              <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-100" style="height:180px;object-fit:cover;" />
+                              <div class="p-3">
+                                  <h4 class="h6 fw-bold mb-1">${sub.name}</h4>
+                                  <p class="mb-0 text-muted small">${sub.description}</p>
                               </div>
-                          </a>
+                            </a>
+                        </div>
                     </c:forEach>
                 </div>
             </div>
 
             <!-- Featured Subjects -->
             <div>
-                <h2 class="text-xl font-semibold border-l-4 border-blue-600 pl-4 mb-6 text-blue-600">Featured Subjects</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <h2 class="h4 fw-bold border-start border-4 border-primary ps-3 mb-4 text-primary">Featured Subjects</h2>
+                <div class="row g-4">
                     <c:forEach var="sub" items="${featuredSubjects}" varStatus="loop">
-                          <a href="subjectDetails?id=${sub.id}" class="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-all duration-200 block">
-                              <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-full h-48 object-cover" />
-                              <div class="p-4">
-                                  <h4 class="text-lg font-semibold">${sub.name}</h4>
-                                  <p class="text-sm text-blue-600">${sub.description}</p>
+                        <div class="col-12 col-sm-6 col-md-4">
+                          <c:choose>
+                            <c:when test="${not empty user and (user.role == 'admin' or user.role == 'expert')}">
+                              <a href="${pageContext.request.contextPath}/subject-details?id=${sub.id}" class="bg-white rounded shadow-sm overflow-hidden d-block text-decoration-none h-100">
+                            </c:when>
+                            <c:otherwise>
+                              <a href="${pageContext.request.contextPath}/course_list?subjectId=${sub.id}" class="bg-white rounded shadow-sm overflow-hidden d-block text-decoration-none h-100">
+                            </c:otherwise>
+                          </c:choose>
+                              <img src="${sub.thumbnailUrl}" alt="${sub.name}" class="w-100" style="height:180px;object-fit:cover;" />
+                              <div class="p-3">
+                                  <h4 class="h6 fw-bold mb-1">${sub.name}</h4>
+                                  <p class="mb-0 text-primary small">${sub.description}</p>
                               </div>
-                          </a>
+                            </a>
+                        </div>
                     </c:forEach>
                 </div>
             </div>
@@ -93,6 +112,7 @@
 
         <jsp:include page="/WEB-INF/views/includes/footer.jsp" />
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
         <script>
           const swiper = new Swiper('.mySlider', {
             slidesPerView: 1,
