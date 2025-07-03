@@ -26,6 +26,8 @@
     </div>
 </c:if>
 
+<!-- Tailwind CSS for header and footer -->
+<script src="https://cdn.tailwindcss.com"></script>
 <!-- Bootstrap CSS to ensure grid system works -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome for icons -->
@@ -576,6 +578,32 @@
 <jsp:include page="/WEB-INF/views/includes/footer.jsp" />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Header JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Avatar dropdown toggle
+    const avatarButton = document.getElementById('avatarButton');
+    const avatarDropdown = document.getElementById('avatarDropdown');
+
+    if (avatarButton && avatarDropdown) {
+        avatarButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            avatarDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            avatarDropdown.classList.add('hidden');
+        });
+
+        // Prevent dropdown from closing when clicking inside it
+        avatarDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+});
+</script>
 
 <!-- Login Required Modal JavaScript -->
 <script>
