@@ -8,7 +8,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="/homeControllerServlet">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/home">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="/subjects">Courses </a></li>
         <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Overview</a></li>
