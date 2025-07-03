@@ -45,9 +45,21 @@ public class SubjectDetailsServlet extends HttpServlet {
                 return;
             }
             
-            // Get dimensions and price packages (showing up to 6)
-            List<Dimension> dimensions = dimensionDAO.getDimensions(6);
-            List<PricePackage> pricePackages = pricePackageDAO.getPricePackages(6);
+            // Get dimensions and price packages (theo subjectId)
+            List<Dimension> dimensions = dimensionDAO.getDimensionsBySubjectId(subjectId, 6);
+            List<PricePackage> pricePackages = pricePackageDAO.getPricePackagesBySubjectId(subjectId, 6);
+
+            // Nếu không có dữ liệu, tạo dữ liệu mẫu để hiển thị giao diện
+            if (dimensions == null || dimensions.isEmpty()) {
+                dimensions = new java.util.ArrayList<>();
+                dimensions.add(new Dimension(1, subjectId, "Type A", "Dimension A"));
+                dimensions.add(new Dimension(2, subjectId, "Type B", "Dimension B"));
+            }
+            if (pricePackages == null || pricePackages.isEmpty()) {
+                pricePackages = new java.util.ArrayList<>();
+                pricePackages.add(new PricePackage(1, subjectId, "Basic", 30, 1000000, 800000, "Published"));
+                pricePackages.add(new PricePackage(2, subjectId, "Premium", 90, 2500000, 2000000, "Published"));
+            }
 
             // Get categories from database instead of hardcoded list
             List<Category> categoryList = CategoryDAO.getAll();
