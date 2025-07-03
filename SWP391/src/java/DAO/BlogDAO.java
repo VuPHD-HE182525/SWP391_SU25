@@ -4,14 +4,14 @@
  */
 package DAO;
 
-import model.Blog;
-import utils.DBContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.SQLException;
+import model.Blog;
+import utils.DBContext;
 
 /**
  *
@@ -193,5 +193,34 @@ public class BlogDAO {
         
         System.out.println("Total latest blogs found: " + list.size());
         return list;
+    }
+
+    // Lấy chi tiết blog theo id
+    public Blog getBlogById(int id) throws Exception {
+        Blog blog = null;
+        try (Connection conn = DBContext.getConnection()) {
+            String sql = "SELECT * FROM blogs WHERE id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        blog = new Blog();
+                        blog.setId(rs.getInt("id"));
+                        blog.setTitle(rs.getString("title"));
+                        blog.setContent(rs.getString("content"));
+                        blog.setAuthorId(rs.getInt("author_id"));
+                        blog.setPublishedAt(rs.getTimestamp("published_at"));
+                        blog.setThumbnailUrl(rs.getString("thumbnail_url"));
+                        // Nếu có category_id thì set luôn (nếu model có)
+                        try {
+                            java.lang.reflect.Field f = blog.getClass().getDeclaredField("categoryId");
+                            f.setAccessible(true);
+                            f.set(blog, rs.getObject("category_id"));
+                        } catch (Exception ignore) {}
+                    }
+                }
+            }
+        }
+        return blog;
     }
 }
