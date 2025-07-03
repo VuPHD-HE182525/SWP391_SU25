@@ -125,7 +125,8 @@ public class SubjectDAO {
     }
 
     public Subject getSubjectById(int id) throws Exception {
-        String sql = "SELECT id, name, description, created_at, thumbnail_url, category, status, is_featured FROM subjects WHERE id = ?";
+        String sql = "SELECT s.id, s.name, s.description, s.created_at, s.thumbnail_url, s.category_id, s.status, s.is_featured, c.name AS category_name " +
+                     "FROM subjects s LEFT JOIN categories c ON s.category_id = c.id WHERE s.id = ?";
 
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -139,9 +140,10 @@ public class SubjectDAO {
                     s.setDescription(rs.getString("description"));
                     s.setCreatedAt(rs.getTimestamp("created_at"));
                     s.setThumbnailUrl(rs.getString("thumbnail_url"));
-                    s.setCategory(rs.getString("category"));
+                    s.setCategoryId(rs.getInt("category_id"));
                     s.setStatus(rs.getString("status"));
                     s.setFeatured(rs.getBoolean("is_featured"));
+                    s.setCategoryName(rs.getString("category_name"));
                     return s;
                 }
             }
