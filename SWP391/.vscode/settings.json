@@ -3,6 +3,7 @@
         "lib/**/*.jar",
         "c:\\Users\\thang\\Documents\\Zalo Received Files\\jakarta.servlet.jsp.jstl-2.0.0.jar",
         "c:\\Users\\thang\\Documents\\Zalo Received Files\\jakarta.servlet.jsp.jstl-api-2.0.0.jar",
-        "c:\\Users\\thang\\Downloads\\mysql-connector-j-9.3.0.jar"
+        "c:\\Users\\thang\\Downloads\\mysql-connector-j-9.3.0.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib/**/*.jar"
     ]
 }

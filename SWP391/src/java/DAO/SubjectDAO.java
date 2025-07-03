@@ -4,17 +4,12 @@
  */
 package DAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import model.Subject;
 import model.Package;
+import model.Subject;
 import utils.DBContext;
-import java.util.Map;
-import java.util.HashMap;
-import java.sql.*;
 
 /**
  *
@@ -358,5 +353,90 @@ public class SubjectDAO {
         }
         
         return 0;
+    }
+
+    // Lấy danh sách subject với đủ thông tin cho Subject List
+    public static List<Subject> getSubjectsWithDetails(String search, String categoryId, String status) throws Exception {
+        List<Subject> subjects = new ArrayList<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT s.id, s.name, c.name AS categoryName, s.status, u.full_name AS ownerName, ");
+        sql.append("(SELECT COUNT(*) FROM lessons l JOIN courses c2 ON l.course_id = c2.id WHERE c2.subject_id = s.id) AS lessonCount ");
+        sql.append("FROM subjects s ");
+        sql.append("LEFT JOIN categories c ON s.category_id = c.id ");
+        sql.append("LEFT JOIN users u ON s.owner_id = u.id ");
+        sql.append("WHERE 1=1 ");
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append("AND s.name LIKE ? ");
+        }
+        if (categoryId != null && !categoryId.trim().isEmpty()) {
+            sql.append("AND s.category_id = ? ");
+        }
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append("AND s.status = ? ");
+        }
+        sql.append("ORDER BY s.id DESC");
+
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            int paramIndex = 1;
+            if (search != null && !search.trim().isEmpty()) {
+                ps.setString(paramIndex++, "%" + search + "%");
+            }
+            if (categoryId != null && !categoryId.trim().isEmpty()) {
+                ps.setString(paramIndex++, categoryId);
+            }
+            if (status != null && !status.trim().isEmpty()) {
+                ps.setString(paramIndex++, status);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Subject subject = new Subject();
+                    subject.setId(rs.getInt("id"));
+                    subject.setName(rs.getString("name"));
+                    subject.setCategoryName(rs.getString("categoryName"));
+                    subject.setStatus(rs.getString("status"));
+                    subject.setOwnerName(rs.getString("ownerName"));
+                    subject.setLessonCount(rs.getInt("lessonCount"));
+                    subjects.add(subject);
+                }
+            }
+        }
+        return subjects;
+    }
+
+    // Thêm subject mới
+    public static void insertSubject(String name, String categoryId, String ownerName, String status) throws Exception {
+        String sql = "INSERT INTO subjects (name, category_id, owner_id, status) VALUES (?, ?, (SELECT id FROM users WHERE full_name = ? LIMIT 1), ?)";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, categoryId);
+            ps.setString(3, ownerName);
+            ps.setString(4, status);
+            ps.executeUpdate();
+        }
+    }
+    // Cập nhật subject
+    public static void updateSubject(int id, String name, String categoryId, String ownerName, String status) throws Exception {
+        String sql = "UPDATE subjects SET name=?, category_id=?, owner_id=(SELECT id FROM users WHERE full_name = ? LIMIT 1), status=? WHERE id=?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, categoryId);
+            ps.setString(3, ownerName);
+            ps.setString(4, status);
+            ps.setInt(5, id);
+            ps.executeUpdate();
+        }
+    }
+
+    // Soft delete subject (update status='inactive')
+    public static void softDeleteSubject(int id) throws Exception {
+        String sql = "UPDATE subjects SET status='inactive' WHERE id=?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
     }
 }
