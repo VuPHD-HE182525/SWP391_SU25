@@ -45,7 +45,8 @@
       <div class="col-12 col-md-3">
         <h6 class="fw-bold mb-3">Contact</h6>
         <div style="color:#bfc9d1;font-size:0.95rem;">
-          <p><span style="font-size:1.1em;">📧</span> vuphdhe182525@fpt.edu.vn</p>
+          <p><span style="font-size:1.1em;">📧</span> thangma999@gmail.com</p>
+          <p><span style="font-size:1.1em;">📧</span> </p>
           <p><span style="font-size:1.1em;">📞</span> +84 123 456 789</p>
           <p><span style="font-size:1.1em;">📍</span> Khu Công nghệ cao Hòa Lạc, Km29 Đại lộ Thăng Long, huyện Thạch Thất, Hà Nội</p>
         </div>

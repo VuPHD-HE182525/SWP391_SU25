@@ -152,13 +152,13 @@ public class SubjectDAO {
     }
 
     public void updateSubject(Subject subject) throws Exception {
-        String sql = "UPDATE subjects SET name=?, description=?, thumbnail_url=?, category=?, status=?, is_featured=? WHERE id=?";
+        String sql = "UPDATE subjects SET name=?, description=?, thumbnail_url=?, category_id=?, status=?, is_featured=? WHERE id=?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, subject.getName());
             ps.setString(2, subject.getDescription());
             ps.setString(3, subject.getThumbnailUrl());
-            ps.setString(4, subject.getCategory());
+            ps.setInt(4, subject.getCategoryId());
             ps.setString(5, subject.getStatus());
             ps.setBoolean(6, subject.isFeatured());
             ps.setInt(7, subject.getId());
@@ -173,6 +173,7 @@ public class SubjectDAO {
         String sql = "SELECT id, name, description, created_at, thumbnail_url " +
                     "FROM subjects " +
                     "WHERE (status = 'Published' OR status = 'published' OR status = 'active' OR status = '1' OR status IS NULL) " +
+                    "AND (is_featured IS NULL OR is_featured = 0) " +
                     "ORDER BY created_at DESC LIMIT ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

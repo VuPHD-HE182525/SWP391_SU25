@@ -62,7 +62,7 @@
             <!-- Overview Tab -->
             <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                 <h2 class="mb-4">Overview</h2>
-                <form action="subjectDetails?id=${subject.id}" method="post" enctype="multipart/form-data">
+                <form action="${pageContext.request.contextPath}/subject-details?id=${subject.id}" method="post" enctype="multipart/form-data">
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="mb-3">
@@ -73,7 +73,7 @@
                                 <label class="form-label">Category</label>
                                 <select name="category" class="form-select" required>
                                     <c:forEach var="cat" items="${categories}">
-                                        <option value="${cat}" <c:if test="${cat == subject.category}">selected</c:if>>${cat}</option>
+                                        <option value="${cat.id}" <c:if test="${cat.id == subject.categoryId}">selected</c:if>>${cat.name}</option>
                                     </c:forEach>
                                 </select>
                             </div>
@@ -150,7 +150,7 @@
                                             data-type="${fn:escapeXml(d.type)}" 
                                             data-name="${fn:escapeXml(d.name)}" 
                                             onclick="showDimensionModal('edit', this.dataset.id, this.dataset.type, this.dataset.name)">Edit</button>
-                                        <form action="subjectDetails?id=${subject.id}" method="post" style="display:inline;">
+                                        <form action="${pageContext.request.contextPath}/subject-details?id=${subject.id}" method="post" style="display:inline;">
                                             <input type="hidden" name="action" value="deleteDimension" />
                                             <input type="hidden" name="dimensionId" value="${d.id}" />
                                             <button type="submit" class="btn btn-link p-0 text-danger ms-2" onclick="return confirm('Delete this dimension?')">Delete</button>
@@ -169,7 +169,7 @@
                                 <h5 class="modal-title" id="dimensionModalTitle"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form id="dimensionForm" action="subjectDetails?id=${subject.id}" method="post">
+                            <form id="dimensionForm" action="${pageContext.request.contextPath}/subject-details?id=${subject.id}" method="post">
                                 <div class="modal-body">
                                     <input type="hidden" name="action" id="dimensionAction" value="" />
                                     <input type="hidden" name="dimensionId" id="dimensionId" value="" />
@@ -343,7 +343,7 @@
                                             data-saleprice="${p.salePrice}"
                                             data-status="${fn:escapeXml(p.status)}"
                                             onclick="showPriceModal('edit', this.dataset.id, this.dataset.name, this.dataset.duration, this.dataset.listprice, this.dataset.saleprice, this.dataset.status)">Edit</button>
-                                        <form action="subjectDetails?id=${subject.id}" method="post" style="display:inline;">
+                                        <form action="${pageContext.request.contextPath}/subject-details?id=${subject.id}" method="post" style="display:inline;">
                                             <input type="hidden" name="action" value="deletePrice" />
                                             <input type="hidden" name="priceId" value="${p.id}" />
                                             <button type="submit" class="btn btn-link p-0 text-danger ms-2" onclick="return confirm('Delete this price package?')">Delete</button>
@@ -362,7 +362,7 @@
                                 <h5 class="modal-title" id="priceModalTitle"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form id="priceForm" action="subjectDetails?id=${subject.id}" method="post">
+                            <form id="priceForm" action="${pageContext.request.contextPath}/subject-details?id=${subject.id}" method="post">
                                 <div class="modal-body">
                                     <input type="hidden" name="action" id="priceAction" value="" />
                                     <input type="hidden" name="priceId" id="priceId" value="" />

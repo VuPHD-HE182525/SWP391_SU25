@@ -62,27 +62,12 @@ public class SubjectDetailsServlet extends HttpServlet {
             }
 
             // Get categories from database instead of hardcoded list
-            List<Category> categoryList = CategoryDAO.getAll();
-            List<String> categories = new java.util.ArrayList<>();
-            for (Category cat : categoryList) {
-                categories.add(cat.getName());
-            }
+            List<Category> categories = CategoryDAO.getAll();
+            request.setAttribute("categories", categories);
             
-            // Add default categories if database is empty
-            if (categories.isEmpty()) {
-                categories.add("Communication Skills");
-                categories.add("Collaboration");
-                categories.add("Leadership");
-                categories.add("Time Management");
-                categories.add("Problem-Solving");
-                categories.add("Critical Thinking");
-            }
-
             request.setAttribute("subject", subject);
             request.setAttribute("dimensions", dimensions);
             request.setAttribute("pricePackages", pricePackages);
-            request.setAttribute("categories", categories);
-            
         } catch (NumberFormatException e) {
             System.err.println("Invalid subject ID: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/subjects");
@@ -180,7 +165,13 @@ public class SubjectDetailsServlet extends HttpServlet {
 
     private void updateSubject(HttpServletRequest request, int subjectId) throws ServletException, IOException {
         String name = request.getParameter("name");
-        String category = request.getParameter("category");
+        String categoryParam = request.getParameter("category");
+        int categoryId = 0;
+        try {
+            categoryId = Integer.parseInt(categoryParam);
+        } catch (Exception ex) {
+            categoryId = 0; // hoặc xử lý khác nếu muốn
+        }
         String status = request.getParameter("status");
         String description = request.getParameter("description");
         boolean featured = request.getParameter("featured") != null;
@@ -203,7 +194,7 @@ public class SubjectDetailsServlet extends HttpServlet {
             Subject subject = new Subject();
             subject.setId(subjectId);
             subject.setName(name);
-            subject.setCategory(category);
+            subject.setCategoryId(categoryId);
             subject.setStatus(status);
             subject.setDescription(description);
             subject.setFeatured(featured);
