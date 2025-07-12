@@ -22,8 +22,8 @@ public class RegistrationDAO {
      * @return the generated registration ID, or -1 if failed
      */
     public static int createRegistration(Registration registration) {
-        // Simple insert with core fields only
-        String sql = "INSERT INTO registrations (user_id, course_id, package_id, full_name, email, mobile, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        // Updated SQL to include all media fields
+        String sql = "INSERT INTO registrations (user_id, course_id, package_id, full_name, email, mobile, gender, status, image_url, image_description, video_url, video_description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         Connection conn = null;
         PreparedStatement ps = null;
@@ -52,12 +52,20 @@ public class RegistrationDAO {
             ps.setString(7, registration.getGender());
             ps.setString(8, registration.getStatus() != null ? registration.getStatus() : "pending");
             
+            // Add media fields
+            ps.setString(9, registration.getImageUrl());
+            ps.setString(10, registration.getImageDescription());
+            ps.setString(11, registration.getVideoUrl());
+            ps.setString(12, registration.getVideoDescription());
+            
             System.out.println("Executing SQL: " + sql);
             System.out.println("Parameters: userId=" + registration.getUserId() + 
                              ", subjectId=" + registration.getSubjectId() + 
                              ", packageId=" + registration.getPackageId() + 
                              ", fullName=" + registration.getFullName() + 
-                             ", email=" + registration.getEmail());
+                             ", email=" + registration.getEmail() + 
+                             ", imageUrl=" + registration.getImageUrl() + 
+                             ", videoUrl=" + registration.getVideoUrl());
             
             int affectedRows = ps.executeUpdate();
             System.out.println("Affected rows: " + affectedRows);
