@@ -1,12 +1,10 @@
 package DAO;
 
 
+import java.sql.*;
 import model.Course;
 import model.Package;
 import utils.DBContext;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class CourseDAO {
@@ -56,9 +54,9 @@ public class CourseDAO {
                 }
             }
         } catch (Exception e) {
-
             e.printStackTrace();
         }
+        
         return course;
     }
     
@@ -69,7 +67,7 @@ public class CourseDAO {
                      "FROM courses c " +
                      "LEFT JOIN subjects s ON c.subject_id = s.id " +
                      "LEFT JOIN packages p ON c.id = p.course_id " +
-                     "WHERE c.subject_id = ?";
+                     "WHERE s.id = ?";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -88,27 +86,38 @@ public class CourseDAO {
                         course.setTagline(rs.getString("subject_tagline"));
                     }
                     
-                                         if (rs.getInt("package_id") != 0) {
-                         int packageId = rs.getInt("package_id");
-                         // Check if package already exists in the list
-                         boolean packageExists = course.getPackages().stream()
-                                 .anyMatch(p -> p.getId() == packageId);
-                         
-                         if (!packageExists) {
-                             Package pkg = new Package();
-                             pkg.setId(packageId);
-                             pkg.setName(rs.getString("package_name"));
-                             pkg.setOriginalPrice(rs.getDouble("original_price"));
-                             pkg.setSalePrice(rs.getDouble("sale_price"));
-                             pkg.setDuration(rs.getInt("duration"));
-                             course.getPackages().add(pkg);
-                         }
-                     }
+
+                    if (rs.getInt("package_id") != 0) {
+                        int packageId = rs.getInt("package_id");
+                        // Check if package already exists in the list
+                        boolean packageExists = course.getPackages().stream()
+                                .anyMatch(p -> p.getId() == packageId);
+                        
+                        if (!packageExists) {
+                            Package pkg = new Package();
+                            pkg.setId(packageId);
+                            pkg.setName(rs.getString("package_name"));
+                            pkg.setOriginalPrice(rs.getDouble("original_price"));
+                            pkg.setSalePrice(rs.getDouble("sale_price"));
+                            pkg.setDuration(rs.getInt("duration"));
+                            course.getPackages().add(pkg);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         return course;
+    }
+    
+    // Instance methods for consistency with other DAOs
+    public Course getCourseByIdInstance(int courseId) {
+        return getCourseById(courseId);
+    }
+    
+    public Course getCourseBySubjectIdInstance(int subjectId) {
+        return getCourseBySubjectId(subjectId);
     }
 } 

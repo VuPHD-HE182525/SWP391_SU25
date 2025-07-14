@@ -21,4 +21,10 @@
         <session-timeout>30</session-timeout>
     </session-config>
     
+    <!-- Default Servlet for Static Resources -->
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/uploads/*</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

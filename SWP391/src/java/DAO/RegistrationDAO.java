@@ -1,7 +1,5 @@
 package DAO;
 
-import model.Registration;
-import utils.DBContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import model.Registration;
+import utils.DBContext;
 
 /**
  * Data Access Object for Registration operations
@@ -377,7 +377,7 @@ public class RegistrationDAO {
     private static Registration mapResultSetToRegistration(ResultSet rs) throws SQLException {
         Registration registration = new Registration();
         registration.setId(rs.getInt("id"));
-        registration.setSubjectId(rs.getInt("course_id")); // map course_id to subjectId
+        registration.setCourseId(rs.getInt("course_id")); // map course_id to courseId
         
         // Handle package_id safely (might not exist in existing records)
         try {
@@ -438,7 +438,18 @@ public class RegistrationDAO {
             registration.setVideoDescription(null);
         }
         
-        registration.setRegistrationDate(rs.getTimestamp("registered_at")); // map registered_at to registrationDate
+        // Handle different possible column names for registration date
+        try {
+            registration.setRegistrationDate(rs.getTimestamp("registered_at"));
+        } catch (SQLException e) {
+            try {
+                registration.setRegistrationDate(rs.getTimestamp("created_at"));
+            } catch (SQLException e2) {
+                // If both fail, set current timestamp
+                registration.setRegistrationDate(new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+        }
+        
         registration.setStatus(rs.getString("status"));
         
         return registration;
@@ -459,11 +470,13 @@ public class RegistrationDAO {
         try {
             conn = DBContext.getConnection();
             ps = conn.prepareStatement(sql);
+            
             ps.setString(1, status);
             ps.setInt(2, registrationId);
             
-            int affectedRows = ps.executeUpdate();
-            return affectedRows > 0;
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+            
         } catch (Exception e) {
             System.err.println("Error updating registration status: " + e.getMessage());
             e.printStackTrace();
@@ -472,9 +485,56 @@ public class RegistrationDAO {
             try {
                 if (ps != null) ps.close();
                 if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.err.println("Error closing resources: " + e.getMessage());
+            } catch (Exception e) {
+                System.err.println("Error closing database resources: " + e.getMessage());
             }
         }
+    }
+    
+    /**
+     * Get all registrations for a specific user
+     * @param userId the user ID
+     * @return list of registrations for the user
+     */
+    public static List<Registration> getRegistrationsByUserId(int userId) {
+        List<Registration> registrations = new ArrayList<>();
+        // Remove status filter to get all registrations first
+        String sql = "SELECT * FROM registrations WHERE user_id = ?";
+        
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            System.out.println("DEBUG: Getting registrations for user ID: " + userId);
+            conn = DBContext.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            rs = ps.executeQuery();
+            
+            while (rs.next()) {
+                Registration registration = mapResultSetToRegistration(rs);
+                registrations.add(registration);
+                System.out.println("DEBUG: Found registration - ID: " + registration.getId() + 
+                                 ", Course ID: " + registration.getCourseId() + 
+                                 ", Status: " + registration.getStatus());
+            }
+            
+            System.out.println("DEBUG: Total registrations found: " + registrations.size());
+            
+        } catch (Exception e) {
+            System.err.println("Error getting registrations by user ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (conn != null) conn.close();
+            } catch (Exception e) {
+                System.err.println("Error closing database resources: " + e.getMessage());
+            }
+        }
+        
+        return registrations;
     }
 } 

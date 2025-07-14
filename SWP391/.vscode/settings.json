@@ -1,15 +1,16 @@
 {
     "java.project.referencedLibraries": [
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jakarta.activation-2.0.1.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jakarta.mail-2.0.1.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jakarta.servlet.jsp.jstl-2.0.0.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jakarta.servlet.jsp.jstl-api-2.0.0.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jakarta.servlet-api-6.0.0.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jakarta.servlet-api-6.0.0-javadoc.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\jaxb-api-2.1.jar",
-        "c:\\Users\\admin\\OneDrive\\Desktop\\PRJ_code\\allowedlib\\sqljdbc42.jar"
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jakarta.activation-2.0.1.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jakarta.mail-2.0.1.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jakarta.servlet.jsp.jstl-2.0.0.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jakarta.servlet.jsp.jstl-api-2.0.0.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jakarta.servlet-api-6.0.0.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jakarta.servlet-api-6.0.0-javadoc.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\jaxb-api-2.1.jar",
+        "c:\\Users\\thang\\Documents\\Zalo Received Files\\allowedlib\\sqljdbc42.jar"
     ],
     "java.project.sourcePaths": [
         "src\\java"
-    ]
+    ],
+    "java.format.settings.url": ".vscode/java-formatter.xml"
 }
