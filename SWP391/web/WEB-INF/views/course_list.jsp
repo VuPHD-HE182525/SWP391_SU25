@@ -95,7 +95,7 @@
   <div class="row">
     <!-- Sidebar -->
     <div class="col-md-3 mb-4">
-      <form method="get" action="subjects" id="searchForm">
+      <form method="get" action="course_list" id="searchForm">
           <label>Subject Search</label>
           <div class="input-group mb-3">
               <input type="text" name="search" value="${param.search}" placeholder="Search subjects..." id="searchInput" class="form-control" />
@@ -256,15 +256,15 @@
       <!-- Pagination -->
       <div class="pagination">
           <c:if test="${page > 1}">
-              <a href="subjects?page=${page-1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Previous</a>
+              <a href="course_list?page=${page-1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Previous</a>
           </c:if>
           <c:forEach begin="1" end="${(totalSubjects/pageSize) + (totalSubjects%pageSize==0?0:1)}" var="i">
-              <a href="subjects?page=${i}&search=${param.search}&category=${param.category}&pageSize=${pageSize}" class="${i==page ? 'active' : ''}">${i}</a>
+              <a href="course_list?page=${i}&search=${param.search}&category=${param.category}&pageSize=${pageSize}" class="${i==page ? 'active' : ''}">${i}</a>
           </c:forEach>
           <c:if test="${page < (totalSubjects/pageSize) + (totalSubjects%pageSize==0?0:1)}">
-              <a href="subjects?page=${page+1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Next</a>
+              <a href="course_list?page=${page+1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Next</a>
           </c:if>
-          <form method="get" action="subjects" style="display:inline-block; margin-left:10px;">
+          <form method="get" action="course_list" style="display:inline-block; margin-left:10px;">
               <input type="hidden" name="search" value="${param.search}" />
               <input type="hidden" name="category" value="${param.category}" />
               <input type="hidden" name="page" value="1" />
