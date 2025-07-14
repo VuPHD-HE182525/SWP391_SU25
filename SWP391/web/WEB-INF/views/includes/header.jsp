@@ -20,10 +20,10 @@
       <!-- Navigation -->
       <nav class="d-none d-md-flex align-items-center gap-4">
         <a href="${pageContext.request.contextPath}/home" class="text-secondary text-decoration-none fw-semibold">Home</a>
-        <a href="#" class="text-secondary text-decoration-none fw-semibold">Courses</a>
-        <a href="#" class="text-secondary text-decoration-none fw-semibold">Blogs</a>
-        <a href="#" class="text-secondary text-decoration-none fw-semibold">About</a>
-        <a href="#" class="text-secondary text-decoration-none fw-semibold">Contacts</a>
+        <a href="${pageContext.request.contextPath}/courses" class="text-secondary text-decoration-none fw-semibold">Courses</a>
+        <a href="${pageContext.request.contextPath}/blogs" class="text-secondary text-decoration-none fw-semibold">Blogs</a>
+        <a href="${pageContext.request.contextPath}/about" class="text-secondary text-decoration-none fw-semibold">About</a>
+        <a href="${pageContext.request.contextPath}/contact" class="text-secondary text-decoration-none fw-semibold">Contacts</a>
       </nav>
       <!-- Actions -->
       <div class="d-flex align-items-center gap-3">
@@ -42,7 +42,7 @@
                 <img src="${empty user.avatarUrl ? '/uploads/images/default-avatar.svg' : user.avatarUrl}" alt="User Avatar" class="rounded-circle border" style="width:36px;height:36px;object-fit:cover;" />
               </button>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="avatarDropdown">
-                <li><button class="dropdown-item" id="openProfileModal">Tài khoản</button></li>
+                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">Tài khoản</a></li>
                 <li><a class="dropdown-item" href="my-course">Khóa học của tôi</a></li>
                 <li><a class="dropdown-item" href="settings">Cài đặt</a></li>
                 <li><hr class="dropdown-divider"></li>

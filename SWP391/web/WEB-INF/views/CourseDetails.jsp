@@ -443,6 +443,26 @@
                                             <strong>Already Registered</strong>
                                             <br><small style="font-size: 0.9em; opacity: 0.9;">You are enrolled in this course</small>
                                         </div>
+                                        
+                                        <!-- Start Learning Buttons -->
+                                        <div style="margin-top: 20px; text-align: center;">
+                                            <a href="lesson-view?lessonId=1" 
+                                               style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                                      color: white; padding: 12px 24px; text-decoration: none; 
+                                                      border-radius: 8px; font-weight: 600; margin-right: 10px;
+                                                      transition: transform 0.2s ease;">
+                                                <i class="fas fa-play-circle" style="margin-right: 8px;"></i>
+                                                Start Learning
+                                            </a>
+                                            <a href="my-course" 
+                                               style="display: inline-block; background: #6b7280; 
+                                                      color: white; padding: 12px 24px; text-decoration: none; 
+                                                      border-radius: 8px; font-weight: 600;
+                                                      transition: transform 0.2s ease;">
+                                                <i class="fas fa-book" style="margin-right: 8px;"></i>
+                                                My Courses
+                                            </a>
+                                        </div>
                                     </c:when>
                                     <c:otherwise>
                                         <!-- Check if user is logged in -->
@@ -672,4 +692,34 @@ document.querySelector('.login-required-modal-content')?.addEventListener('click
         });
     </script>
 </c:if>
+
+<!-- Quick Access to Lessons Section -->
+<c:if test="${not empty sessionScope.user}">
+    <div class="fixed bottom-4 right-4 z-50">
+        <div class="bg-blue-600 text-white p-4 rounded-lg shadow-lg max-w-sm">
+            <h4 class="font-bold mb-2">📚 Quick Access to Lessons</h4>
+            <div class="space-y-1">
+                <a href="lesson-view?lessonId=1" class="block text-blue-200 hover:text-white text-sm">
+                    ▶️ Lesson 1: Lắng nghe chủ động
+                </a>
+                <a href="lesson-view?lessonId=2" class="block text-blue-200 hover:text-white text-sm">
+                    ▶️ Lesson 2: Nói để người khác nghe
+                </a>
+                <a href="lesson-view?lessonId=3" class="block text-blue-200 hover:text-white text-sm">
+                    ▶️ Lesson 3: Phân vai trong nhóm
+                </a>
+                <a href="lesson-view?lessonId=4" class="block text-blue-200 hover:text-white text-sm">
+                    ▶️ Lesson 4: Giải quyết xung đột
+                </a>
+            </div>
+            <button onclick="this.parentElement.style.display='none'" 
+                    class="mt-2 text-xs text-blue-200 hover:text-white">
+                ✕ Close
+            </button>
+        </div>
+    </div>
+</c:if>
+
+</body>
+</html>
 

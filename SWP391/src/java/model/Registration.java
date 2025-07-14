@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  */
 public class Registration {
     private int id;
-    private int subjectId;
+    private int courseId; // Changed from subjectId to courseId to match database
     private int packageId;
     private Integer userId; // Nullable for non-registered users
     private String fullName;
@@ -24,9 +24,9 @@ public class Registration {
     public Registration() {
     }
 
-    public Registration(int subjectId, int packageId, Integer userId, String fullName, 
+    public Registration(int courseId, int packageId, Integer userId, String fullName, 
                        String email, String mobile, String gender) {
-        this.subjectId = subjectId;
+        this.courseId = courseId;
         this.packageId = packageId;
         this.userId = userId;
         this.fullName = fullName;
@@ -45,12 +45,23 @@ public class Registration {
         this.id = id;
     }
 
-    public int getSubjectId() {
-        return subjectId;
+    public int getCourseId() {
+        return courseId;
     }
 
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
+    }
+    
+    // Keep the old methods for backward compatibility
+    @Deprecated
+    public int getSubjectId() {
+        return courseId;
+    }
+
+    @Deprecated
     public void setSubjectId(int subjectId) {
-        this.subjectId = subjectId;
+        this.courseId = subjectId;
     }
 
     public int getPackageId() {
