@@ -509,7 +509,7 @@
                     <!-- Subject Search -->
                     <div class="sidebar-section">
                         <h5>Subject Search</h5>
-                        <form method="get" action="subjects">
+                        <form method="get" action="course_list">
                             <input type="text" name="search" class="search-box" placeholder="Search subjects...">
                             <button type="submit" class="btn btn-primary mt-2 w-100">Search</button>
                         </form>
