@@ -2,13 +2,12 @@
 <Context path="/">
     <Resources>
         <PreResources className="org.apache.catalina.webresources.DirResourceSet"
-                      base="D:\SWP391_SU25\SWP391\web\uploads\images"
+                      base="C:\Users\admin\OneDrive\Desktop\PRJ_code\SWP391_Group3\SWP391\web\uploads\images"
                       webAppMount="/uploads/images" />
     </Resources>
     <Resources>
         <PreResources className="org.apache.catalina.webresources.DirResourceSet"
-                      base="D:\SWP391_SU25\SWP391\web\uploads\videos"
-
+                      base="C:\Users\admin\OneDrive\Desktop\PRJ_code\SWP391_Group3\SWP391\web\uploads\videos"
                       webAppMount="/uploads/videos" />
     </Resources>
 </Context>

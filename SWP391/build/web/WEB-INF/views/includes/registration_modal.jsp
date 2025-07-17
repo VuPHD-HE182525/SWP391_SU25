@@ -338,6 +338,23 @@
         border-radius: 5px;
     }
     
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+    
     .file-preview video {
         max-width: 100%;
         max-height: 200px;
@@ -546,29 +563,35 @@
                 
                 <!-- Optional Media Uploads -->
                 <div class="form-group">
-                    <label>Image About Yourself (Optional):</label>
-                    <div class="file-upload-group" id="imageUploadArea">
-                        <button type="button" class="file-upload-button" onclick="document.getElementById('imageUpload').click()">
-                            📷 Choose Image
-                        </button>
-                        <input type="file" id="imageUpload" name="profileImage" class="file-upload-input" accept="image/*" onchange="previewImage(this)">
-                        <div class="file-info">Supported formats: JPG, PNG, GIF (Max: 5MB)</div>
-                        <div id="imagePreview" class="file-preview"></div>
+                    <label>Images About Yourself (Optional):</label>
+                    <div id="imageUploadContainer">
+                        <div class="file-upload-group" id="imageUploadArea_1">
+                            <button type="button" class="file-upload-button" onclick="document.getElementById('imageUpload_1').click()">
+                                📷 Choose Image #1
+                            </button>
+                            <input type="file" id="imageUpload_1" name="profileImages_1" class="file-upload-input" accept="image/*" onchange="previewMultipleImages(this, 1)">
+                            <div class="file-info">Supported formats: JPG, PNG, GIF (Max: 5MB)</div>
+                            <div id="imagePreview_1" class="file-preview"></div>
+                            <input type="text" name="imageDescription_1" placeholder="Caption for image #1 (optional)" class="form-control" style="margin-top: 10px;">
+                        </div>
                     </div>
-                    <input type="text" name="imageCaption" placeholder="Caption for your image (optional)" class="form-control" style="margin-top: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="addMoreImages()" style="margin-top: 10px;">+ Add More Images</button>
                 </div>
                 
                 <div class="form-group">
-                    <label>Video About Yourself (Optional):</label>
-                    <div class="file-upload-group" id="videoUploadArea">
-                        <button type="button" class="file-upload-button" onclick="document.getElementById('videoUpload').click()">
-                            🎥 Choose Video
-                        </button>
-                        <input type="file" id="videoUpload" name="profileVideo" class="file-upload-input" accept="video/*" onchange="previewVideo(this)">
-                        <div class="file-info">Supported formats: MP4, AVI, MOV (Max: 50MB)</div>
-                        <div id="videoPreview" class="file-preview"></div>
+                    <label>Videos About Yourself (Optional):</label>
+                    <div id="videoUploadContainer">
+                        <div class="file-upload-group" id="videoUploadArea_1">
+                            <button type="button" class="file-upload-button" onclick="document.getElementById('videoUpload_1').click()">
+                                🎥 Choose Video #1
+                            </button>
+                            <input type="file" id="videoUpload_1" name="profileVideos_1" class="file-upload-input" accept="video/*" onchange="previewMultipleVideos(this, 1)">
+                            <div class="file-info">Supported formats: MP4, AVI, MOV (Max: 50MB)</div>
+                            <div id="videoPreview_1" class="file-preview"></div>
+                            <input type="text" name="videoDescription_1" placeholder="Caption for video #1 (optional)" class="form-control" style="margin-top: 10px;">
+                        </div>
                     </div>
-                    <input type="text" name="videoCaption" placeholder="Caption for your video (optional)" class="form-control" style="margin-top: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="addMoreVideos()" style="margin-top: 10px;">+ Add More Videos</button>
                 </div>
                 
                 <button type="submit" class="btn-register-modal">Complete Registration</button>
@@ -627,11 +650,20 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Image preview function
-function previewImage(input) {
-    const preview = document.getElementById('imagePreview');
+// Multiple images preview function
+let imageCount = 1;
+function previewMultipleImages(input, index) {
+    console.log('Preview function called for image index:', index);
+    const preview = document.getElementById('imagePreview_' + index);
+    
+    if (!preview) {
+        console.error('Preview element not found for index:', index);
+        return;
+    }
+    
     if (input.files && input.files[0]) {
         const file = input.files[0];
+        console.log('File selected:', file.name, 'Size:', file.size);
         
         // Check file size (5MB limit)
         if (file.size > 5 * 1024 * 1024) {
@@ -643,10 +675,35 @@ function previewImage(input) {
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            preview.innerHTML = `
-                <p><strong>Selected:</strong> ${file.name}</p>
-                <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px;">
-            `;
+            // Create elements instead of using innerHTML
+            const selectedText = document.createElement('p');
+            selectedText.innerHTML = '<strong>Selected:</strong> ' + file.name;
+            
+            const imgElement = document.createElement('img');
+            imgElement.src = e.target.result;
+            imgElement.alt = 'Preview';
+            imgElement.style.maxWidth = '100%';
+            imgElement.style.maxHeight = '200px';
+            
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = 'Remove';
+            removeButton.style.marginTop = '10px';
+            removeButton.style.backgroundColor = '#dc3545';
+            removeButton.style.color = 'white';
+            removeButton.style.border = 'none';
+            removeButton.style.padding = '5px 10px';
+            removeButton.style.borderRadius = '3px';
+            removeButton.style.cursor = 'pointer';
+            removeButton.onclick = function() {
+                removeImage(index);
+            };
+            
+            // Clear preview and add elements
+            preview.innerHTML = '';
+            preview.appendChild(selectedText);
+            preview.appendChild(imgElement);
+            preview.appendChild(removeButton);
             preview.style.display = 'block';
         }
         reader.readAsDataURL(file);
@@ -655,11 +712,20 @@ function previewImage(input) {
     }
 }
 
-// Video preview function
-function previewVideo(input) {
-    const preview = document.getElementById('videoPreview');
+// Multiple videos preview function
+let videoCount = 1;
+function previewMultipleVideos(input, index) {
+    console.log('Preview function called for video index:', index);
+    const preview = document.getElementById('videoPreview_' + index);
+    
+    if (!preview) {
+        console.error('Preview element not found for index:', index);
+        return;
+    }
+    
     if (input.files && input.files[0]) {
         const file = input.files[0];
+        console.log('Video file selected:', file.name, 'Size:', file.size);
         
         // Check file size (50MB limit)
         if (file.size > 50 * 1024 * 1024) {
@@ -671,18 +737,184 @@ function previewVideo(input) {
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            preview.innerHTML = `
-                <p><strong>Selected:</strong> ${file.name}</p>
-                <video controls style="max-width: 100%; max-height: 200px;">
-                    <source src="${e.target.result}" type="${file.type}">
-                    Your browser does not support the video tag.
-                </video>
-            `;
+            // Create elements instead of using innerHTML
+            const selectedText = document.createElement('p');
+            selectedText.innerHTML = '<strong>Selected:</strong> ' + file.name;
+            
+            const videoElement = document.createElement('video');
+            videoElement.controls = true;
+            videoElement.style.maxWidth = '100%';
+            videoElement.style.maxHeight = '200px';
+            
+            const sourceElement = document.createElement('source');
+            sourceElement.src = e.target.result;
+            sourceElement.type = file.type;
+            
+            videoElement.appendChild(sourceElement);
+            videoElement.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+            
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.textContent = 'Remove';
+            removeButton.style.marginTop = '10px';
+            removeButton.style.backgroundColor = '#dc3545';
+            removeButton.style.color = 'white';
+            removeButton.style.border = 'none';
+            removeButton.style.padding = '5px 10px';
+            removeButton.style.borderRadius = '3px';
+            removeButton.style.cursor = 'pointer';
+            removeButton.onclick = function() {
+                removeVideo(index);
+            };
+            
+            // Clear preview and add elements
+            preview.innerHTML = '';
+            preview.appendChild(selectedText);
+            preview.appendChild(videoElement);
+            preview.appendChild(removeButton);
             preview.style.display = 'block';
         }
         reader.readAsDataURL(file);
     } else {
         preview.style.display = 'none';
+    }
+}
+
+// Add more images function
+function addMoreImages() {
+    imageCount++;
+    const container = document.getElementById('imageUploadContainer');
+    const newImageDiv = document.createElement('div');
+    newImageDiv.className = 'file-upload-group';
+    
+    // Use let to capture the current value of imageCount
+    let currentImageCount = imageCount;
+    newImageDiv.id = 'imageUploadArea_' + currentImageCount;
+    
+    // Create button
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'file-upload-button';
+    button.textContent = '📷 Choose Image #' + currentImageCount;
+    button.onclick = function() {
+        document.getElementById('imageUpload_' + currentImageCount).click();
+    };
+    
+    // Create file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'imageUpload_' + currentImageCount;
+    fileInput.name = 'profileImages_' + currentImageCount;
+    fileInput.className = 'file-upload-input';
+    fileInput.accept = 'image/*';
+    fileInput.onchange = function() {
+        previewMultipleImages(this, currentImageCount);
+    };
+    
+    // Create file info
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+    fileInfo.textContent = 'Supported formats: JPG, PNG, GIF (Max: 5MB)';
+    
+    // Create preview div
+    const previewDiv = document.createElement('div');
+    previewDiv.id = 'imagePreview_' + currentImageCount;
+    previewDiv.className = 'file-preview';
+    
+    // Create description input
+    const descriptionInput = document.createElement('input');
+    descriptionInput.type = 'text';
+    descriptionInput.name = 'imageDescription_' + currentImageCount;
+    descriptionInput.placeholder = 'Caption for image #' + currentImageCount + ' (optional)';
+    descriptionInput.className = 'form-control';
+    descriptionInput.style.marginTop = '10px';
+    
+    // Append all elements
+    newImageDiv.appendChild(button);
+    newImageDiv.appendChild(fileInput);
+    newImageDiv.appendChild(fileInfo);
+    newImageDiv.appendChild(previewDiv);
+    newImageDiv.appendChild(descriptionInput);
+    
+    container.appendChild(newImageDiv);
+    
+    console.log('Added image upload field #' + currentImageCount);
+}
+
+// Add more videos function
+function addMoreVideos() {
+    videoCount++;
+    const container = document.getElementById('videoUploadContainer');
+    const newVideoDiv = document.createElement('div');
+    newVideoDiv.className = 'file-upload-group';
+    
+    // Use let to capture the current value of videoCount
+    let currentVideoCount = videoCount;
+    newVideoDiv.id = 'videoUploadArea_' + currentVideoCount;
+    
+    // Create button
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'file-upload-button';
+    button.textContent = '🎥 Choose Video #' + currentVideoCount;
+    button.onclick = function() {
+        document.getElementById('videoUpload_' + currentVideoCount).click();
+    };
+    
+    // Create file input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'videoUpload_' + currentVideoCount;
+    fileInput.name = 'profileVideos_' + currentVideoCount;
+    fileInput.className = 'file-upload-input';
+    fileInput.accept = 'video/*';
+    fileInput.onchange = function() {
+        previewMultipleVideos(this, currentVideoCount);
+    };
+    
+    // Create file info
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+    fileInfo.textContent = 'Supported formats: MP4, AVI, MOV (Max: 50MB)';
+    
+    // Create preview div
+    const previewDiv = document.createElement('div');
+    previewDiv.id = 'videoPreview_' + currentVideoCount;
+    previewDiv.className = 'file-preview';
+    
+    // Create description input
+    const descriptionInput = document.createElement('input');
+    descriptionInput.type = 'text';
+    descriptionInput.name = 'videoDescription_' + currentVideoCount;
+    descriptionInput.placeholder = 'Caption for video #' + currentVideoCount + ' (optional)';
+    descriptionInput.className = 'form-control';
+    descriptionInput.style.marginTop = '10px';
+    
+    // Append all elements
+    newVideoDiv.appendChild(button);
+    newVideoDiv.appendChild(fileInput);
+    newVideoDiv.appendChild(fileInfo);
+    newVideoDiv.appendChild(previewDiv);
+    newVideoDiv.appendChild(descriptionInput);
+    
+    container.appendChild(newVideoDiv);
+    
+    console.log('Added video upload field #' + currentVideoCount);
+}
+
+// Remove image function
+function removeImage(index) {
+    const imageArea = document.getElementById('imageUploadArea_' + index);
+    if (imageArea) {
+        imageArea.remove();
+    }
+}
+
+// Remove video function
+function removeVideo(index) {
+    const videoArea = document.getElementById('videoUploadArea_' + index);
+    if (videoArea) {
+        videoArea.remove();
     }
 }
 

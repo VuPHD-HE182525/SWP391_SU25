@@ -109,6 +109,9 @@
               </c:forEach>
           </select>
           <button type="submit" class="btn btn-danger w-100">Filter</button>
+          <c:if test="${param.search != null && !param.search.trim().isEmpty() || param.category != null && !param.category.trim().isEmpty()}">
+              <a href="course_list" class="btn btn-secondary w-100 mt-2">Clear Filters</a>
+          </c:if>
       </form>
       <script>
           let subjectsData = [];
@@ -253,16 +256,34 @@
               </c:choose>
           </c:forEach>
       </div>
+      <!-- Filter Results Info -->
+      <div class="mb-3">
+          <c:if test="${param.search != null && !param.search.trim().isEmpty()}">
+              <span class="badge bg-info">Search: "${param.search}"</span>
+          </c:if>
+          <c:if test="${param.category != null && !param.category.trim().isEmpty()}">
+              <c:forEach var="cat" items="${categories}">
+                  <c:if test="${cat.id == param.category}">
+                      <span class="badge bg-secondary">Category: ${cat.name}</span>
+                  </c:if>
+              </c:forEach>
+          </c:if>
+          <span class="text-muted">Total: ${totalSubjects} subjects</span>
+      </div>
+
       <!-- Pagination -->
       <div class="pagination">
-          <c:if test="${page > 1}">
-              <a href="course_list?page=${page-1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Previous</a>
-          </c:if>
-          <c:forEach begin="1" end="${(totalSubjects/pageSize) + (totalSubjects%pageSize==0?0:1)}" var="i">
-              <a href="course_list?page=${i}&search=${param.search}&category=${param.category}&pageSize=${pageSize}" class="${i==page ? 'active' : ''}">${i}</a>
-          </c:forEach>
-          <c:if test="${page < (totalSubjects/pageSize) + (totalSubjects%pageSize==0?0:1)}">
-              <a href="course_list?page=${page+1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Next</a>
+          <c:if test="${totalSubjects > 0}">
+              <c:set var="totalPages" value="${totalPages != null ? totalPages : ((totalSubjects + pageSize - 1) / pageSize)}" />
+              <c:if test="${page > 1}">
+                  <a href="course_list?page=${page-1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Previous</a>
+              </c:if>
+              <c:forEach begin="1" end="${totalPages}" var="i">
+                  <a href="course_list?page=${i}&search=${param.search}&category=${param.category}&pageSize=${pageSize}" class="${i==page ? 'active' : ''}">${i}</a>
+              </c:forEach>
+              <c:if test="${page < totalPages}">
+                  <a href="course_list?page=${page+1}&search=${param.search}&category=${param.category}&pageSize=${pageSize}">Next</a>
+              </c:if>
           </c:if>
           <form method="get" action="course_list" style="display:inline-block; margin-left:10px;">
               <input type="hidden" name="search" value="${param.search}" />

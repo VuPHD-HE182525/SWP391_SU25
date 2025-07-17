@@ -13,9 +13,9 @@ import java.sql.DriverManager;
  */
 public class DBContext {
 
-    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/newSQL";
+    private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/swp391";
     private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "123456";
+    private static final String JDBC_PASSWORD = "admin";
 
     public static Connection getConnection() throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
