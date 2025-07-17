@@ -1,0 +1,56 @@
+# Security - Configuration files with API keys
+src/config.properties
+src/java/config.properties
+config.properties
+*.env
+.env
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.iws
+
+# Build files
+build/
+dist/
+target/
+*.class
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# NetBeans specific
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+nbactions.xml
+nb-configuration.xml
+
+# Database
+*.db
+*.sqlite
+
+# API Keys and Secrets
+*api*key*
+*secret*
+*password*
+*token* 
