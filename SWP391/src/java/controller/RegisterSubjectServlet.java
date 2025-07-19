@@ -7,11 +7,9 @@ package controller;
 
 import DAO.PackageDAO;
 import DAO.RegistrationDAO;
-import DAO.RegistrationMediaDAO;
 import DAO.SubjectDAO;
 import model.Package;
 import model.Registration;
-import model.RegistrationMedia;
 import model.Subject;
 import model.User;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.util.List;
-import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -207,47 +204,22 @@ public class RegisterSubjectServlet extends HttpServlet {
                 return;
             }
             
-            // Handle multiple file uploads
-            List<RegistrationMedia> mediaList = new ArrayList<>();
+            // Handle file uploads
+            String imagePath = null;
+            String videoPath = null;
             
             try {
-                // Handle multiple image uploads
-                for (Part imagePart : request.getParts()) {
-                    if (imagePart.getName().startsWith("profileImages") && imagePart.getSize() > 0) {
-                        String imagePath = saveUploadedFile(imagePart, "images", request);
-                        if (imagePath != null) {
-                            String imageDescription = request.getParameter("imageDescription_" + imagePart.getName().replaceAll("\\D", ""));
-                            RegistrationMedia media = new RegistrationMedia();
-                            media.setMediaType("image");
-                            media.setFileUrl(imagePath);
-                            media.setFileDescription(imageDescription);
-                            media.setFileSize(imagePart.getSize());
-                            media.setFileName(extractFileName(imagePart));
-                            media.setDisplayOrder(mediaList.size() + 1);
-                            mediaList.add(media);
-                        }
-                    }
+                // Handle image upload
+                Part imagePart = request.getPart("profileImage");
+                if (imagePart != null && imagePart.getSize() > 0) {
+                    imagePath = saveUploadedFile(imagePart, "images", request);
                 }
                 
-                // Handle multiple video uploads
-                for (Part videoPart : request.getParts()) {
-                    if (videoPart.getName().startsWith("profileVideos") && videoPart.getSize() > 0) {
-                        String videoPath = saveUploadedFile(videoPart, "videos", request);
-                        if (videoPath != null) {
-                            String videoDescription = request.getParameter("videoDescription_" + videoPart.getName().replaceAll("\\D", ""));
-                            RegistrationMedia media = new RegistrationMedia();
-                            media.setMediaType("video");
-                            media.setFileUrl(videoPath);
-                            media.setFileDescription(videoDescription);
-                            media.setFileSize(videoPart.getSize());
-                            media.setFileName(extractFileName(videoPart));
-                            media.setDisplayOrder(mediaList.size() + 1);
-                            mediaList.add(media);
-                        }
-                    }
+                // Handle video upload
+                Part videoPart = request.getPart("profileVideo");
+                if (videoPart != null && videoPart.getSize() > 0) {
+                    videoPath = saveUploadedFile(videoPart, "videos", request);
                 }
-                
-                System.out.println("Processed " + mediaList.size() + " media files");
             } catch (Exception e) {
                 System.err.println("Error handling file uploads: " + e.getMessage());
                 // Continue with registration even if file upload fails
@@ -275,6 +247,20 @@ public class RegisterSubjectServlet extends HttpServlet {
             registration.setGender(gender);
             registration.setStatus("pending");
             
+            // Set media files if uploaded
+            if (imagePath != null && !imagePath.trim().isEmpty()) {
+                registration.setImageUrl(imagePath);
+                if (imageCaption != null && !imageCaption.trim().isEmpty()) {
+                    registration.setImageDescription(imageCaption.trim());
+                }
+            }
+            if (videoPath != null && !videoPath.trim().isEmpty()) {
+                registration.setVideoUrl(videoPath);
+                if (videoCaption != null && !videoCaption.trim().isEmpty()) {
+                    registration.setVideoDescription(videoCaption.trim());
+                }
+            }
+            
             // Set user ID if logged in
             if (user != null) {
                 registration.setUserId(user.getId());
@@ -299,17 +285,6 @@ public class RegisterSubjectServlet extends HttpServlet {
                 
                 if (registrationId > 0) {
                     System.out.println("Registration successful with ID: " + registrationId);
-                    
-                    // Save media files if any were uploaded
-                    if (!mediaList.isEmpty()) {
-                        for (RegistrationMedia media : mediaList) {
-                            media.setRegistrationId(registrationId);
-                        }
-                        
-                        List<Integer> mediaIds = RegistrationMediaDAO.createRegistrationMediaBatch(mediaList);
-                        System.out.println("Saved " + mediaIds.size() + " media files for registration " + registrationId);
-                    }
-                    
                     // Success - redirect back to course details with success parameter
                     String redirectUrl = request.getContextPath() + "/course-details?subjectId=" + subjectId + "&success=true&registrationId=" + registrationId;
                     System.out.println("Redirecting to: " + redirectUrl);

@@ -13,6 +13,16 @@ import java.io.IOException;
 @WebServlet("/ai-chat")
 public class AiChatServlet extends HttpServlet {
 
+     // 1. Validate user session (must be logged in)
+    // 2. Extract parameters: message, lessonId, lessonName
+    // 3. Validate input (message không empty)
+    // 4. Check AI configuration (API key available)
+    // 5. Build context từ lesson data
+    // 6. Call GeminiService để get AI response
+    // 7. Clean và format response
+    // 8. Return JSON response
+    
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -70,6 +80,19 @@ public class AiChatServlet extends HttpServlet {
     
     /**
      * Build context information for the lesson using video transcript if available
+     * 
+     * 
+     *    1. Query VideoTranscriptDAO để lấy transcript data
+     *  2. Check transcript status = 'completed'
+     *3. Build rich context string:
+        - Lesson name
+    //    - Summary
+    //    - Key topics  
+    //    - Learning objectives
+    //    - Video transcript (limited 1500 chars)
+    * 4. Add AI instructions for educational responses
+    * 5. Fallback to basic context nếu không có transcript
+    * 6. Pattern matching cho lesson types (java, ai, soft skills)
      */
     private String buildLessonContext(String lessonId, String lessonName) {
         StringBuilder context = new StringBuilder();
@@ -106,7 +129,9 @@ public class AiChatServlet extends HttpServlet {
                     }
                     
                     context.append("Please answer questions based on this lesson content. ");
-                    context.append("Provide specific, accurate information from the video transcript. ");
+                    context.append("Provide detailed, specific explanations using information from the video transcript. ");
+                    context.append("When listing topics, include brief explanations for each topic. ");
+                    context.append("Use examples and context from the lesson to make answers comprehensive and educational. ");
                     context.append("If asked about topics not covered in this lesson, politely redirect to the actual lesson content.");
                     
                     return context.toString();

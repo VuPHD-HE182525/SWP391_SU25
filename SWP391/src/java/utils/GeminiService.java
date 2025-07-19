@@ -79,7 +79,7 @@ public class GeminiService {
         
         String apiKey = getApiKey();
         if (apiKey == null || apiKey.isEmpty()) {
-            return "⚠️ Please configure your Gemini API key:\n\n" +
+            return "WARNING: Please configure your Gemini API key:\n\n" +
                    "1. Go to: https://aistudio.google.com/app/apikey\n" +
                    "2. Create an API key\n" +
                    "3. Add it to src/config.properties: gemini.api.key=YOUR_KEY\n" +
@@ -168,9 +168,9 @@ public class GeminiService {
             JSONObject test = new JSONObject();
             test.put("message", "JSON library is working!");
             test.put("timestamp", System.currentTimeMillis());
-            return "✅ JSON Library Test Passed: " + test.toString();
+            return "SUCCESS: JSON Library Test Passed: " + test.toString();
         } catch (Exception e) {
-            return "❌ JSON Library Test Failed: " + e.getMessage();
+            return "ERROR: JSON Library Test Failed: " + e.getMessage();
         }
     }
 } 

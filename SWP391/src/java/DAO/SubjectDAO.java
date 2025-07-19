@@ -10,7 +10,6 @@ import java.util.List;
 import model.Package;
 import model.Subject;
 import utils.DBContext;
-import DAO.PackageDAO;
 
 /**
  *
@@ -201,36 +200,31 @@ public class SubjectDAO {
         
     public static List<Subject> getSubjects(String search, String categoryId) throws Exception {
         List<Subject> subjects = new ArrayList<>();
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT s.id, s.name, s.description, s.thumbnail_url, s.category_id, s.tagline, s.status, s.created_at ");
-        sql.append("FROM subjects s ");
-        sql.append("WHERE 1=1 ");
-        
-        if (search != null && !search.trim().isEmpty()) {
-            sql.append("AND (s.name LIKE ? OR s.description LIKE ? OR s.tagline LIKE ?) ");
-        }
-        if (categoryId != null && !categoryId.trim().isEmpty()) {
-            sql.append("AND s.category_id = ? ");
-        }
-        
-        sql.append("ORDER BY s.created_at DESC");
-        
-        System.out.println("Executing getSubjects query: " + sql.toString());
+        String sql = "SELECT s.*, " +
+                "p.id AS package_id, p.package_name AS package_name, p.original_price, p.sale_price, p.duration_months AS duration, p.status " +
+                "FROM subjects s " +
+                "LEFT JOIN courses c ON s.id = c.subject_id " +
+                "LEFT JOIN packages p ON c.id = p.course_id " +
+                "WHERE p.sale_price = ( " +
+                "    SELECT MIN(p2.sale_price) " +
+                "    FROM packages p2 " +
+                "    LEFT JOIN courses c2 ON p2.course_id = c2.id " +
+                "    WHERE c2.subject_id = s.id " +
+                ") " +
+                (search != null && !search.trim().isEmpty() ? "AND (s.name LIKE ? OR s.tagline LIKE ?) " : "") +
+                (categoryId != null && !categoryId.trim().isEmpty() ? "AND s.category_id = ? " : "") +
+                "ORDER BY s.created_at DESC";
         
         try (Connection conn = DBContext.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             
             int paramIndex = 1;
             if (search != null && !search.trim().isEmpty()) {
-                String searchPattern = "%" + search + "%";
-                ps.setString(paramIndex++, searchPattern);
-                ps.setString(paramIndex++, searchPattern);
-                ps.setString(paramIndex++, searchPattern);
-                System.out.println("Search parameter: " + searchPattern);
+                ps.setString(paramIndex++, "%" + search + "%");
+                ps.setString(paramIndex++, "%" + search + "%");
             }
             if (categoryId != null && !categoryId.trim().isEmpty()) {
-                ps.setInt(paramIndex, Integer.parseInt(categoryId));
-                System.out.println("Category parameter: " + categoryId);
+                ps.setString(paramIndex, categoryId);
             }
             
             try (ResultSet rs = ps.executeQuery()) {
@@ -243,42 +237,23 @@ public class SubjectDAO {
                     subject.setThumbnailUrl(rs.getString("thumbnail_url"));
                     subject.setCreatedAt(rs.getTimestamp("created_at"));
                     subject.setCategoryId(rs.getInt("category_id"));
-                    subject.setStatus(rs.getString("status"));
 
-                    // Load packages for this subject
-                    try {
-                        List<Package> packages = PackageDAO.getPackagesBySubjectId(subject.getId());
-                        if (packages != null && !packages.isEmpty()) {
-                            subject.setPackages(packages);
-                            
-                            // Find the lowest price package
-                            Package lowestPackage = null;
-                            for (Package pkg : packages) {
-                                if (pkg != null && (lowestPackage == null || pkg.getSalePrice() < lowestPackage.getSalePrice())) {
-                                    lowestPackage = pkg;
-                                }
-                            }
-                            if (lowestPackage != null) {
-                                subject.setLowestPackage(lowestPackage);
-                            }
-                        } else {
-                            subject.setPackages(new ArrayList<>());
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Failed to load packages for subject " + subject.getId() + ": " + e.getMessage());
-                        subject.setPackages(new ArrayList<>());
-                    }
+                    Package pkg = new Package();
+                    pkg.setId(rs.getInt("package_id"));
+                    pkg.setSubjectId(rs.getInt("id"));
+                    pkg.setName(rs.getString("package_name"));
+                    pkg.setOriginalPrice(rs.getDouble("original_price"));
+                    pkg.setSalePrice(rs.getDouble("sale_price"));
+                    pkg.setDuration(rs.getInt("duration"));
+                    pkg.setStatus(rs.getString("status"));
 
+                    subject.setLowestPackage(pkg);
                     subjects.add(subject);
-                    System.out.println("Found filtered subject: " + subject.getName());
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error in getSubjects: " + e.getMessage());
             e.printStackTrace();
         }
-        
-        System.out.println("Total filtered subjects: " + subjects.size());
         return subjects;
     }
     
