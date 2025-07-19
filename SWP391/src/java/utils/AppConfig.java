@@ -47,7 +47,7 @@ public class AppConfig {
             loaded = true;
             System.out.println("Config loaded from environment variables");
         } else {
-            System.err.println("⚠️ WARNING: No API key found! Please configure properly.");
+            System.err.println("WARNING: No API key found! Please configure properly.");
         }
     }
     
