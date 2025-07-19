@@ -7,6 +7,7 @@ import DAO.LessonCommentDAO;
 import DAO.LessonRatingDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.*;
 import model.Lesson;
 import model.Course;
@@ -15,11 +16,20 @@ import model.LessonComment;
 import model.LessonRating;
 import model.User;
 import java.io.IOException;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @WebServlet("/lesson-view")
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024, // 1MB
+    maxFileSize = 1024 * 1024 * 10, // 10MB
+    maxRequestSize = 1024 * 1024 * 50 // 50MB
+)
 public class LessonViewServlet extends HttpServlet {
 
     @Override
@@ -115,6 +125,9 @@ public class LessonViewServlet extends HttpServlet {
             // Mark lesson as viewed
             progressDAO.markLessonViewed(currentUser.getId(), lessonId, 0);
             
+            // Check if current lesson is reading type
+            boolean isReadingLesson = "reading".equals(currentLesson.getType());
+            
             // Set attributes for JSP
             request.setAttribute("currentLesson", currentLesson);
             request.setAttribute("course", course);
@@ -127,6 +140,7 @@ public class LessonViewServlet extends HttpServlet {
             request.setAttribute("previousLesson", previousLesson);
             request.setAttribute("nextLesson", nextLesson);
             request.setAttribute("currentUser", currentUser);
+            request.setAttribute("isReadingLesson", isReadingLesson);
             
             // Forward to lesson view page
             request.getRequestDispatcher("/WEB-INF/views/lesson_view.jsp").forward(request, response);
@@ -191,11 +205,77 @@ public class LessonViewServlet extends HttpServlet {
         if (commentText != null && !commentText.trim().isEmpty()) {
             LessonCommentDAO commentDAO = new LessonCommentDAO();
             LessonComment comment = new LessonComment(currentUser.getId(), lessonId, commentText.trim());
+            
+            // Handle file upload
+            Part filePart = request.getPart("mediaFile");
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = getSubmittedFileName(filePart);
+                String fileExtension = getFileExtension(fileName);
+                
+                // Validate file type
+                if (isValidMediaFile(fileExtension)) {
+                    // Create upload directory
+                    String uploadPath = getServletContext().getRealPath("/uploads/comments");
+                    File uploadDir = new File(uploadPath);
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdirs();
+                    }
+                    
+                    // Generate unique filename
+                    String uniqueFileName = generateUniqueFileName(fileExtension);
+                    String filePath = uploadPath + File.separator + uniqueFileName;
+                    
+                    // Save file
+                    filePart.write(filePath);
+                    
+                    // Set media info
+                    String mediaType = fileExtension.matches("(?i)(jpg|jpeg|png|gif)") ? "image" : "video";
+                    comment.setMediaType(mediaType);
+                    comment.setMediaPath("/uploads/comments/" + uniqueFileName);
+                    comment.setMediaFilename(fileName);
+                }
+            }
+            
             commentDAO.addComment(comment);
         }
         
         // Redirect back to lesson view
         response.sendRedirect("lesson-view?lessonId=" + lessonId);
+    }
+    
+    private String getSubmittedFileName(Part part) {
+        String contentDisp = part.getHeader("content-disposition");
+        String[] tokens = contentDisp.split(";");
+        for (String token : tokens) {
+            if (token.trim().startsWith("filename")) {
+                return token.substring(token.indexOf("=") + 2, token.length() - 1);
+            }
+        }
+        return "";
+    }
+    
+    private String getFileExtension(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
+        int lastDot = fileName.lastIndexOf('.');
+        return lastDot > 0 ? fileName.substring(lastDot + 1).toLowerCase() : "";
+    }
+    
+    private boolean isValidMediaFile(String extension) {
+        String[] validExtensions = {"jpg", "jpeg", "png", "gif", "mp4", "avi", "mov"};
+        for (String validExt : validExtensions) {
+            if (validExt.equals(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private String generateUniqueFileName(String extension) {
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String uuid = UUID.randomUUID().toString().substring(0, 8);
+        return "comment_" + timestamp + "_" + uuid + "." + extension;
     }
     
     private void handleEditComment(HttpServletRequest request, HttpServletResponse response, User currentUser) 

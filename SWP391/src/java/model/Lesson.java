@@ -20,6 +20,13 @@ public class Lesson {
     private String videoLink;
     private String htmlContent;
     private Integer quizId;
+    
+    // New fields for hybrid content support (file-based like Coursera)
+    private String contentFilePath;
+    private String objectivesFilePath;
+    private String referencesFilePath;
+    private String contentType; 
+    private int estimatedTime;
 
     public Lesson() {
     }
@@ -115,5 +122,46 @@ public class Lesson {
 
     public void setQuizId(Integer quizId) {
         this.quizId = quizId;
+    }
+
+    // Getters and setters for hybrid content fields
+    public String getContentFilePath() {
+        return contentFilePath;
+    }
+
+    public void setContentFilePath(String contentFilePath) {
+        this.contentFilePath = contentFilePath;
+    }
+
+    public String getObjectivesFilePath() {
+        return objectivesFilePath;
+    }
+
+    public void setObjectivesFilePath(String objectivesFilePath) {
+        this.objectivesFilePath = objectivesFilePath;
+    }
+
+    public String getReferencesFilePath() {
+        return referencesFilePath;
+    }
+
+    public void setReferencesFilePath(String referencesFilePath) {
+        this.referencesFilePath = referencesFilePath;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public int getEstimatedTime() {
+        return estimatedTime;
+    }
+
+    public void setEstimatedTime(int estimatedTime) {
+        this.estimatedTime = estimatedTime;
     }
 }
