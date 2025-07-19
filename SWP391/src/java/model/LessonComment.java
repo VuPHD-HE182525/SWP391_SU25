@@ -14,6 +14,11 @@ public class LessonComment {
     private String userFullName;
     private String userAvatarUrl;
     
+    // Media fields
+    private String mediaType;
+    private String mediaPath;
+    private String mediaFilename;
+    
     // Constructors
     public LessonComment() {}
     
@@ -88,5 +93,30 @@ public class LessonComment {
     
     public void setUserAvatarUrl(String userAvatarUrl) {
         this.userAvatarUrl = userAvatarUrl;
+    }
+    
+    // Media getters and setters
+    public String getMediaType() {
+        return mediaType;
+    }
+    
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
+    
+    public String getMediaPath() {
+        return mediaPath;
+    }
+    
+    public void setMediaPath(String mediaPath) {
+        this.mediaPath = mediaPath;
+    }
+    
+    public String getMediaFilename() {
+        return mediaFilename;
+    }
+    
+    public void setMediaFilename(String mediaFilename) {
+        this.mediaFilename = mediaFilename;
     }
 } 
