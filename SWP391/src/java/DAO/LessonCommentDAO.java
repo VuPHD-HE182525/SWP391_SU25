@@ -1,11 +1,11 @@
 package DAO;
 
-import model.LessonComment;
-import utils.DBContext;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import model.LessonComment;
+import utils.DBContext;
 
 public class LessonCommentDAO {
     
@@ -41,6 +41,11 @@ public class LessonCommentDAO {
                         comment.setUpdatedAt(updatedAt.toLocalDateTime());
                     }
                     
+                    // Load media fields
+                    comment.setMediaType(rs.getString("media_type"));
+                    comment.setMediaPath(rs.getString("media_path"));
+                    comment.setMediaFilename(rs.getString("media_filename"));
+                    
                     // Debug
                     System.out.println("Loaded comment: " + comment.getCommentText() + " by " + comment.getUserFullName());
                     
@@ -55,8 +60,8 @@ public class LessonCommentDAO {
     }
     
     public void addComment(LessonComment comment) throws Exception {
-        String sql = "INSERT INTO lesson_comments (user_id, lesson_id, comment_text, created_at, updated_at) " +
-                    "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO lesson_comments (user_id, lesson_id, comment_text, created_at, updated_at, media_type, media_path, media_filename) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -66,6 +71,9 @@ public class LessonCommentDAO {
             ps.setString(3, comment.getCommentText());
             ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
             ps.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setString(6, comment.getMediaType());
+            ps.setString(7, comment.getMediaPath());
+            ps.setString(8, comment.getMediaFilename());
             
             ps.executeUpdate();
         }
@@ -124,6 +132,11 @@ public class LessonCommentDAO {
                     if (updatedAt != null) {
                         comment.setUpdatedAt(updatedAt.toLocalDateTime());
                     }
+                    
+                    // Load media fields
+                    comment.setMediaType(rs.getString("media_type"));
+                    comment.setMediaPath(rs.getString("media_path"));
+                    comment.setMediaFilename(rs.getString("media_filename"));
                     
                     comment.setUserFullName(rs.getString("full_name"));
                     comment.setUserAvatarUrl(rs.getString("avatar_url"));

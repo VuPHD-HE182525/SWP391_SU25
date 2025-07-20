@@ -27,6 +27,15 @@ public class LessonDAO {
                     lesson.setStatus(rs.getBoolean("status"));
                     lesson.setSubjectId(rs.getInt("course_id")); // Use course_id from database
                     lesson.setParentLessonId(rs.getInt("parent_lesson_id"));
+                    lesson.setVideoLink(rs.getString("video_url"));
+                    
+                    // Load hybrid content fields (file paths)
+                    lesson.setContentFilePath(rs.getString("content_file_path"));
+                    lesson.setObjectivesFilePath(rs.getString("objectives_file_path"));
+                    lesson.setReferencesFilePath(rs.getString("references_file_path"));
+                    lesson.setContentType(rs.getString("content_type"));
+                    lesson.setEstimatedTime(rs.getInt("estimated_time"));
+                    
                     list.add(lesson);
                 }
             }
@@ -60,7 +69,13 @@ public class LessonDAO {
                     lesson.setSubjectId(rs.getInt("course_id")); // Use course_id from database
                     lesson.setParentLessonId(rs.getInt("parent_lesson_id"));
                     lesson.setVideoLink(rs.getString("video_url")); // Use video_url from database
-                    // Skip html_content and quiz_id as they don't exist in current schema
+                    
+                    // Load hybrid content fields (file paths)
+                    lesson.setContentFilePath(rs.getString("content_file_path"));
+                    lesson.setObjectivesFilePath(rs.getString("objectives_file_path"));
+                    lesson.setReferencesFilePath(rs.getString("references_file_path"));
+                    lesson.setContentType(rs.getString("content_type"));
+                    lesson.setEstimatedTime(rs.getInt("estimated_time"));
 
                     return lesson;
                 }

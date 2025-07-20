@@ -379,37 +379,12 @@
     }
     .sidebar-section ul li a:hover {
         text-decoration: underline;
-        color: #0056b3;
     }
     .search-box {
         width: 100%;
         padding: 8px;
         border: 1px solid #ced4da;
         border-radius: 5px;
-        transition: border-color 0.3s ease;
-    }
-    .search-box:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-    .category-tag {
-        display: inline-block;
-        padding: 8px 16px;
-        margin: 4px;
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 20px;
-        text-decoration: none;
-        color: #495057;
-        transition: all 0.3s ease;
-    }
-    .category-tag:hover {
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
     
     /* Responsive design */
@@ -554,8 +529,8 @@
                     <!-- Subject Search -->
                     <div class="sidebar-section">
                         <h5>Subject Search</h5>
-                        <form method="get" action="course_list" id="courseSearchForm">
-                            <input type="text" name="search" class="search-box" placeholder="Search subjects..." id="searchInput">
+                        <form method="get" action="course_list">
+                            <input type="text" name="search" class="search-box" placeholder="Search subjects...">
                             <button type="submit" class="btn btn-primary mt-2 w-100">Search</button>
                         </form>
                     </div>
@@ -565,7 +540,7 @@
                         <h5>Subject Categories</h5>
                         <ul>
                             <c:forEach var="cat" items="${categories}">
-                                <li><a href="course_list?category=${cat.id}">${cat.name}</a></li>
+                                <li><a href="subjects?category=${cat.id}">${cat.name}</a></li>
                             </c:forEach>
                         </ul>
                     </div>

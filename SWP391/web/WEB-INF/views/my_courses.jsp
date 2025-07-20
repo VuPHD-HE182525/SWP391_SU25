@@ -51,12 +51,7 @@
             <p class="text-muted fs-5">Tiếp tục học tập và phát triển kỹ năng của bạn</p>
         </div>
         
-        <!-- Debug Info -->
-        <c:if test="${not empty sessionScope.user}">
-            <div class="alert alert-info mb-4">
-                <strong>Debug:</strong> User ID: ${sessionScope.user.id}, Total courses found: ${fn:length(myCourses)}
-            </div>
-        </c:if>
+
         
         <!-- Courses Grid -->
         <c:choose>

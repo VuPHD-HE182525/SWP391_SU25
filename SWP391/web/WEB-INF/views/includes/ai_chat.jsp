@@ -322,6 +322,13 @@ function toggleAiChat() {
     }
 }
 
+/*
+    // 1. L?y user input t? chat box
+    // 2. Add user message vào chat UI
+    // 3. Show loading indicator
+    // 4. G?i AJAX POST ??n AiChatServlet v?i lessonId + lessonName
+    // 5. X? lý response và display AI message
+    **/
 function sendAiMessage() {
     const input = document.getElementById('aiChatInput');
     const message = input.value.trim();
@@ -360,7 +367,12 @@ function sendAiMessage() {
         console.error('AI Chat error:', error);
     });
 }
-
+/*
+    // 1. T?o DOM element cho message
+    // 2. Phân bi?t user message vs AI message (avatar khác nhau)
+    // 3. Add vào chat container
+    // 4. Auto scroll to bottom
+**/
 function addMessage(message, sender) {
     const messagesContainer = document.getElementById('aiChatMessages');
     const messageDiv = document.createElement('div');
@@ -383,6 +395,13 @@ function addMessage(message, sender) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
+
+/*
+    // 1. T?o loading indicator v?i AI avatar
+    // 2. Show "AI is thinking..." text
+    // 3. Add vào chat container
+ * 
+ */
 function addLoadingMessage() {
     const messagesContainer = document.getElementById('aiChatMessages');
     const loadingDiv = document.createElement('div');

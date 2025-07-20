@@ -22,11 +22,11 @@ public class JsonTestServlet extends HttpServlet {
             test.put("message", "JSON library is working!");
             test.put("timestamp", System.currentTimeMillis());
             
-            response.getWriter().println("<h3>✅ JSON Library Test Passed:</h3>");
+            response.getWriter().println("<h3>SUCCESS: JSON Library Test Passed:</h3>");
             response.getWriter().println("<p>" + test.toString() + "</p>");
             
         } catch (Exception e) {
-            response.getWriter().println("<h3>❌ JSON Library Test Failed:</h3>");
+            response.getWriter().println("<h3>ERROR: JSON Library Test Failed:</h3>");
             response.getWriter().println("<p style='color:red;'>" + e.getMessage() + "</p>");
             response.getWriter().println("<p>Make sure json-20250517.jar is properly added to project</p>");
         }

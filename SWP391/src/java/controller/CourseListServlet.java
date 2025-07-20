@@ -40,7 +40,7 @@ public class CourseListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        System.out.println("=== CourseListServlet Debug ===");
+        System.out.println("=== SubjectsServlet Debug ===");
         
         String search = request.getParameter("search");
         String categoryId = request.getParameter("category");
@@ -74,56 +74,43 @@ public class CourseListServlet extends HttpServlet {
         }
 
         try {
-            System.out.println("Loading subjects with filters...");
+            System.out.println("Loading subjects...");
             
-            // Use the filtering methods from SubjectDAO
-            List<Subject> allSubjects;
-            int totalSubjects;
+            // Use simpler method first
+            SubjectDAO subjectDAO = new SubjectDAO();
+            List<Subject> allSubjects = subjectDAO.getAllSubjects();
+            System.out.println("All subjects count: " + allSubjects.size());
             
-            // Check if we have search or category filters
-            if ((search != null && !search.trim().isEmpty()) || 
-                (categoryId != null && !categoryId.trim().isEmpty())) {
-                
-                System.out.println("Applying filters - Search: " + search + ", Category: " + categoryId);
-                
-                // Use the filtered method
-                allSubjects = SubjectDAO.getSubjects(search, categoryId);
-                totalSubjects = allSubjects.size(); // Since getSubjects returns all filtered results
-                
-                System.out.println("Filtered subjects count: " + allSubjects.size());
-                
-            } else {
-                // No filters, get all subjects
-                SubjectDAO subjectDAO = new SubjectDAO();
-                allSubjects = subjectDAO.getAllSubjects();
-                totalSubjects = allSubjects.size();
-                
-                System.out.println("No filters, all subjects count: " + allSubjects.size());
-                
-                // Load packages for subjects when no filters (since getSubjects already includes packages)
-                for (Subject subject : allSubjects) {
-                    try {
-                        List<Package> packages = PackageDAO.getPackagesBySubjectId(subject.getId());
-                        if (packages != null) {
-                            subject.setPackages(packages);
-                            
-                            // Find the lowest price package
-                            Package lowestPackage = null;
-                            for (Package pkg : packages) {
-                                if (pkg != null && (lowestPackage == null || pkg.getSalePrice() < lowestPackage.getSalePrice())) {
-                                    lowestPackage = pkg;
-                                }
+            // Load packages for each subject
+            System.out.println("Loading packages for subjects...");
+            for (Subject subject : allSubjects) {
+                try {
+                    List<Package> packages = PackageDAO.getPackagesBySubjectId(subject.getId());
+                    if (packages != null) {
+                        subject.setPackages(packages);
+                        
+                        // Find the lowest price package
+                        Package lowestPackage = null;
+                        for (Package pkg : packages) {
+                            if (pkg != null && (lowestPackage == null || pkg.getSalePrice() < lowestPackage.getSalePrice())) {
+                                lowestPackage = pkg;
                             }
-                            if (lowestPackage != null) {
-                                subject.setLowestPackage(lowestPackage);
-                            }
-                        } else {
-                            subject.setPackages(new ArrayList<>());
                         }
-                    } catch (Exception e) {
-                        System.out.println("Failed to load packages for subject " + subject.getId() + ": " + e.getMessage());
+                        if (lowestPackage != null) {
+                            subject.setLowestPackage(lowestPackage);
+                        }
+                        
+                        System.out.println("Subject: " + subject.getName() + 
+                                         " - Packages: " + packages.size() + 
+                                         " - Lowest price: " + (lowestPackage != null ? lowestPackage.getSalePrice() : "N/A"));
+                    } else {
+                        System.out.println("No packages found for subject: " + subject.getName());
                         subject.setPackages(new ArrayList<>());
                     }
+                } catch (Exception e) {
+                    System.out.println("Failed to load packages for subject " + subject.getId() + ": " + e.getMessage());
+                    e.printStackTrace();
+                    subject.setPackages(new ArrayList<>());
                 }
             }
             
@@ -138,8 +125,9 @@ public class CourseListServlet extends HttpServlet {
             
             System.out.println("Paginated subjects count: " + subjects.size());
             
+            int totalSubjects = allSubjects.size();
+            
             // Get featured subjects using instance method
-            SubjectDAO subjectDAO = new SubjectDAO();
             List<Subject> featuredSubjects = subjectDAO.getFeaturedSubjects();
             System.out.println("Featured subjects count: " + featuredSubjects.size());
 
@@ -186,29 +174,23 @@ public class CourseListServlet extends HttpServlet {
                 subjects.add(null);
             }
 
-            // Calculate total pages
-            int totalPages = (int) Math.ceil((double) totalSubjects / pageSize);
-
             // Set attributes
             request.setAttribute("subjects", subjects);
             request.setAttribute("categories", categories);
             request.setAttribute("featuredSubjects", featuredSubjects);
             request.setAttribute("contacts", contacts);
             request.setAttribute("totalSubjects", totalSubjects);
-            request.setAttribute("totalPages", totalPages);
             request.setAttribute("page", page);
             request.setAttribute("pageSize", pageSize);
             request.setAttribute("subjectsJson", subjectsJson.toString());
             request.setAttribute("searchTerm", search);
             request.setAttribute("selectedCategory", categoryId);
 
-            System.out.println("=== Forwarding to course_list.jsp ===");
-            System.out.println("Total subjects: " + totalSubjects + ", Total pages: " + totalPages + ", Current page: " + page);
-            
+            System.out.println("=== Forwarding to subjects.jsp ===");
             request.getRequestDispatcher("/WEB-INF/views/course_list.jsp").forward(request, response);
 
         } catch (Exception e) {
-            System.err.println("Error in CourseListServlet: " + e.getMessage());
+            System.err.println("Error in SubjectsServlet: " + e.getMessage());
             e.printStackTrace();
             
             // Set empty data to prevent JSP errors
@@ -217,7 +199,6 @@ public class CourseListServlet extends HttpServlet {
             request.setAttribute("featuredSubjects", new ArrayList<>());
             request.setAttribute("contacts", new ArrayList<>());
             request.setAttribute("totalSubjects", 0);
-            request.setAttribute("totalPages", 0);
             request.setAttribute("page", 1);
             request.setAttribute("pageSize", pageSize);
             request.setAttribute("subjectsJson", "[]");
@@ -247,7 +228,7 @@ public class CourseListServlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Course listing servlet with filtering functionality";
+        return "Subjects listing servlet";
     }
 } 
 

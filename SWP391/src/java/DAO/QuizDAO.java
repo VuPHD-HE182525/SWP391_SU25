@@ -44,9 +44,44 @@ public class QuizDAO {
         return null;
     }
 
+    public Quiz getQuizByLessonId(int lessonId) {
+        String sql = "SELECT * FROM quizzes WHERE lesson_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, lessonId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToQuiz(rs);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    private int countQuestionsForQuiz(int quizId) {
+        String sql = "SELECT COUNT(*) FROM questions WHERE quiz_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, quizId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public void insertQuiz(Quiz quiz) {
-        String sql = "INSERT INTO quizzes (lesson_id, code, description, title, subject_id, level, duration, pass_rate, quiz_type, total_questions) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO quizzes (lesson_id, title, description) VALUES (?, ?, ?)";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -55,15 +90,8 @@ public class QuizDAO {
             } else {
                 ps.setNull(1, Types.INTEGER);
             }
-            ps.setString(2, quiz.getCode());
+            ps.setString(2, quiz.getTitle());
             ps.setString(3, quiz.getDescription());
-            ps.setString(4, quiz.getTitle());
-            ps.setInt(5, quiz.getSubjectId());
-            ps.setString(6, quiz.getLevel());
-            ps.setInt(7, quiz.getDuration());
-            ps.setDouble(8, quiz.getPassRate());
-            ps.setString(9, quiz.getQuizType());
-            ps.setInt(10, quiz.getTotalQuestions());
 
             ps.executeUpdate();
 
@@ -73,8 +101,7 @@ public class QuizDAO {
     }
 
     public void updateQuiz(Quiz quiz) {
-        String sql = "UPDATE quizzes SET lesson_id = ?, code = ?, description = ?, title = ?, subject_id = ?, " +
-                     "level = ?, duration = ?, pass_rate = ?, quiz_type = ?, total_questions = ? WHERE id = ?";
+        String sql = "UPDATE quizzes SET lesson_id = ?, title = ?, description = ? WHERE id = ?";
         try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -83,16 +110,9 @@ public class QuizDAO {
             } else {
                 ps.setNull(1, Types.INTEGER);
             }
-            ps.setString(2, quiz.getCode());
+            ps.setString(2, quiz.getTitle());
             ps.setString(3, quiz.getDescription());
-            ps.setString(4, quiz.getTitle());
-            ps.setInt(5, quiz.getSubjectId());
-            ps.setString(6, quiz.getLevel());
-            ps.setInt(7, quiz.getDuration());
-            ps.setDouble(8, quiz.getPassRate());
-            ps.setString(9, quiz.getQuizType());
-            ps.setInt(10, quiz.getTotalQuestions());
-            ps.setInt(11, quiz.getId());
+            ps.setInt(4, quiz.getId());
 
             ps.executeUpdate();
 
@@ -119,15 +139,20 @@ public class QuizDAO {
         quiz.setId(rs.getInt("id"));
         int lessonId = rs.getInt("lesson_id");
         quiz.setLessonId(rs.wasNull() ? null : lessonId);
-        quiz.setCode(rs.getString("code"));
-        quiz.setDescription(rs.getString("description"));
         quiz.setTitle(rs.getString("title"));
-        quiz.setSubjectId(rs.getInt("subject_id"));
-        quiz.setLevel(rs.getString("level"));
-        quiz.setDuration(rs.getInt("duration"));
-        quiz.setPassRate(rs.getDouble("pass_rate"));
-        quiz.setQuizType(rs.getString("quiz_type"));
-        quiz.setTotalQuestions(rs.getInt("total_questions"));
+        quiz.setDescription(rs.getString("description"));
+        
+        // Set default values for fields not in database
+        quiz.setCode("QUIZ_" + quiz.getId());
+        quiz.setSubjectId(0);
+        quiz.setLevel("Intermediate");
+        quiz.setDuration(30);
+        quiz.setPassRate(70.0);
+        quiz.setQuizType("Multiple Choice");
+        
+        // Count actual questions for this quiz
+        quiz.setTotalQuestions(countQuestionsForQuiz(quiz.getId()));
+        
         return quiz;
     }
 }
