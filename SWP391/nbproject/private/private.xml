@@ -2,6 +2,24 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/controller/RegisterSubjectServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/controller/ForgotPasswordServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/DAO/UserDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/controller/ResetPasswordServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/model/Registration.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/web/WEB-INF/views/reset_result.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/web/WEB-INF/views/reset_password.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/model/RegistrationMedia.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/web/WEB-INF/views/lesson_view_simple.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/DAO/RegistrationMediaDAO.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/web/WEB-INF/views/forgot_password.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/utils/MailUtil.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/controller/JsonTestServlet.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/web/WEB-INF/views/login.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/utils/DBContext.java</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/web/WEB-INF/views/lesson_view_debug.jsp</file>
+            <file>file:/C:/Users/admin/OneDrive/Desktop/PRJ_code/SWP391_Group3/SWP391/src/java/utils/GeminiService.java</file>
+        </group>
     </open-files>
 </project-private>

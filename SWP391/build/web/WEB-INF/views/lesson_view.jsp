@@ -313,7 +313,7 @@
     <script>
         // Mark lesson as complete functionality
         document.getElementById('markCompleteBtn').addEventListener('click', function() {
-            const lessonId = ${currentLesson.id};
+            const lessonId = '${currentLesson.id}';
             const button = this;
             const text = document.getElementById('markCompleteText');
             
@@ -361,7 +361,7 @@
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
-                        body: 'action=updateProgress&lessonId=${currentLesson.id}&viewDuration=' + currentTime
+                        body: 'action=updateProgress&lessonId=' + '${currentLesson.id}' + '&viewDuration=' + currentTime
                     });
                 }
             });
@@ -378,6 +378,9 @@
             });
         });
     </script>
+    
+    <!-- Include AI Chat Assistant -->
+    <jsp:include page="/WEB-INF/views/includes/ai_chat.jsp" />
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

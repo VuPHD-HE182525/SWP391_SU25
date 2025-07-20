@@ -313,7 +313,7 @@
     <script>
         // Mark lesson as complete functionality
         document.getElementById('markCompleteBtn').addEventListener('click', function() {
-            const lessonId = ${currentLesson.id};
+            const lessonId = '${currentLesson.id}';
             const button = this;
             const text = document.getElementById('markCompleteText');
             
@@ -361,7 +361,7 @@
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
-                        body: 'action=updateProgress&lessonId=${currentLesson.id}&viewDuration=' + currentTime
+                        body: 'action=updateProgress&lessonId=' + '${currentLesson.id}' + '&viewDuration=' + currentTime
                     });
                 }
             });
