@@ -38,6 +38,17 @@
             </div>
         </div>
 
+        <!-- Smart Suggestions -->
+        <div class="ai-suggestions-container" id="aiSuggestions" style="display: none;">
+            <div class="ai-suggestions-header">
+                <span>ðŸ’¡ Smart Suggestions</span>
+                <button onclick="hideSuggestions()" class="ai-suggestions-close">Ã—</button>
+            </div>
+            <div class="ai-suggestions-list" id="suggestionsList">
+                <!-- Suggestions will be populated here -->
+            </div>
+        </div>
+        
         <!-- Input Section -->
         <div class="ai-chat-input-section">
             <div class="ai-status-message" id="aiStatusMessage" style="display: none;">
@@ -50,7 +61,7 @@
             </div>
             
             <div class="ai-chat-input-container">
-                <div class="ai-attachment-btn">
+                <div class="ai-attachment-btn" onclick="toggleSuggestions()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
                     </svg>
@@ -65,7 +76,8 @@
             </div>
             
             <div class="ai-chat-footer">
-                <button class="ai-feedback-btn">Share feedback</button>
+                <button class="ai-feedback-btn" onclick="showFeedbackModal()">Share feedback</button>
+                <button class="ai-clear-btn" onclick="clearConversation()">Clear chat</button>
             </div>
         </div>
     </div>
@@ -89,8 +101,8 @@
     background: white;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    z-index: 1000;
-    display: flex;
+    z-index: 9999;
+    display: none;
     flex-direction: column;
 }
 
@@ -253,15 +265,86 @@
 
 .ai-chat-footer {
     text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.ai-feedback-btn {
+.ai-feedback-btn, .ai-clear-btn {
     color: #6b7280;
     background: none;
     border: none;
     font-size: 12px;
     cursor: pointer;
     text-decoration: underline;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.ai-feedback-btn:hover, .ai-clear-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Smart Suggestions Styles */
+.ai-suggestions-container {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.ai-suggestions-header {
+    padding: 8px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.ai-suggestions-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ai-suggestions-close:hover {
+    color: #374151;
+}
+
+.ai-suggestions-list {
+    padding: 8px 0;
+}
+
+.ai-suggestion-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #374151;
+    transition: background-color 0.2s;
+}
+
+.ai-suggestion-item:hover {
+    background-color: #f3f4f6;
 }
 
 .ai-chat-toggle {
@@ -307,27 +390,43 @@
 let isChatOpen = false;
 
 function toggleAiChat() {
+    console.log('toggleAiChat called'); // Debug log
+    
     const container = document.getElementById('aiChatContainer');
     const toggle = document.getElementById('aiChatToggle');
     
+    console.log('Container:', container); // Debug log
+    console.log('Toggle:', toggle); // Debug log
+    
+    if (!container || !toggle) {
+        console.error('AI chat elements not found!');
+        return;
+    }
+    
     isChatOpen = !isChatOpen;
+    console.log('isChatOpen:', isChatOpen); // Debug log
     
     if (isChatOpen) {
         container.style.display = 'block';
         toggle.style.display = 'none';
-        document.getElementById('aiChatInput').focus();
+        const input = document.getElementById('aiChatInput');
+        if (input) {
+            input.focus();
+        }
+        console.log('AI chat opened'); // Debug log
     } else {
         container.style.display = 'none';
         toggle.style.display = 'flex';
+        console.log('AI chat closed'); // Debug log
     }
 }
 
 /*
     // 1. L?y user input t? chat box
-    // 2. Add user message vào chat UI
+    // 2. Add user message vï¿½o chat UI
     // 3. Show loading indicator
     // 4. G?i AJAX POST ??n AiChatServlet v?i lessonId + lessonName
-    // 5. X? lý response và display AI message
+    // 5. X? lï¿½ response vï¿½ display AI message
     **/
 function sendAiMessage() {
     const input = document.getElementById('aiChatInput');
@@ -369,8 +468,8 @@ function sendAiMessage() {
 }
 /*
     // 1. T?o DOM element cho message
-    // 2. Phân bi?t user message vs AI message (avatar khác nhau)
-    // 3. Add vào chat container
+    // 2. Phï¿½n bi?t user message vs AI message (avatar khï¿½c nhau)
+    // 3. Add vï¿½o chat container
     // 4. Auto scroll to bottom
 **/
 function addMessage(message, sender) {
@@ -399,7 +498,7 @@ function addMessage(message, sender) {
 /*
     // 1. T?o loading indicator v?i AI avatar
     // 2. Show "AI is thinking..." text
-    // 3. Add vào chat container
+    // 3. Add vï¿½o chat container
  * 
  */
 function addLoadingMessage() {
@@ -436,6 +535,74 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Enhanced AI Chat Functions
+function toggleSuggestions() {
+    const suggestions = document.getElementById('aiSuggestions');
+    if (suggestions.style.display === 'none') {
+        loadSuggestions();
+        suggestions.style.display = 'block';
+    } else {
+        suggestions.style.display = 'none';
+    }
+}
+
+function hideSuggestions() {
+    document.getElementById('aiSuggestions').style.display = 'none';
+}
+
+function loadSuggestions() {
+    const currentLessonName = '${currentLesson != null ? currentLesson.name : ""}';
+    const userMessage = document.getElementById('aiChatInput').value;
+    
+    // Get suggestions based on lesson type
+    const lessonId = '${currentLesson != null ? currentLesson.id : ""}';
+    
+    let suggestions = [
+        "Can you summarize this lesson?",
+        "What are the key points?",
+        "Give me an example",
+        "How can I practice this?",
+        "What should I focus on?"
+    ];
+    
+    // Reading-specific suggestions
+    if (currentLessonName.toLowerCase().includes('reading') || lessonId === '15') {
+        suggestions = [
+            "Can you summarize this reading?",
+            "What are the main concepts?",
+            "Explain the key points",
+            "How can I apply this knowledge?",
+            "What should I remember from this?"
+        ];
+    }
+    
+    const suggestionsList = document.getElementById('suggestionsList');
+    suggestionsList.innerHTML = '';
+    
+    suggestions.forEach(suggestion => {
+        const div = document.createElement('div');
+        div.className = 'ai-suggestion-item';
+        div.textContent = suggestion;
+        div.onclick = () => {
+            document.getElementById('aiChatInput').value = suggestion;
+            hideSuggestions();
+        };
+        suggestionsList.appendChild(div);
+    });
+}
+
+function clearConversation() {
+    if (confirm('Clear all conversation history?')) {
+        document.getElementById('aiChatMessages').innerHTML = '';
+        // You can add server call to clear conversation memory
+        console.log('Conversation cleared');
+    }
+}
+
+function showFeedbackModal() {
+    alert('Feedback feature coming soon!');
+}
+
 // Enter key support
 document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('aiChatInput');
@@ -443,6 +610,14 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendAiMessage();
+            }
+        });
+        
+        // Auto-show suggestions when input is focused
+        input.addEventListener('focus', function() {
+            if (this.value.trim() === '') {
+                loadSuggestions();
+                document.getElementById('aiSuggestions').style.display = 'block';
             }
         });
     }
