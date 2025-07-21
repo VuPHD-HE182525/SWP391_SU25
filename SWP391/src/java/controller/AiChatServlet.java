@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import utils.GeminiService;
 import utils.AppConfig;
+import utils.AiContextBuilder;
+import utils.ConversationMemory;
 import model.User;
 import model.VideoTranscript;
 import DAO.VideoTranscriptDAO;
@@ -55,16 +57,27 @@ public class AiChatServlet extends HttpServlet {
                 return;
             }
             
-            // Build context from lesson information
-            String context = buildLessonContext(lessonId, lessonName);
+            // Build enhanced context with conversation memory
+            String sessionId = session.getId();
+            ConversationMemory.addMessage(sessionId, userMessage, "user", lessonId);
+            
+            // Build enhanced context
+            String context = AiContextBuilder.buildEnhancedContext(lessonId, lessonName, userMessage);
+            String conversationContext = ConversationMemory.getConversationContext(sessionId);
+            
+            // Combine contexts
+            String fullContext = context + "\n" + conversationContext;
             
             // Get AI response
             String aiResponse;
-            if (context != null && !context.isEmpty()) {
-                aiResponse = GeminiService.chatWithContext(userMessage, context);
+            if (fullContext != null && !fullContext.isEmpty()) {
+                aiResponse = GeminiService.chatWithContext(userMessage, fullContext);
             } else {
                 aiResponse = GeminiService.simpleChat(userMessage);
             }
+            
+            // Add AI response to memory
+            ConversationMemory.addMessage(sessionId, aiResponse, "ai", lessonId);
             
             // Clean and format response
             aiResponse = cleanAiResponse(aiResponse);

@@ -354,7 +354,7 @@
             </div>
             
             <!-- Lesson Content Section (Reading Materials) -->
-            <c:if test="${not empty currentLesson.contentFilePath or not empty currentLesson.objectivesFilePath or not empty currentLesson.referencesFilePath}">
+            <c:if test="${not empty currentLesson.contentFilePath or not empty currentLesson.objectivesFilePath or not empty currentLesson.referencesFilePath or currentLesson.id == 15}">
                 <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
                     <!-- Content Header -->
                     <div class="flex items-center justify-between mb-6">
@@ -369,24 +369,90 @@
                     </div>
                     
                     <!-- Learning Objectives -->
-                    <c:if test="${not empty currentLesson.learningObjectives}">
-                        <div class="mb-6 bg-blue-50 rounded-lg p-4">
-                            <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
-                                <i class="fas fa-target mr-2"></i>
-                                Learning Objectives
-                            </h4>
-                            <div class="text-blue-700">
-                                ${fn:replace(currentLesson.learningObjectives, "•", "<li>")}
+                    <c:choose>
+                        <c:when test="${not empty currentLesson.learningObjectives}">
+                            <div class="mb-6 bg-blue-50 rounded-lg p-4">
+                                <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                                    <i class="fas fa-target mr-2"></i>
+                                    Learning Objectives
+                                </h4>
+                                <div class="text-blue-700">
+                                    ${fn:replace(currentLesson.learningObjectives, "•", "<li>")}
+                                </div>
                             </div>
-                        </div>
-                    </c:if>
+                        </c:when>
+                        <c:when test="${currentLesson.id == 15}">
+                            <!-- Fallback learning objectives for lesson ID 15 -->
+                            <div class="mb-6 bg-blue-50 rounded-lg p-4">
+                                <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                                    <i class="fas fa-target mr-2"></i>
+                                    What You'll Learn
+                                </h4>
+                                <div class="text-blue-700">
+                                    <ul>
+                                        <li>Understand the principles of active listening</li>
+                                        <li>Learn key techniques for effective listening</li>
+                                        <li>Identify common barriers to active listening</li>
+                                        <li>Practice active listening skills through exercises</li>
+                                        <li>Apply active listening in professional and personal contexts</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </c:when>
+                    </c:choose>
                     
                     <!-- Main Content -->
-                    <c:if test="${not empty currentLesson.contentText}">
-                        <div class="prose max-w-none mb-6">
-                            ${currentLesson.contentText}
-                        </div>
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${not empty currentLesson.contentText}">
+                            <div class="prose max-w-none mb-6">
+                                ${currentLesson.contentText}
+                            </div>
+                        </c:when>
+                        <c:when test="${currentLesson.id == 15}">
+                            <!-- Fallback content for lesson ID 15 (Active Listening) -->
+                            <div class="prose max-w-none mb-6">
+                                <h2>Active Listening Fundamentals</h2>
+                                <p>Active listening is a crucial skill in effective communication. It involves fully concentrating, understanding, responding, and remembering what is being said.</p>
+
+                                <h3>Key Components of Active Listening</h3>
+                                <ul>
+                                    <li><strong>Give Full Attention:</strong> Focus completely on the speaker without distractions</li>
+                                    <li><strong>Show That You are Listening:</strong> Use body language and verbal cues to demonstrate engagement</li>
+                                    <li><strong>Provide Feedback:</strong> Reflect on what you have heard to ensure understanding</li>
+                                    <li><strong>Defer Judgment:</strong> Allow the speaker to finish before forming opinions</li>
+                                    <li><strong>Respond Appropriately:</strong> Give thoughtful responses that show comprehension</li>
+                                </ul>
+
+                                <h3>Benefits of Active Listening</h3>
+                                <p>Active listening helps build trust, reduces conflicts, and improves relationships. It is essential in professional settings, personal relationships, and educational environments.</p>
+
+                                <h3>Practice Exercise</h3>
+                                <p>Try this with a partner:</p>
+                                <ol>
+                                    <li>One person speaks for 2 minutes about a topic they care about</li>
+                                    <li>The other practices active listening techniques</li>
+                                    <li>The listener summarizes what they heard</li>
+                                    <li>Switch roles and discuss the experience</li>
+                                </ol>
+
+                                <h3>Common Barriers to Active Listening</h3>
+                                <ul>
+                                    <li><strong>Distractions:</strong> Phone, noise, multitasking</li>
+                                    <li><strong>Prejudgment:</strong> Forming opinions before hearing the full message</li>
+                                    <li><strong>Emotional Reactions:</strong> Getting defensive or upset</li>
+                                    <li><strong>Mental Preparation:</strong> Thinking about your response instead of listening</li>
+                                </ul>
+
+                                <h3>Techniques for Better Listening</h3>
+                                <ul>
+                                    <li><strong>Paraphrasing:</strong> "What I hear you saying is..."</li>
+                                    <li><strong>Asking Questions:</strong> "Can you help me understand..."</li>
+                                    <li><strong>Summarizing:</strong> "Let me make sure I understand the main points..."</li>
+                                    <li><strong>Reflecting Feelings:</strong> "It sounds like you're feeling..."</li>
+                                </ul>
+                            </div>
+                        </c:when>
+                    </c:choose>
                     
                     <!-- References and Additional Resources -->
                     <c:if test="${not empty currentLesson.references}">
@@ -413,7 +479,7 @@
                                         <i class="fas fa-play mr-1"></i> Video
                                     </span>
                                 </c:when>
-                                <c:when test="${currentLesson.contentType == 'reading'}">
+                                <c:when test="${currentLesson.contentType == 'reading' or currentLesson.id == 15}">
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <i class="fas fa-book mr-1"></i> Reading
                                     </span>
@@ -900,7 +966,7 @@
                                             <div class="flex items-center space-x-3">
                                                 <i class="fas fa-book text-blue-600 text-sm mr-1"></i>
                                                 <span class="text-sm font-medium text-gray-800">
-                                                    Reading: ${lesson.title}
+                                                    Reading: ${lesson.name}
                                                 </span>
                                             </div>
                                             <div class="text-xs text-gray-500">${lesson.estimatedTime > 0 ? lesson.estimatedTime : 15} min</div>
@@ -1297,29 +1363,8 @@
                 item.classList.remove('current');
             });
             
-            // Check if it's a reading lesson (ID 15 for now, expand later)
-            if (lessonId === 15) {
-                console.log('Showing reading content for lesson 15');
-                // For reading lessons, show content inline instead of redirecting
-                showReadingContent();
-                
-                // Highlight the reading lesson
-                const readingItem = document.querySelector(`[onclick="navigateToLesson(${lessonId})"]`);
-                if (readingItem) {
-                    readingItem.classList.add('current');
-                }
-                
-                // Scroll to reading content
-                setTimeout(() => {
-                    const readingSection = document.getElementById('readingContentSection');
-                    if (readingSection) {
-                        readingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }, 300);
-            } else {
-                // For video lessons, navigate normally
-                location.href = 'lesson-view?lessonId=' + lessonId;
-            }
+            // Navigate to lesson
+            location.href = 'lesson-view?lessonId=' + lessonId;
         }
         
         function clearAllHighlighting() {
@@ -1464,7 +1509,7 @@
             `;
             
             // Insert before comments section (with null check)
-            const commentsSection = document.querySelector('.bg-white.rounded-lg.shadow-lg.p-6');
+            const commentsSection = document.querySelector('.bg-white.rounded.shadow.lg.p-6');
             if (commentsSection && commentsSection.parentNode) {
                 commentsSection.parentNode.insertBefore(readingContent, commentsSection);
                 console.log('Reading content inserted before comments');
