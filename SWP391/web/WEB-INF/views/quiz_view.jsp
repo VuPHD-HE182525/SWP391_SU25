@@ -165,20 +165,45 @@
                                         <div class="d-flex align-items-center mb-2">
                                             <i class="fas fa-calendar-alt text-muted me-2"></i>
                                             <span class="text-muted">
-                                                <fmt:formatDate value="${latestSubmission.submittedAt}" pattern="dd MMM yyyy, HH:mm"/>
+                                                <c:choose>
+                                                    <c:when test="${latestSubmission.submittedAt != null}">
+                                                        ${latestSubmission.submittedAt.toString().replace('T', ' ').substring(0, 16)}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        Recently completed
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-check-circle text-success me-2"></i>
                                             <span>
-                                                <strong>${latestSubmission.correctAnswers}/${latestSubmission.totalQuestions}</strong> 
+                                                <strong>
+                                                    <c:choose>
+                                                        <c:when test="${latestSubmission.correctAnswers != null and latestSubmission.totalQuestions != null}">
+                                                            ${latestSubmission.correctAnswers}/${latestSubmission.totalQuestions}
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            -/-
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </strong> 
                                                 correct answers
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="text-center">
-                                            <div class="display-6 fw-bold text-primary">${latestSubmission.score}%</div>
+                                            <div class="display-6 fw-bold text-primary">
+                                                <c:choose>
+                                                    <c:when test="${latestSubmission.score != null}">
+                                                        ${latestSubmission.score}%
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        --%
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
                                             <small class="text-muted">Score</small>
                                         </div>
                                     </div>

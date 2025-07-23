@@ -165,7 +165,7 @@
     
     <!-- Main Content -->
     <div class="container py-4">
-        <form id="quizForm" action="quiz" method="post">
+        <form id="quizForm" action="quiz-fixed" method="post">
             <input type="hidden" name="action" value="submit">
             <input type="hidden" name="quizId" value="${quiz.id}">
             
