@@ -234,7 +234,14 @@
                     </div>
                     <div class="col-md-3">
                         <div class="display-6 fw-bold text-primary">
-                            <fmt:formatDate value="${submission.submittedAt}" pattern="mm"/>
+                            <c:choose>
+                                <c:when test="${submission.submittedAt != null}">
+                                    ${submission.submittedAt.toString().substring(14, 16)}
+                                </c:when>
+                                <c:otherwise>
+                                    --
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                         <h6 class="text-muted">Time Taken</h6>
                         <small class="text-muted">minutes (approx.)</small>
@@ -375,7 +382,14 @@
         // Animate progress ring on page load
         document.addEventListener('DOMContentLoaded', function() {
             const progressRing = document.querySelector('.progress-ring .progress');
-            const score = ${submission.score};
+            <c:choose>
+                <c:when test="${submission.score != null}">
+                    const score = ${submission.score};
+                </c:when>
+                <c:otherwise>
+                    const score = 0;
+                </c:otherwise>
+            </c:choose>
             const circumference = 2 * Math.PI * 40; // radius = 40
             const offset = circumference - (score / 100) * circumference;
             

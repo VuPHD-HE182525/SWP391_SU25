@@ -283,7 +283,7 @@
                             <div class="flex items-center space-x-4">
                                 <!-- Take Quiz Button (if quiz exists for this lesson) -->
                                 <c:if test="${currentLesson.quizId != null && currentLesson.quizId > 0}">
-                                    <a href="quiz?action=view&quizId=${currentLesson.quizId}" 
+                                    <a href="quiz-fixed?action=view&quizId=${currentLesson.quizId}" 
                                        class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                         <i class="fas fa-clipboard-question mr-2"></i>
                                         Take Quiz
@@ -940,6 +940,9 @@
                                                 <span class="text-sm font-medium text-gray-800">
                                                     Video ${status.index + 1}: ${lesson.name}
                                                 </span>
+                                                <c:if test="${lesson.quizId != null && lesson.quizId > 0}">
+                                                    <i class="fas fa-clipboard-question text-blue-600 text-xs" title="Quiz available"></i>
+                                                </c:if>
                                             </div>
                                             <div class="text-xs text-gray-500">
                                                 ${status.index + 1 == 1 ? '12' : status.index + 1 == 2 ? '18' : '15'} min
