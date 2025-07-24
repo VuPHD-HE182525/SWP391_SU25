@@ -104,6 +104,7 @@
     z-index: 9999;
     display: none;
     flex-direction: column;
+    border: 1px solid #e5e7eb;
 }
 
 .ai-chat-panel {
@@ -358,16 +359,21 @@
     border-radius: 50%;
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
     cursor: pointer;
-    z-index: 999;
+    z-index: 10000;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .ai-chat-toggle:hover {
     background: #7C3AED;
     transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.ai-chat-toggle:active {
+    transform: scale(0.95);
 }
 
 /* Mobile Responsive */
@@ -407,11 +413,11 @@ function toggleAiChat() {
     console.log('isChatOpen:', isChatOpen); // Debug log
     
     if (isChatOpen) {
-        container.style.display = 'block';
+        container.style.display = 'flex';
         toggle.style.display = 'none';
         const input = document.getElementById('aiChatInput');
         if (input) {
-            input.focus();
+            setTimeout(() => input.focus(), 100);
         }
         console.log('AI chat opened'); // Debug log
     } else {
@@ -603,23 +609,47 @@ function showFeedbackModal() {
     alert('Feedback feature coming soon!');
 }
 
-// Enter key support
+// Initialize AI Chat functionality
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing AI Chat...');
+
+    // Check if elements exist
+    const container = document.getElementById('aiChatContainer');
+    const toggle = document.getElementById('aiChatToggle');
     const input = document.getElementById('aiChatInput');
+
+    console.log('AI Chat elements:', { container, toggle, input });
+
+    // Initialize input functionality
     if (input) {
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 sendAiMessage();
             }
         });
-        
+
         // Auto-show suggestions when input is focused
         input.addEventListener('focus', function() {
             if (this.value.trim() === '') {
                 loadSuggestions();
-                document.getElementById('aiSuggestions').style.display = 'block';
+                const suggestions = document.getElementById('aiSuggestions');
+                if (suggestions) {
+                    suggestions.style.display = 'block';
+                }
             }
         });
+    }
+
+    // Ensure toggle button is visible
+    if (toggle) {
+        toggle.style.display = 'flex';
+        console.log('AI Chat toggle initialized');
+    }
+
+    // Ensure container is hidden initially
+    if (container) {
+        container.style.display = 'none';
+        console.log('AI Chat container initialized');
     }
 });
 </script> 
