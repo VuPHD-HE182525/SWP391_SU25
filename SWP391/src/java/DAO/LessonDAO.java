@@ -29,12 +29,19 @@ public class LessonDAO {
                     lesson.setParentLessonId(rs.getInt("parent_lesson_id"));
                     lesson.setVideoLink(rs.getString("video_url"));
                     
-                    // Load hybrid content fields (file paths)
-                    lesson.setContentFilePath(rs.getString("content_file_path"));
-                    lesson.setObjectivesFilePath(rs.getString("objectives_file_path"));
-                    lesson.setReferencesFilePath(rs.getString("references_file_path"));
-                    lesson.setContentType(rs.getString("content_type"));
-                    lesson.setEstimatedTime(rs.getInt("estimated_time"));
+                    // Load hybrid content fields (file paths) - with null checks
+                    try {
+                        lesson.setContentFilePath(rs.getString("content_file_path"));
+                        lesson.setObjectivesFilePath(rs.getString("objectives_file_path"));
+                        lesson.setReferencesFilePath(rs.getString("references_file_path"));
+                        lesson.setContentType(rs.getString("content_type"));
+                        lesson.setEstimatedTime(rs.getInt("estimated_time"));
+                        lesson.setContentText(rs.getString("content_text"));
+                    } catch (Exception e) {
+                        // Columns might not exist yet, set defaults
+                        lesson.setContentType("video");
+                        lesson.setEstimatedTime(0);
+                    }
                     
                     list.add(lesson);
                 }
@@ -70,12 +77,19 @@ public class LessonDAO {
                     lesson.setParentLessonId(rs.getInt("parent_lesson_id"));
                     lesson.setVideoLink(rs.getString("video_url")); // Use video_url from database
                     
-                    // Load hybrid content fields (file paths)
-                    lesson.setContentFilePath(rs.getString("content_file_path"));
-                    lesson.setObjectivesFilePath(rs.getString("objectives_file_path"));
-                    lesson.setReferencesFilePath(rs.getString("references_file_path"));
-                    lesson.setContentType(rs.getString("content_type"));
-                    lesson.setEstimatedTime(rs.getInt("estimated_time"));
+                    // Load hybrid content fields (file paths) - with null checks
+                    try {
+                        lesson.setContentFilePath(rs.getString("content_file_path"));
+                        lesson.setObjectivesFilePath(rs.getString("objectives_file_path"));
+                        lesson.setReferencesFilePath(rs.getString("references_file_path"));
+                        lesson.setContentType(rs.getString("content_type"));
+                        lesson.setEstimatedTime(rs.getInt("estimated_time"));
+                        lesson.setContentText(rs.getString("content_text"));
+                    } catch (Exception e) {
+                        // Columns might not exist yet, set defaults
+                        lesson.setContentType("video");
+                        lesson.setEstimatedTime(0);
+                    }
 
                     return lesson;
                 }

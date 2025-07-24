@@ -27,6 +27,7 @@ public class Lesson {
     private String referencesFilePath;
     private String contentType; 
     private int estimatedTime;
+    private String contentText; // HTML content for reading lessons
 
     public Lesson() {
     }
@@ -163,5 +164,13 @@ public class Lesson {
 
     public void setEstimatedTime(int estimatedTime) {
         this.estimatedTime = estimatedTime;
+    }
+
+    public String getContentText() {
+        return contentText;
+    }
+
+    public void setContentText(String contentText) {
+        this.contentText = contentText;
     }
 }
