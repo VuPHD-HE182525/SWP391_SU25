@@ -20,10 +20,20 @@
       <!-- Navigation -->
       <nav class="d-none d-md-flex align-items-center gap-4">
         <a href="${pageContext.request.contextPath}/home" class="text-secondary text-decoration-none fw-semibold">Home</a>
-        <a href="${pageContext.request.contextPath}/courses" class="text-secondary text-decoration-none fw-semibold">Courses</a>
-        <a href="${pageContext.request.contextPath}/blogs" class="text-secondary text-decoration-none fw-semibold">Blogs</a>
+
+        <!-- Courses link with role-based navigation -->
+        <c:choose>
+          <c:when test="${not empty user and (user.role == 'admin' or user.role == 'expert')}">
+            <a href="${pageContext.request.contextPath}/subject-list" class="text-secondary text-decoration-none fw-semibold">Courses</a>
+          </c:when>
+          <c:otherwise>
+            <a href="${pageContext.request.contextPath}/course_list" class="text-secondary text-decoration-none fw-semibold">Courses</a>
+          </c:otherwise>
+        </c:choose>
+
+        <a href="${pageContext.request.contextPath}/blog-list" class="text-secondary text-decoration-none fw-semibold">Blog</a>
         <a href="${pageContext.request.contextPath}/about" class="text-secondary text-decoration-none fw-semibold">About</a>
-        <a href="${pageContext.request.contextPath}/contact" class="text-secondary text-decoration-none fw-semibold">Contacts</a>
+        <a href="${pageContext.request.contextPath}/contact" class="text-secondary text-decoration-none fw-semibold">Contact</a>
       </nav>
       <!-- Actions -->
       <div class="d-flex align-items-center gap-3">

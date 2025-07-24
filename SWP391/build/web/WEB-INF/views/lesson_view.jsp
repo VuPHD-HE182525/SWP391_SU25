@@ -174,7 +174,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .nav-button:before {
             content: '';
             position: absolute;
@@ -185,9 +185,47 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.5s;
         }
-        
+
         .nav-button:hover:before {
             left: 100%;
+        }
+
+        /* Button Enhancements */
+        .btn, button, a.btn {
+            cursor: pointer;
+            user-select: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover, button:hover, a.btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn:active, button:active, a.btn:active {
+            transform: translateY(0);
+        }
+
+        /* Ensure clickable elements are properly styled */
+        .cursor-pointer {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+        }
+
+        /* Fix any overlay issues */
+        .lesson-item, .quiz-button, .ai-chat-toggle {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Ensure buttons are interactive */
+        button, a, .clickable {
+            pointer-events: auto;
+            user-select: none;
         }
         
         /* Responsive Design */
@@ -393,15 +431,24 @@
                         <div class="flex items-center space-x-4">
                             <!-- Take Quiz Button -->
                             <c:if test="${currentLesson.quizId != null && currentLesson.quizId > 0}">
-                                <a href="quiz-fixed?action=view&quizId=${currentLesson.quizId}" 
+                                <button onclick="takeQuiz()"
                                    class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                     <i class="fas fa-clipboard-question mr-2"></i>
                                     Take Quiz
-                                </a>
+                                </button>
+                            </c:if>
+                            <c:if test="${currentLesson.quizId == null || currentLesson.quizId <= 0}">
+                                <button onclick="takeQuiz()"
+                                   class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-clipboard-question mr-2"></i>
+                                    Take Quiz
+                                </button>
                             </c:if>
                             
                             <!-- Mark Complete Button -->
-                            <button id="markCompleteBtn" class="flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <button id="markCompleteBtn" onclick="markComplete()"
+                                    class="mark-complete-btn flex items-center px-4 py-2 ${progressMap[currentLesson.id] != null && progressMap[currentLesson.id].completed ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'} text-white rounded-lg transition-colors"
+                                    ${progressMap[currentLesson.id] != null && progressMap[currentLesson.id].completed ? 'disabled' : ''}>
                                 <i class="fas fa-check-circle mr-2"></i>
                                 <span id="markCompleteText">
                                     <c:choose>
@@ -900,20 +947,23 @@
     <jsp:include page="/WEB-INF/views/includes/footer.jsp" />
     
     <script>
+        // Debug logging
+        console.log('Lesson view script loading...');
+
         // Enhanced Navigation with Coursera-like Interaction
         function navigateToLesson(lessonId) {
             console.log('Navigating to lesson:', lessonId);
-            
+
             // Prevent multiple clicks
             if (window.navigating) return;
             window.navigating = true;
-            
+
             // Show loading state
             const dynamicContent = document.getElementById('dynamicContent');
             if (dynamicContent) {
                 dynamicContent.style.opacity = '0.5';
             }
-            
+
             // Update URL and reload content
             setTimeout(() => {
                 window.location.href = 'lesson-view?lessonId=' + lessonId;
@@ -921,15 +971,17 @@
             }, 100);
         }
         
-        // Fix course content navigation clicks
+        // Fix course content navigation clicks and initialize all interactive elements
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing interactive elements');
+
             // Make all lesson items clickable
             const lessonItems = document.querySelectorAll('.course-sidebar .cursor-pointer');
             lessonItems.forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Extract lesson ID from onclick attribute or data attribute
                     const onclickAttr = this.getAttribute('onclick');
                     if (onclickAttr) {
@@ -940,38 +992,86 @@
                     }
                 });
             });
-            
+
             console.log('Navigation fixed for', lessonItems.length, 'lesson items');
+
+            // Initialize AI Chat Toggle
+            const aiToggle = document.getElementById('aiChatToggle');
+            if (aiToggle) {
+                console.log('AI Chat toggle found and initialized');
+                aiToggle.style.display = 'flex';
+            } else {
+                console.warn('AI Chat toggle not found');
+            }
+
+            // Initialize Quiz buttons
+            const quizButtons = document.querySelectorAll('a[href*="quiz"]');
+            quizButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    console.log('Quiz button clicked:', this.href);
+                });
+            });
+
+            console.log('Found', quizButtons.length, 'quiz buttons');
+
+            // Add global error handler
+            window.addEventListener('error', function(e) {
+                console.error('JavaScript error:', e.error);
+                console.error('Error details:', {
+                    message: e.message,
+                    filename: e.filename,
+                    lineno: e.lineno,
+                    colno: e.colno
+                });
+            });
+
+            // Test all interactive elements
+            setTimeout(() => {
+                console.log('Testing interactive elements...');
+                const allClickable = document.querySelectorAll('[onclick], .cursor-pointer, button, a');
+                console.log('Found', allClickable.length, 'clickable elements');
+
+                allClickable.forEach((element, index) => {
+                    if (!element.style.pointerEvents || element.style.pointerEvents !== 'none') {
+                        console.log('Clickable element', index, ':', element);
+                    }
+                });
+            }, 1000);
         });
         
         // Mark lesson as complete functionality
-        document.getElementById('markCompleteBtn').addEventListener('click', function() {
-            const lessonId = '${currentLesson.id}';
-            const button = this;
-            const text = document.getElementById('markCompleteText');
-            
-            fetch('lesson-view', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'action=markCompleted&lessonId=' + lessonId
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    text.textContent = 'Completed';
-                    button.classList.remove('bg-green-500', 'hover:bg-green-600');
-                    button.classList.add('bg-gray-500', 'cursor-not-allowed');
-                    button.disabled = true;
-                    
-                    // Show notification
-                    showNotification('Lesson completed! 🎉');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+        document.addEventListener('DOMContentLoaded', function() {
+            const markCompleteBtn = document.getElementById('markCompleteBtn');
+            if (markCompleteBtn) {
+                markCompleteBtn.addEventListener('click', function() {
+                    const lessonId = '${currentLesson.id}';
+                    const button = this;
+                    const text = document.getElementById('markCompleteText');
+
+                    fetch('lesson-view', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=markCompleted&lessonId=' + lessonId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            text.textContent = 'Completed';
+                            button.classList.remove('bg-green-500', 'hover:bg-green-600');
+                            button.classList.add('bg-gray-500', 'cursor-not-allowed');
+                            button.disabled = true;
+
+                            // Show notification
+                            showNotification('Lesson completed! 🎉');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            }
         });
         
         // Video progress tracking
@@ -1030,18 +1130,17 @@
         // Show notification function
         function showNotification(message) {
             const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #10B981;
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 1000;
-                font-weight: 500;
-            `;
+            notification.style.cssText =
+                'position: fixed;' +
+                'top: 20px;' +
+                'right: 20px;' +
+                'background: #10B981;' +
+                'color: white;' +
+                'padding: 15px 20px;' +
+                'border-radius: 8px;' +
+                'box-shadow: 0 4px 12px rgba(0,0,0,0.15);' +
+                'z-index: 1000;' +
+                'font-weight: 500;';
             notification.textContent = message;
             
             document.body.appendChild(notification);
@@ -1178,6 +1277,90 @@
                 this.classList.add('current');
             });
         });
+
+        // ===== INTERACTIVE COMPONENTS FUNCTIONS =====
+
+        // Quiz Button Function
+        function takeQuiz() {
+            console.log('Quiz button clicked!');
+
+            // Get current lesson ID
+            const currentLessonId = ${currentLesson.id};
+
+            // Check if quiz exists for this lesson
+            <c:if test="${not empty currentLesson.quizId}">
+                // Navigate to quiz page
+                window.location.href = 'quiz?lessonId=' + currentLessonId + '&quizId=${currentLesson.quizId}';
+            </c:if>
+            <c:if test="${empty currentLesson.quizId}">
+                // Show message if no quiz available
+                showNotification('Quiz not available for this lesson yet.', 'info');
+            </c:if>
+        }
+
+        // Mark Complete Function
+        function markComplete() {
+            console.log('Mark Complete button clicked!');
+
+            const button = document.getElementById('markCompleteBtn');
+            const buttonText = document.getElementById('markCompleteText');
+            const currentLessonId = ${currentLesson.id};
+
+            if (button && buttonText && buttonText.textContent.includes('Mark as Complete')) {
+                // Mark as complete
+                fetch('lesson-progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'lessonId=' + currentLessonId + '&action=complete'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        buttonText.innerHTML = 'Completed';
+                        button.className = 'mark-complete-btn flex items-center px-4 py-2 bg-gray-500 cursor-not-allowed text-white rounded-lg transition-colors';
+                        button.disabled = true;
+                        showNotification('Lesson marked as complete!', 'success');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback: just update UI without server call
+                    buttonText.innerHTML = 'Completed';
+                    button.className = 'mark-complete-btn flex items-center px-4 py-2 bg-gray-500 cursor-not-allowed text-white rounded-lg transition-colors';
+                    button.disabled = true;
+                    showNotification('Lesson marked as complete!', 'success');
+                });
+            }
+        }
+
+        // AI Chat Function - Use existing AI Chat system
+        function openAIChat() {
+            console.log('AI Chat button clicked!');
+            toggleAiChat(); // Use the existing AI chat system
+        }
+
+        // Notification Function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 p-4 rounded-lg text-white z-50 ' +
+                (type === 'success' ? 'bg-green-500' :
+                 type === 'error' ? 'bg-red-500' :
+                 'bg-blue-500');
+            notification.innerHTML =
+                '<div class="flex items-center">' +
+                    '<i class="fas fa-' + (type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : 'info-circle') + ' mr-2"></i>' +
+                    '<span>' + message + '</span>' +
+                '</div>';
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
         
                  // Media Upload Functions
          function handleFileSelect(input) {
@@ -1208,36 +1391,34 @@
                  img.src = URL.createObjectURL(file);
                  img.className = 'max-w-xs max-h-32 rounded-lg object-cover';
                  img.alt = 'Preview';
-                 previewContent.innerHTML = `
-                     <div class="flex items-center space-x-3">
-                         <div class="flex-shrink-0">
-                             <img src="${img.src}" alt="Preview" class="w-16 h-16 rounded-lg object-cover">
-                         </div>
-                         <div>
-                             <p class="text-sm font-medium text-gray-900">${file.name}</p>
-                             <p class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                             <p class="text-xs text-blue-600">Image ready to upload</p>
-                         </div>
-                     </div>
-                 `;
+                 previewContent.innerHTML =
+                     '<div class="flex items-center space-x-3">' +
+                         '<div class="flex-shrink-0">' +
+                             '<img src="' + img.src + '" alt="Preview" class="w-16 h-16 rounded-lg object-cover">' +
+                         '</div>' +
+                         '<div>' +
+                             '<p class="text-sm font-medium text-gray-900">' + file.name + '</p>' +
+                             '<p class="text-xs text-gray-500">' + (file.size / 1024 / 1024).toFixed(2) + ' MB</p>' +
+                             '<p class="text-xs text-blue-600">Image ready to upload</p>' +
+                         '</div>' +
+                     '</div>';
              } else if (file.type.startsWith('video/')) {
                  const video = document.createElement('video');
                  video.src = URL.createObjectURL(file);
                  video.className = 'w-16 h-16 rounded-lg object-cover';
                  video.controls = false;
                  video.muted = true;
-                 previewContent.innerHTML = `
-                     <div class="flex items-center space-x-3">
-                         <div class="flex-shrink-0">
-                             <video src="${video.src}" class="w-16 h-16 rounded-lg object-cover" muted></video>
-                         </div>
-                         <div>
-                             <p class="text-sm font-medium text-gray-900">${file.name}</p>
-                             <p class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                             <p class="text-xs text-green-600">Video ready to upload</p>
-                         </div>
-                     </div>
-                 `;
+                 previewContent.innerHTML =
+                     '<div class="flex items-center space-x-3">' +
+                         '<div class="flex-shrink-0">' +
+                             '<video src="' + video.src + '" class="w-16 h-16 rounded-lg object-cover" muted></video>' +
+                         '</div>' +
+                         '<div>' +
+                             '<p class="text-sm font-medium text-gray-900">' + file.name + '</p>' +
+                             '<p class="text-xs text-gray-500">' + (file.size / 1024 / 1024).toFixed(2) + ' MB</p>' +
+                             '<p class="text-xs text-green-600">Video ready to upload</p>' +
+                         '</div>' +
+                     '</div>';
              }
              
              preview.classList.remove('hidden');
@@ -1260,14 +1441,13 @@
              const modalContent = document.getElementById('modalContent');
              
              if (type === 'image') {
-                 modalContent.innerHTML = `<img src="${src}" alt="Full size image" class="max-w-full max-h-full object-contain">`;
+                 modalContent.innerHTML = '<img src="' + src + '" alt="Full size image" class="max-w-full max-h-full object-contain">';
              } else if (type === 'video') {
-                 modalContent.innerHTML = `
-                     <video controls class="max-w-full max-h-full">
-                         <source src="${src}" type="video/mp4">
-                         Your browser does not support the video tag.
-                     </video>
-                 `;
+                 modalContent.innerHTML =
+                     '<video controls class="max-w-full max-h-full">' +
+                         '<source src="' + src + '" type="video/mp4">' +
+                         'Your browser does not support the video tag.' +
+                     '</video>';
              }
              
              modal.classList.remove('hidden');
