@@ -124,13 +124,24 @@
                   alert('Please enter a subject name to search');
                   return;
               }
-              const matchedSubject = subjectsData.find(function(subject) {
+              
+              // First try exact match
+              let matchedSubject = subjectsData.find(function(subject) {
                   return subject && subject.name.toLowerCase() === searchTerm.toLowerCase();
               });
+              
+              // If no exact match, try partial match
+              if (!matchedSubject) {
+                  matchedSubject = subjectsData.find(function(subject) {
+                      return subject && subject.name.toLowerCase().includes(searchTerm.toLowerCase());
+                  });
+              }
+              
               if (matchedSubject) {
                   window.location.href = 'course-details?subjectId=' + matchedSubject.id;
               } else {
-                  alert('No exact match found for: ' + searchTerm);
+                  // If no match found, submit the form to search on server side
+                  document.getElementById('searchForm').submit();
               }
           });
           document.getElementById('searchForm').addEventListener('submit', function(e) {
@@ -141,7 +152,7 @@
       <h5 class="mt-4">Subject Categories</h5>
       <ul>
           <c:forEach var="cat" items="${categories}">
-              <li>${cat.name}</li>
+              <li><a href="course_list?category=${cat.id}" class="text-decoration-none">${cat.name}</a></li>
           </c:forEach>
       </ul>
       <h5 class="mt-4">Featured Subjects</h5>
