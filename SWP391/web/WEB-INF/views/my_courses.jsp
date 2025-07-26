@@ -11,14 +11,20 @@
     <title>Khóa học của tôi - E-Learning</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Resolve Bootstrap and Tailwind conflicts */
         .container { max-width: 1200px; }
         .btn { display: inline-block; }
+
+        /* Ensure Bootstrap dropdown works properly */
+        .dropdown-menu {
+            display: none;
+        }
+        .dropdown-menu.show {
+            display: block;
+        }
         
         .course-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -217,7 +223,7 @@
                                 <div class="h2 fw-bold text-info mb-1">
                                     <c:choose>
                                         <c:when test="${totalLessons > 0}">
-                                            ${(completedLessons * 100) / totalLessons}%
+                                            <fmt:formatNumber value="${(completedLessons * 100) / totalLessons}" maxFractionDigits="1" minFractionDigits="0"/>%
                                         </c:when>
                                         <c:otherwise>0%</c:otherwise>
                                     </c:choose>
@@ -234,9 +240,6 @@
     <!-- Include Footer -->
     <jsp:include page="/WEB-INF/views/includes/footer.jsp" />
     
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         // Set progress bar widths and add animations
         document.addEventListener('DOMContentLoaded', function() {
@@ -246,23 +249,29 @@
                 const progress = bar.getAttribute('data-progress');
                 bar.style.width = progress + '%';
             });
-            
+
             // Add smooth animations
             const cards = document.querySelectorAll('.course-card');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
-                
+
                 setTimeout(() => {
                     card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, index * 100);
             });
+
+            // Ensure Bootstrap dropdown works properly
+            console.log('My courses page loaded - Bootstrap should handle dropdown automatically');
         });
     </script>
-    
-    <!-- Bootstrap JS -->
+
+    <!-- Bootstrap JS - Load only once -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Tailwind CSS - Load after Bootstrap to avoid conflicts -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </body>
-</html> 
+</html>

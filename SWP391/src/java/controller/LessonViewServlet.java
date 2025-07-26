@@ -6,9 +6,14 @@ import DAO.LessonProgressDAO;
 import DAO.LessonCommentDAO;
 import DAO.QuizDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import model.Lesson;
 import model.Course;
 import model.LessonProgress;
@@ -17,20 +22,11 @@ import model.LessonRating;
 import model.User;
 import model.Quiz;
 import java.io.IOException;
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.UUID;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-@WebServlet("/lesson-view")
-@MultipartConfig(
-    fileSizeThreshold = 1024 * 1024, // 1MB
-    maxFileSize = 1024 * 1024 * 10, // 10MB
-    maxRequestSize = 1024 * 1024 * 50 // 50MB
-)
 public class LessonViewServlet extends HttpServlet {
 
     @Override
@@ -122,19 +118,100 @@ public class LessonViewServlet extends HttpServlet {
                 ratingStats = calculateRatingStatsManually(lessonId);
             }
             
-            // Find previous and next lessons
+            // Find previous and next lessons with section-aware logic
             Lesson previousLesson = null;
             Lesson nextLesson = null;
-            
-            for (int i = 0; i < courseLessons.size(); i++) {
-                if (courseLessons.get(i).getId() == lessonId) {
-                    if (i > 0) {
-                        previousLesson = courseLessons.get(i - 1);
+
+            // Separate lessons by sections for proper navigation
+            List<Lesson> section1Videos = new ArrayList<>();
+            List<Lesson> section2Readings = new ArrayList<>();
+            List<Lesson> section2Videos = new ArrayList<>();
+
+            for (Lesson lesson : courseLessons) {
+                if ("video".equals(lesson.getType())) {
+                    if (lesson.getOrderNum() <= 3) { // Section 1: first 3 videos
+                        section1Videos.add(lesson);
+                    } else { // Section 2: remaining videos
+                        section2Videos.add(lesson);
                     }
-                    if (i < courseLessons.size() - 1) {
-                        nextLesson = courseLessons.get(i + 1);
+                } else if ("reading".equals(lesson.getType()) ||
+                          "reading".equals(lesson.getContentType()) ||
+                          lesson.getContentFilePath() != null) {
+                    section2Readings.add(lesson);
+                }
+            }
+
+            // Sort each section by order
+            section1Videos.sort((a, b) -> Integer.compare(a.getOrderNum(), b.getOrderNum()));
+            section2Readings.sort((a, b) -> Integer.compare(a.getOrderNum(), b.getOrderNum()));
+            section2Videos.sort((a, b) -> Integer.compare(a.getOrderNum(), b.getOrderNum()));
+
+            // Find current lesson position and determine navigation
+            boolean found = false;
+
+            // Check if current lesson is in Section 1 videos
+            for (int i = 0; i < section1Videos.size(); i++) {
+                if (section1Videos.get(i).getId() == lessonId) {
+                    found = true;
+                    if (i > 0) {
+                        previousLesson = section1Videos.get(i - 1);
+                    }
+                    if (i < section1Videos.size() - 1) {
+                        nextLesson = section1Videos.get(i + 1);
+                    } else {
+                        // Last video in Section 1 → Next should be first reading in Section 2
+                        if (!section2Readings.isEmpty()) {
+                            nextLesson = section2Readings.get(0);
+                        }
                     }
                     break;
+                }
+            }
+
+            // Check if current lesson is in Section 2 readings
+            if (!found) {
+                for (int i = 0; i < section2Readings.size(); i++) {
+                    if (section2Readings.get(i).getId() == lessonId) {
+                        found = true;
+                        if (i > 0) {
+                            previousLesson = section2Readings.get(i - 1);
+                        } else {
+                            // First reading in Section 2 → Previous should be last video in Section 1
+                            if (!section1Videos.isEmpty()) {
+                                previousLesson = section1Videos.get(section1Videos.size() - 1);
+                            }
+                        }
+                        if (i < section2Readings.size() - 1) {
+                            nextLesson = section2Readings.get(i + 1);
+                        } else {
+                            // Last reading in Section 2 → Next should be first video in Section 2
+                            if (!section2Videos.isEmpty()) {
+                                nextLesson = section2Videos.get(0);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+            // Check if current lesson is in Section 2 videos
+            if (!found) {
+                for (int i = 0; i < section2Videos.size(); i++) {
+                    if (section2Videos.get(i).getId() == lessonId) {
+                        found = true;
+                        if (i > 0) {
+                            previousLesson = section2Videos.get(i - 1);
+                        } else {
+                            // First video in Section 2 → Previous should be last reading in Section 2
+                            if (!section2Readings.isEmpty()) {
+                                previousLesson = section2Readings.get(section2Readings.size() - 1);
+                            }
+                        }
+                        if (i < section2Videos.size() - 1) {
+                            nextLesson = section2Videos.get(i + 1);
+                        }
+                        break;
+                    }
                 }
             }
             
@@ -177,8 +254,14 @@ public class LessonViewServlet extends HttpServlet {
             // Check if user is logged in
             HttpSession session = request.getSession();
             User currentUser = (User) session.getAttribute("user");
-            
+
+            System.out.println("=== DEBUG: POST Request ===");
+            System.out.println("Action: " + request.getParameter("action"));
+            System.out.println("LessonId: " + request.getParameter("lessonId"));
+            System.out.println("User: " + (currentUser != null ? currentUser.getFullName() : "null"));
+
             if (currentUser == null) {
+                System.err.println("ERROR: User not logged in, redirecting to login");
                 response.sendRedirect("login");
                 return;
             }
@@ -201,98 +284,59 @@ public class LessonViewServlet extends HttpServlet {
             
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Error in LessonViewServlet POST: " + e.getMessage());
+            System.err.println("=== ERROR in LessonViewServlet POST ===");
+            System.err.println("Action: " + request.getParameter("action"));
+            System.err.println("LessonId: " + request.getParameter("lessonId"));
+            System.err.println("Error: " + e.getMessage());
+            System.err.println("=== END ERROR ===");
+
             // Redirect to avoid showing error page
             String lessonId = request.getParameter("lessonId");
-            if (lessonId != null) {
+            if (lessonId != null && !lessonId.trim().isEmpty()) {
+                System.err.println("Redirecting to lesson-view with lessonId: " + lessonId);
                 response.sendRedirect("lesson-view?lessonId=" + lessonId + "&error=true");
             } else {
+                System.err.println("Redirecting to course-list (no valid lessonId)");
                 response.sendRedirect("course-list");
             }
         }
     }
-    
-    private void handleAddComment(HttpServletRequest request, HttpServletResponse response, User currentUser) 
+
+    private void handleAddComment(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws Exception {
-        
-        int lessonId = Integer.parseInt(request.getParameter("lessonId"));
+
+        String lessonIdParam = request.getParameter("lessonId");
         String commentText = request.getParameter("commentText");
-        
-        if (commentText != null && !commentText.trim().isEmpty()) {
-            LessonCommentDAO commentDAO = new LessonCommentDAO();
-            LessonComment comment = new LessonComment(currentUser.getId(), lessonId, commentText.trim());
-            
-            // Handle file upload
-            Part filePart = request.getPart("mediaFile");
-            if (filePart != null && filePart.getSize() > 0) {
-                String fileName = getSubmittedFileName(filePart);
-                String fileExtension = getFileExtension(fileName);
-                
-                // Validate file type
-                if (isValidMediaFile(fileExtension)) {
-                    // Create upload directory
-                    String uploadPath = getServletContext().getRealPath("/uploads/comments");
-                    File uploadDir = new File(uploadPath);
-                    if (!uploadDir.exists()) {
-                        uploadDir.mkdirs();
-                    }
-                    
-                    // Generate unique filename
-                    String uniqueFileName = generateUniqueFileName(fileExtension);
-                    String filePath = uploadPath + File.separator + uniqueFileName;
-                    
-                    // Save file
-                    filePart.write(filePath);
-                    
-                    // Set media info
-                    String mediaType = fileExtension.matches("(?i)(jpg|jpeg|png|gif)") ? "image" : "video";
-                    comment.setMediaType(mediaType);
-                    comment.setMediaPath("/uploads/comments/" + uniqueFileName);
-                    comment.setMediaFilename(fileName);
-                }
-            }
-            
-            commentDAO.addComment(comment);
-        }
-        
-        // Redirect back to lesson view
-        response.sendRedirect("lesson-view?lessonId=" + lessonId);
-    }
-    
-    private String getSubmittedFileName(Part part) {
-        String contentDisp = part.getHeader("content-disposition");
-        String[] tokens = contentDisp.split(";");
-        for (String token : tokens) {
-            if (token.trim().startsWith("filename")) {
-                return token.substring(token.indexOf("=") + 2, token.length() - 1);
+
+        System.out.println("=== handleAddComment ===");
+        System.out.println("lessonId: " + lessonIdParam);
+        System.out.println("commentText: " + commentText);
+
+        if (lessonIdParam != null && commentText != null && !commentText.trim().isEmpty()) {
+            try {
+                int lessonId = Integer.parseInt(lessonIdParam);
+
+                // Create simple comment object (no media)
+                LessonCommentDAO commentDAO = new LessonCommentDAO();
+                LessonComment comment = new LessonComment(currentUser.getId(), lessonId, commentText.trim());
+
+                commentDAO.addComment(comment);
+                System.out.println("Comment added successfully");
+                response.sendRedirect("lesson-view?lessonId=" + lessonId);
+                return;
+
+            } catch (Exception e) {
+                System.err.println("Error adding comment: " + e.getMessage());
+                e.printStackTrace();
             }
         }
-        return "";
+
+        // Fallback redirect
+        String lessonId = lessonIdParam != null ? lessonIdParam : "1";
+        response.sendRedirect("lesson-view?lessonId=" + lessonId + "&error=true");
     }
-    
-    private String getFileExtension(String fileName) {
-        if (fileName == null || fileName.isEmpty()) {
-            return "";
-        }
-        int lastDot = fileName.lastIndexOf('.');
-        return lastDot > 0 ? fileName.substring(lastDot + 1).toLowerCase() : "";
-    }
-    
-    private boolean isValidMediaFile(String extension) {
-        String[] validExtensions = {"jpg", "jpeg", "png", "gif", "mp4", "avi", "mov"};
-        for (String validExt : validExtensions) {
-            if (validExt.equals(extension)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private String generateUniqueFileName(String extension) {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String uuid = UUID.randomUUID().toString().substring(0, 8);
-        return "comment_" + timestamp + "_" + uuid + "." + extension;
-    }
+
+
     
     private void handleEditComment(HttpServletRequest request, HttpServletResponse response, User currentUser) 
             throws Exception {

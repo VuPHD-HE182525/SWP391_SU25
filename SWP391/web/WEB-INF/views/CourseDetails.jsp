@@ -602,26 +602,8 @@
 <!-- Header JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Avatar dropdown toggle
-    const avatarButton = document.getElementById('avatarButton');
-    const avatarDropdown = document.getElementById('avatarDropdown');
-
-    if (avatarButton && avatarDropdown) {
-        avatarButton.addEventListener('click', function(e) {
-            e.stopPropagation();
-            avatarDropdown.classList.toggle('hidden');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function() {
-            avatarDropdown.classList.add('hidden');
-        });
-
-        // Prevent dropdown from closing when clicking inside it
-        avatarDropdown.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    }
+    // Let Bootstrap handle the dropdown automatically
+    // Bootstrap dropdown will work with data-bs-toggle="dropdown" attribute
 });
 </script>
 

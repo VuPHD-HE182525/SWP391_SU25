@@ -3,23 +3,25 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/CourseDAO.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/DBContext.java</file>
             <file>file:/D:/SWP391_SU25/SWP391/web/WEB-INF/web.xml</file>
+            <file>file:/D:/SWP391_SU25/SWP391/web/WEB-INF/views/quiz_result.jsp</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/EnhancedContextBuilder.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/BlogDAO.java</file>
             <file>file:/D:/SWP391_SU25/SWP391/web/META-INF/context.xml</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/SubjectDAO.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/web/WEB-INF/views/lesson_view.jsp</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/LessonCommentDAO.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/controller/SubjectListServlet.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/web/WEB-INF/views/my_courses.jsp</file>
             <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/MailUtil.java</file>
             <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/ContactDAO.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/DBContext.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/config.properties</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/controller/AiChatServlet.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/BlogDAO.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/controller/SubjectListServlet.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/EnhancedContextBuilder.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/SmartSuggestions.java</file>
-            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/ReadingContentLoader.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/web/WEB-INF/views/lesson_view.jsp</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/SubjectDAO.java</file>
             <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/GeminiService.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/config.properties</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/CourseDAO.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/DAO/LessonCommentDAO.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/ReadingContentLoader.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/controller/AiChatServlet.java</file>
+            <file>file:/D:/SWP391_SU25/SWP391/src/java/utils/SmartSuggestions.java</file>
         </group>
     </open-files>
 </project-private>

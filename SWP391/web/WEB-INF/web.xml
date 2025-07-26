@@ -26,5 +26,15 @@
         <servlet-name>default</servlet-name>
         <url-pattern>/uploads/*</url-pattern>
     </servlet-mapping>
-    
+
+    <!-- Lesson View Servlet -->
+    <servlet>
+        <servlet-name>LessonViewServlet</servlet-name>
+        <servlet-class>controller.LessonViewServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LessonViewServlet</servlet-name>
+        <url-pattern>/lesson-view</url-pattern>
+    </servlet-mapping>
+
 </web-app>
