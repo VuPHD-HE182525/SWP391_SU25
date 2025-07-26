@@ -442,4 +442,50 @@ public class SubjectDAO {
             ps.executeUpdate();
         }
     }
+    
+    // Get subjects with search and category filters
+    public List<Subject> getSubjectsWithFilters(String search, String categoryId) throws Exception {
+        List<Subject> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT id, name, description, created_at, thumbnail_url FROM subjects WHERE 1=1");
+        
+        List<Object> parameters = new ArrayList<>();
+        
+        // Add search filter
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND (name LIKE ? OR description LIKE ?)");
+            String searchPattern = "%" + search.trim() + "%";
+            parameters.add(searchPattern);
+            parameters.add(searchPattern);
+        }
+        
+        // Add category filter
+        if (categoryId != null && !categoryId.trim().isEmpty()) {
+            sql.append(" AND category_id = ?");
+            parameters.add(Integer.parseInt(categoryId));
+        }
+        
+        sql.append(" ORDER BY name ASC");
+        
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            
+            // Set parameters
+            for (int i = 0; i < parameters.size(); i++) {
+                ps.setObject(i + 1, parameters.get(i));
+            }
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Subject s = new Subject();
+                    s.setId(rs.getInt("id"));
+                    s.setName(rs.getString("name"));
+                    s.setDescription(rs.getString("description"));
+                    s.setCreatedAt(rs.getTimestamp("created_at"));
+                    s.setThumbnailUrl(rs.getString("thumbnail_url"));
+                    list.add(s);
+                }
+            }
+        }
+        return list;
+    }
 }

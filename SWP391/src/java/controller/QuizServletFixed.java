@@ -237,8 +237,9 @@ public class QuizServletFixed extends HttpServlet {
         submission.setScore(score);
         submission.setSubmittedAt(LocalDateTime.now());
         
-        // Insert submission with simplified method
-        insertSubmissionSimplified(submission);
+        // Insert submission using DAO
+        QuizSubmissionDAO submissionDAO = new QuizSubmissionDAO();
+        submissionDAO.insertSubmission(submission);
         
         // Redirect to a simple success page instead of result page
         request.setAttribute("quiz", quiz);
@@ -249,31 +250,5 @@ public class QuizServletFixed extends HttpServlet {
         
         request.getRequestDispatcher("/WEB-INF/views/quiz_success.jsp").forward(request, response);
     }
-    
-    private void insertSubmissionSimplified(QuizSubmission submission) throws ServletException {
-        String sql = "INSERT INTO quiz_submissions (user_id, quiz_id, submitted_at, score) VALUES (?, ?, ?, ?)";
-        
-        try (java.sql.Connection conn = utils.DBContext.getConnection();
-             java.sql.PreparedStatement ps = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
-            
-            ps.setInt(1, submission.getUserId());
-            ps.setInt(2, submission.getQuizId());
-            ps.setTimestamp(3, java.sql.Timestamp.valueOf(submission.getSubmittedAt()));
-            ps.setInt(4, submission.getScore());
-            
-            int affectedRows = ps.executeUpdate();
-            
-            if (affectedRows > 0) {
-                try (java.sql.ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        submission.setId(generatedKeys.getInt(1));
-                    }
-                }
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServletException("Failed to save quiz submission: " + e.getMessage());
-        }
-    }
+
 } 

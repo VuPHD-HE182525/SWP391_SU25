@@ -530,7 +530,7 @@
                     <div class="sidebar-section">
                         <h5>Subject Search</h5>
                         <form method="get" action="course_list">
-                            <input type="text" name="search" class="search-box" placeholder="Search subjects...">
+                            <input type="text" name="search" class="search-box form-control" placeholder="Search subjects...">
                             <button type="submit" class="btn btn-primary mt-2 w-100">Search</button>
                         </form>
                     </div>
@@ -540,7 +540,7 @@
                         <h5>Subject Categories</h5>
                         <ul>
                             <c:forEach var="cat" items="${categories}">
-                                <li><a href="subjects?category=${cat.id}">${cat.name}</a></li>
+                                <li><a href="course_list?category=${cat.id}" class="text-decoration-none">${cat.name}</a></li>
                             </c:forEach>
                         </ul>
                     </div>

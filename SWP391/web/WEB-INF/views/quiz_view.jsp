@@ -180,7 +180,7 @@
                                             <span>
                                                 <strong>
                                                     <c:choose>
-                                                        <c:when test="${latestSubmission.correctAnswers != null and latestSubmission.totalQuestions != null}">
+                                                        <c:when test="${latestSubmission.correctAnswers != null and latestSubmission.totalQuestions != null and latestSubmission.totalQuestions > 0}">
                                                             ${latestSubmission.correctAnswers}/${latestSubmission.totalQuestions}
                                                         </c:when>
                                                         <c:otherwise>
@@ -205,20 +205,6 @@
                                                 </c:choose>
                                             </div>
                                             <small class="text-muted">Score</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="d-grid gap-2">
-                                            <a href="quiz?action=result&submissionId=${latestSubmission.id}" 
-                                               class="btn btn-outline-primary btn-sm">
-                                                <i class="fas fa-chart-bar me-1"></i>
-                                                View Results
-                                            </a>
-                                            <a href="quiz?action=review&submissionId=${latestSubmission.id}" 
-                                               class="btn btn-outline-secondary btn-sm">
-                                                <i class="fas fa-eye me-1"></i>
-                                                Review Test
-                                            </a>
                                         </div>
                                     </div>
                                 </div>
