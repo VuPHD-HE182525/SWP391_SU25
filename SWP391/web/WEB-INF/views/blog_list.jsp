@@ -254,20 +254,7 @@
                     </div>
                 </div>
 
-                <!-- Newsletter Signup -->
-                <div class="card sidebar-card">
-                    <div class="card-body text-center">
-                        <i class="fas fa-envelope fa-2x text-primary mb-3"></i>
-                        <h5 class="card-title">Stay Updated</h5>
-                        <p class="card-text text-muted">Subscribe to our newsletter for the latest articles and updates.</p>
-                        <form>
-                            <div class="mb-3">
-                                <input type="email" class="form-control" placeholder="Enter your email">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Subscribe</button>
-                        </form>
-                    </div>
-                </div>
+
             </div>
         </div>
     </main>

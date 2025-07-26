@@ -27,6 +27,16 @@
         <url-pattern>/uploads/*</url-pattern>
     </servlet-mapping>
 
+    <!-- Subjects Servlet -->
+    <servlet>
+        <servlet-name>SubjectsServlet</servlet-name>
+        <servlet-class>controller.SubjectsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SubjectsServlet</servlet-name>
+        <url-pattern>/subjects</url-pattern>
+    </servlet-mapping>
+
     <!-- Lesson View Servlet -->
     <servlet>
         <servlet-name>LessonViewServlet</servlet-name>
@@ -35,6 +45,16 @@
     <servlet-mapping>
         <servlet-name>LessonViewServlet</servlet-name>
         <url-pattern>/lesson-view</url-pattern>
+    </servlet-mapping>
+
+    <!-- AI Chat Servlet -->
+    <servlet>
+        <servlet-name>AiChatServlet</servlet-name>
+        <servlet-class>controller.AiChatServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AiChatServlet</servlet-name>
+        <url-pattern>/ai-chat</url-pattern>
     </servlet-mapping>
 
 </web-app>
