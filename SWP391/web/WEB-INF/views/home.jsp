@@ -48,7 +48,7 @@
                     <c:forEach var="b" items="${latestBlogs}" varStatus="loop">
                         <div class="col-12 col-sm-6 col-md-4">
                           <a href="${pageContext.request.contextPath}/blog_detail?id=${b.id}" class="bg-white rounded shadow-sm overflow-hidden d-block text-decoration-none h-100">
-                              <img src="${b.thumbnailUrl}" alt="${b.title}" class="w-100" style="height:180px;object-fit:cover;" />
+                              <img src="${pageContext.request.contextPath}/${b.thumbnailUrl}" alt="${b.title}" class="w-100" style="height:180px;object-fit:cover;" />
                               <div class="p-3">
                                   <h4 class="h6 fw-bold mb-1">${b.title}</h4>
                                   <p class="mb-0 text-muted small">${b.publishedAt}</p>
