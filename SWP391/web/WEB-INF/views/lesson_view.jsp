@@ -488,17 +488,19 @@
                 
                 <!-- Enhanced Next Navigation -->
                 <c:choose>
-                    <c:when test="${currentLesson.id == 2 || currentLesson.id == 4}">
+                    <c:when test="${currentLesson.id == 2 || currentLesson.id == 3 || currentLesson.id == 4}">
                         <!-- Special case: Last video in section → navigate to reading -->
                         <c:set var="readingLessonId" value="" />
                         <c:forEach items="${courseLessons}" var="lesson">
                             <c:if test="${lesson.type == 'reading' || lesson.contentType == 'reading' || not empty lesson.contentFilePath}">
-                                <c:set var="readingLessonId" value="${lesson.id}" />
+                                <c:if test="${empty readingLessonId}">
+                                    <c:set var="readingLessonId" value="${lesson.id}" />
+                                </c:if>
                             </c:if>
                         </c:forEach>
                         <c:choose>
                             <c:when test="${not empty readingLessonId}">
-                                <button onclick="navigateToLesson(${readingLessonId});" 
+                                <button onclick="navigateToLesson(${readingLessonId});"
                                        class="nav-button flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                     Next: Reading
                                     <i class="fas fa-chevron-right ml-2"></i>
@@ -506,7 +508,7 @@
                             </c:when>
                             <c:otherwise>
                                 <c:if test="${nextLesson != null}">
-                                    <button onclick="navigateToLesson(${nextLesson.id})" 
+                                    <button onclick="navigateToLesson(${nextLesson.id})"
                                            class="nav-button flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                         Next
                                         <i class="fas fa-chevron-right ml-2"></i>
@@ -559,7 +561,7 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-4">Comments</h3>
                     
                     <!-- Add Comment Form -->
-                    <form action="lesson-view" method="post" enctype="multipart/form-data" class="mb-6" id="commentForm">
+                    <form action="${pageContext.request.contextPath}/lesson-view" method="post" class="mb-6" id="commentForm">
                         <input type="hidden" name="action" value="addComment">
                         <input type="hidden" name="lessonId" value="${currentLesson.id}">
                         <div class="flex space-x-4">
@@ -570,32 +572,7 @@
                                         class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         placeholder="Share your thoughts about this lesson..."></textarea>
                                 
-                                <!-- Media Upload Section -->
-                                <div class="mt-3 space-y-3">
-                                    <!-- File Upload -->
-                                    <div class="flex items-center space-x-3">
-                                        <label for="mediaFile" class="cursor-pointer">
-                                            <div class="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-paperclip text-gray-500"></i>
-                                                <span class="text-sm text-gray-600">Attach Media</span>
-                                            </div>
-                                        </label>
-                                        <input type="file" id="mediaFile" name="mediaFile" accept="image/*,video/*" 
-                                               class="hidden" onchange="handleFileSelect(this)">
-                                        <span class="text-xs text-gray-500">Supports: JPG, PNG, GIF, MP4, AVI (Max 10MB)</span>
-                                    </div>
-                                    
-                                    <!-- File Preview -->
-                                    <div id="filePreview" class="hidden">
-                                        <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
-                                            <div id="previewContent" class="flex-1"></div>
-                                            <button type="button" onclick="removeFile()" 
-                                                    class="text-red-500 hover:text-red-700 p-1">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 
                                 <div class="mt-3 flex space-x-3">
                                     <button type="submit" 
@@ -632,36 +609,11 @@
                                     </div>
                                     <p class="text-gray-700 mb-3">${comment.commentText}</p>
                                     
-                                    <!-- Media Display -->
-                                    <c:if test="${not empty comment.mediaPath}">
-                                        <div class="mt-3">
-                                            <c:choose>
-                                                <c:when test="${comment.mediaType == 'image'}">
-                                                    <img src="${comment.mediaPath}" alt="Comment image" 
-                                                         class="max-w-md max-h-64 rounded-lg shadow-sm cursor-pointer hover:opacity-90 transition-opacity border"
-                                                         onclick="openMediaModal('${comment.mediaPath}', 'image')">
-                                                </c:when>
-                                                <c:when test="${comment.mediaType == 'video'}">
-                                                    <video controls class="max-w-md max-h-64 rounded-lg shadow-sm border">
-                                                        <source src="${comment.mediaPath}" type="video/mp4">
-                                                        Your browser does not support the video tag.
-                                                    </video>
-                                                </c:when>
-                                            </c:choose>
-                                        </div>
-                                    </c:if>
+
                                     
                                     <!-- Comment Actions -->
-                                    <div class="mt-2 flex items-center space-x-3 text-sm">
-                                        <button class="text-gray-500 hover:text-blue-600 transition-colors">
-                                            <i class="fas fa-thumbs-up mr-1"></i>
-                                            Like
-                                        </button>
-                                        <button class="text-gray-500 hover:text-blue-600 transition-colors">
-                                            <i class="fas fa-reply mr-1"></i>
-                                            Reply
-                                        </button>
-                                        <c:if test="${comment.userId == currentUser.id}">
+                                    <c:if test="${comment.userId == currentUser.id}">
+                                        <div class="mt-2 flex items-center space-x-3 text-sm">
                                             <button onclick="editComment(this)" 
                                                     data-comment-id="${comment.id}" 
                                                     data-comment-text="${comment.commentText}"
@@ -677,8 +629,8 @@
                                                     <i class="fas fa-trash mr-1"></i>Delete
                                                 </button>
                                             </form>
-                                        </c:if>
-                                    </div>
+                                        </div>
+                                    </c:if>
                                 </div>
                             </div>
                         </c:forEach>
@@ -1362,99 +1314,8 @@
             }, 3000);
         }
         
-                 // Media Upload Functions
-         function handleFileSelect(input) {
-             const file = input.files[0];
-             if (!file) return;
-             
-             // Validate file type
-             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/avi', 'video/mov'];
-             if (!allowedTypes.includes(file.type)) {
-                 alert('Please select a valid image (JPG, PNG, GIF) or video (MP4, AVI, MOV) file.');
-                 input.value = '';
-                 return;
-             }
-             
-             // Validate file size (max 10MB)
-             if (file.size > 10 * 1024 * 1024) {
-                 alert('File size must be less than 10MB.');
-                 input.value = '';
-                 return;
-             }
-             
-             // Show preview
-             const preview = document.getElementById('filePreview');
-             const previewContent = document.getElementById('previewContent');
-             
-             if (file.type.startsWith('image/')) {
-                 const img = document.createElement('img');
-                 img.src = URL.createObjectURL(file);
-                 img.className = 'max-w-xs max-h-32 rounded-lg object-cover';
-                 img.alt = 'Preview';
-                 previewContent.innerHTML =
-                     '<div class="flex items-center space-x-3">' +
-                         '<div class="flex-shrink-0">' +
-                             '<img src="' + img.src + '" alt="Preview" class="w-16 h-16 rounded-lg object-cover">' +
-                         '</div>' +
-                         '<div>' +
-                             '<p class="text-sm font-medium text-gray-900">' + file.name + '</p>' +
-                             '<p class="text-xs text-gray-500">' + (file.size / 1024 / 1024).toFixed(2) + ' MB</p>' +
-                             '<p class="text-xs text-blue-600">Image ready to upload</p>' +
-                         '</div>' +
-                     '</div>';
-             } else if (file.type.startsWith('video/')) {
-                 const video = document.createElement('video');
-                 video.src = URL.createObjectURL(file);
-                 video.className = 'w-16 h-16 rounded-lg object-cover';
-                 video.controls = false;
-                 video.muted = true;
-                 previewContent.innerHTML =
-                     '<div class="flex items-center space-x-3">' +
-                         '<div class="flex-shrink-0">' +
-                             '<video src="' + video.src + '" class="w-16 h-16 rounded-lg object-cover" muted></video>' +
-                         '</div>' +
-                         '<div>' +
-                             '<p class="text-sm font-medium text-gray-900">' + file.name + '</p>' +
-                             '<p class="text-xs text-gray-500">' + (file.size / 1024 / 1024).toFixed(2) + ' MB</p>' +
-                             '<p class="text-xs text-green-600">Video ready to upload</p>' +
-                         '</div>' +
-                     '</div>';
-             }
-             
-             preview.classList.remove('hidden');
-         }
-         
-         function removeFile() {
-             document.getElementById('mediaFile').value = '';
-             document.getElementById('filePreview').classList.add('hidden');
-             document.getElementById('previewContent').innerHTML = '';
-         }
-         
          function clearForm() {
              document.getElementById('commentForm').reset();
-             removeFile();
-         }
-         
-         // Media modal functions
-         function openMediaModal(src, type) {
-             const modal = document.getElementById('mediaModal');
-             const modalContent = document.getElementById('modalContent');
-             
-             if (type === 'image') {
-                 modalContent.innerHTML = '<img src="' + src + '" alt="Full size image" class="max-w-full max-h-full object-contain">';
-             } else if (type === 'video') {
-                 modalContent.innerHTML =
-                     '<video controls class="max-w-full max-h-full">' +
-                         '<source src="' + src + '" type="video/mp4">' +
-                         'Your browser does not support the video tag.' +
-                     '</video>';
-             }
-             
-             modal.classList.remove('hidden');
-         }
-         
-         function closeMediaModal() {
-             document.getElementById('mediaModal').classList.add('hidden');
          }
          
          // Close modal on background click
@@ -1516,32 +1377,8 @@
                  dynamicContent.classList.add('fade-in');
              }
              
-             // Fix Bootstrap dropdown manually if needed
-             const dropdownToggle = document.getElementById('avatarDropdown');
-             if (dropdownToggle) {
-                 dropdownToggle.addEventListener('click', function(e) {
-                     e.preventDefault();
-                     const dropdownMenu = this.nextElementSibling;
-                     if (dropdownMenu) {
-                         const isShown = dropdownMenu.classList.contains('show');
-                         if (isShown) {
-                             dropdownMenu.classList.remove('show');
-                         } else {
-                             dropdownMenu.classList.add('show');
-                         }
-                     }
-                 });
-                 
-                 // Close dropdown when clicking outside
-                 document.addEventListener('click', function(e) {
-                     if (!dropdownToggle.contains(e.target)) {
-                         const dropdownMenu = dropdownToggle.nextElementSibling;
-                         if (dropdownMenu) {
-                             dropdownMenu.classList.remove('show');
-                         }
-                     }
-                 });
-             }
+             // Let Bootstrap handle the dropdown - remove manual override
+             // Bootstrap dropdown will work automatically with data-bs-toggle="dropdown"
          });
     </script>
     

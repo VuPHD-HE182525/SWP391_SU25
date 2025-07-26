@@ -27,7 +27,7 @@
                     Updated: <fmt:formatDate value="${blog.publishedAt}" pattern="dd MMM, yyyy"/>
                 </div>
                 <c:if test="${not empty blog.thumbnailUrl}">
-                    <img src="${blog.thumbnailUrl}" alt="${blog.title}" class="rounded w-100 mb-4" style="max-height:350px;object-fit:cover;" />
+                    <img src="${pageContext.request.contextPath}/${blog.thumbnailUrl}" alt="${blog.title}" class="rounded w-100 mb-4" style="max-height:350px;object-fit:cover;" />
                 </c:if>
                 <div class="mb-2" style="font-size:1.1em;">
                     ${blog.content}
@@ -56,7 +56,7 @@
                 <h2 class="h6 fw-bold mb-2">Latest Post</h2>
                 <c:forEach var="post" items="${latestBlogs}">
                     <div class="mb-3 d-flex gap-3 align-items-center">
-                        <img src="${post.thumbnailUrl}" alt="${post.title}" class="rounded" style="width:56px;height:56px;object-fit:cover;" />
+                        <img src="${pageContext.request.contextPath}/${post.thumbnailUrl}" alt="${post.title}" class="rounded" style="width:56px;height:56px;object-fit:cover;" />
                         <div>
                             <a href="/blog_detail?id=${post.id}" class="fw-medium text-decoration-none">${post.title}</a>
                             <div class="text-secondary small">

@@ -120,7 +120,7 @@
                                 <div class="col-md-6">
                                     <a href="blog_detail?id=${blog.id}" class="card blog-card text-decoration-none">
                                         <c:if test="${not empty blog.thumbnailUrl}">
-                                            <img src="${blog.thumbnailUrl}" alt="${blog.title}" class="card-img-top blog-image">
+                                            <img src="${pageContext.request.contextPath}/${blog.thumbnailUrl}" alt="${blog.title}" class="card-img-top blog-image">
                                         </c:if>
                                         <c:if test="${empty blog.thumbnailUrl}">
                                             <div class="card-img-top blog-image bg-light d-flex align-items-center justify-content-center">
@@ -236,7 +236,7 @@
                         <c:forEach var="latestBlog" items="${latestBlogs}">
                             <div class="d-flex mb-3">
                                 <div class="flex-shrink-0 me-3">
-                                    <img src="${latestBlog.thumbnailUrl != null ? latestBlog.thumbnailUrl : '/uploads/images/blog-placeholder.jpg'}" 
+                                    <img src="${latestBlog.thumbnailUrl != null ? pageContext.request.contextPath.concat('/').concat(latestBlog.thumbnailUrl) : pageContext.request.contextPath.concat('/uploads/images/blog-placeholder.jpg')}"
                                          alt="${latestBlog.title}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                 </div>
                                 <div class="flex-grow-1">

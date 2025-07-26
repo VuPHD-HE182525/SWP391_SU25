@@ -179,10 +179,41 @@ public class QuizSubmissionDAO {
             submission.setSubmittedAt(submittedAt.toLocalDateTime());
         }
         
-        submission.setScore(rs.getInt("score"));
+        int score = rs.getInt("score");
+        submission.setScore(score);
         submission.setQuizTitle(rs.getString("quiz_title"));
         submission.setUserName(rs.getString("user_name"));
         
+        // Calculate totalQuestions and correctAnswers from quiz and score
+        try {
+            int quizId = submission.getQuizId();
+            int totalQuestions = getTotalQuestionsByQuizId(quizId);
+            int correctAnswers = totalQuestions > 0 ? (int) Math.round((double) score * totalQuestions / 100) : 0;
+            
+            submission.setTotalQuestions(totalQuestions);
+            submission.setCorrectAnswers(correctAnswers);
+        } catch (SQLException e) {
+            // Fallback values if calculation fails
+            submission.setTotalQuestions(0);
+            submission.setCorrectAnswers(0);
+        }
+        
         return submission;
+    }
+    
+    private int getTotalQuestionsByQuizId(int quizId) throws SQLException {
+        String sql = "SELECT COUNT(*) as total FROM questions WHERE quiz_id = ?";
+        try (Connection conn = DBContext.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, quizId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+            }
+        } catch (Exception e) {
+            throw new SQLException("Failed to get total questions", e);
+        }
+        return 0;
     }
 } 

@@ -78,8 +78,16 @@ public class CourseListServlet extends HttpServlet {
             
             // Use simpler method first
             SubjectDAO subjectDAO = new SubjectDAO();
-            List<Subject> allSubjects = subjectDAO.getAllSubjects();
-            System.out.println("All subjects count: " + allSubjects.size());
+            List<Subject> allSubjects;
+            
+            // Apply search and category filter
+            if ((search != null && !search.trim().isEmpty()) || (categoryId != null && !categoryId.trim().isEmpty())) {
+                System.out.println("Applying filters - Search: " + search + ", Category: " + categoryId);
+                allSubjects = subjectDAO.getSubjectsWithFilters(search, categoryId);
+            } else {
+                allSubjects = subjectDAO.getAllSubjects();
+            }
+            System.out.println("Filtered subjects count: " + allSubjects.size());
             
             // Load packages for each subject
             System.out.println("Loading packages for subjects...");

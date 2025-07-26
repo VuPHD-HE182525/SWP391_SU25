@@ -56,7 +56,7 @@
                 <li><a class="dropdown-item" href="my-course">Khóa học của tôi</a></li>
                 <li><a class="dropdown-item" href="settings">Cài đặt</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="Logout">Đăng xuất</a></li>
+                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">Đăng xuất</a></li>
               </ul>
             </div>
           </c:when>

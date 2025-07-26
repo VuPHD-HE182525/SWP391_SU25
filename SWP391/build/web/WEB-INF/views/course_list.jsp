@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:include page="/WEB-INF/views/includes/header_subjects.jsp" />
+<jsp:include page="/WEB-INF/views/includes/header.jsp" />
 
 <meta charset="UTF-8">
 <title>Course Details</title>
@@ -124,13 +124,24 @@
                   alert('Please enter a subject name to search');
                   return;
               }
-              const matchedSubject = subjectsData.find(function(subject) {
+              
+              // First try exact match
+              let matchedSubject = subjectsData.find(function(subject) {
                   return subject && subject.name.toLowerCase() === searchTerm.toLowerCase();
               });
+              
+              // If no exact match, try partial match
+              if (!matchedSubject) {
+                  matchedSubject = subjectsData.find(function(subject) {
+                      return subject && subject.name.toLowerCase().includes(searchTerm.toLowerCase());
+                  });
+              }
+              
               if (matchedSubject) {
                   window.location.href = 'course-details?subjectId=' + matchedSubject.id;
               } else {
-                  alert('No exact match found for: ' + searchTerm);
+                  // If no match found, submit the form to search on server side
+                  document.getElementById('searchForm').submit();
               }
           });
           document.getElementById('searchForm').addEventListener('submit', function(e) {
@@ -141,7 +152,7 @@
       <h5 class="mt-4">Subject Categories</h5>
       <ul>
           <c:forEach var="cat" items="${categories}">
-              <li>${cat.name}</li>
+              <li><a href="course_list?category=${cat.id}" class="text-decoration-none">${cat.name}</a></li>
           </c:forEach>
       </ul>
       <h5 class="mt-4">Featured Subjects</h5>
@@ -275,5 +286,5 @@
     </div>
   </div>
 </div>
-<jsp:include page="/WEB-INF/views/includes/footer_subjects.jsp" />
+<jsp:include page="/WEB-INF/views/includes/footer.jsp" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
