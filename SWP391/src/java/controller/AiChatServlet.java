@@ -1,8 +1,10 @@
 package controller;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import utils.GeminiService;
 import utils.AppConfig;
 import utils.AiContextBuilder;
@@ -31,7 +33,6 @@ import java.io.IOException;
  *
  * @author SWP391 Team
  */
-@WebServlet("/ai-chat")
 public class AiChatServlet extends HttpServlet {
 
     /**
@@ -310,13 +311,13 @@ public class AiChatServlet extends HttpServlet {
 
         // Display current AI configuration status
         if (AppConfig.isConfigured()) {
-            response.getWriter().println("<p style='color: green;'>✅ AI Assistant is configured and ready.</p>");
+            response.getWriter().println("<p style='color: green;'>[OK] AI Assistant is configured and ready.</p>");
         } else {
-            response.getWriter().println("<p style='color: red;'>❌ AI Assistant is not configured.</p>");
+            response.getWriter().println("<p style='color: red;'>[ERROR] AI Assistant is not configured.</p>");
         }
 
         // Provide navigation link back to lesson view
-        response.getWriter().println("<p><a href='lesson-view?lessonId=10'>← Back to Lesson</a></p>");
+        response.getWriter().println("<p><a href='lesson-view?lessonId=10'>&lt; Back to Lesson</a></p>");
         response.getWriter().println("</body></html>");
     }
 }

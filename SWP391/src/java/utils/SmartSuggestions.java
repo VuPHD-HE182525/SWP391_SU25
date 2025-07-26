@@ -173,11 +173,11 @@ public class SmartSuggestions {
     public static List<String> getQuickActions(String lessonName) {
         List<String> actions = new ArrayList<>();
         
-        actions.add("📝 Take notes");
-        actions.add("🎯 Practice exercise");
-        actions.add("📚 Read more");
-        actions.add("❓ Ask question");
-        actions.add("🔄 Review lesson");
+        actions.add("Take notes");
+        actions.add("Practice exercise");
+        actions.add("Read more");
+        actions.add("Ask question");
+        actions.add("Review lesson");
         
         return actions;
     }

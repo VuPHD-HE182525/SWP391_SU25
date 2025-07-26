@@ -41,8 +41,21 @@
         <!-- Smart Suggestions -->
         <div class="ai-suggestions-container" id="aiSuggestions" style="display: none;">
             <div class="ai-suggestions-header">
-                <span>💡 Smart Suggestions</span>
-                <button onclick="hideSuggestions()" class="ai-suggestions-close">×</button>
+                <span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: text-bottom;">
+                        <path d="M9 21H7l-4-4V9a7 7 0 0 1 14 0v8l-4 4h-2"></path>
+                        <path d="M9 21v-6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v6"></path>
+                        <path d="M9 7h6"></path>
+                        <path d="M9 11h6"></path>
+                    </svg>
+                    Smart Suggestions
+                </span>
+                <button onclick="hideSuggestions()" class="ai-suggestions-close">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
             </div>
             <div class="ai-suggestions-list" id="suggestionsList">
                 <!-- Suggestions will be populated here -->
@@ -428,11 +441,11 @@ function toggleAiChat() {
 }
 
 /*
-    // 1. L?y user input t? chat box
-    // 2. Add user message v�o chat UI
+    // 1. Lay user input to chat box
+    // 2. Add user message video chat UI
     // 3. Show loading indicator
-    // 4. G?i AJAX POST ??n AiChatServlet v?i lessonId + lessonName
-    // 5. X? l� response v� display AI message
+    // 4. Gui AJAX POST den AiChatServlet voi lessonId + lessonName
+    // 5. Xu li response va display AI message
     **/
 function sendAiMessage() {
     const input = document.getElementById('aiChatInput');
