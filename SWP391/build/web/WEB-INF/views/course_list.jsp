@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:include page="/WEB-INF/views/includes/header_subjects.jsp" />
+<jsp:include page="/WEB-INF/views/includes/header.jsp" />
 
 <meta charset="UTF-8">
 <title>Course Details</title>
@@ -275,5 +275,5 @@
     </div>
   </div>
 </div>
-<jsp:include page="/WEB-INF/views/includes/footer_subjects.jsp" />
+<jsp:include page="/WEB-INF/views/includes/footer.jsp" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
